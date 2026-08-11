@@ -1,11 +1,10 @@
 services:
   - type: web
     name: mcm-nomad-backend
-    env: java
+    env: docker
+    dockerfilePath: ./Dockerfile
     plan: free
     region: singapore
-    buildCommand: ./gradlew bootJar
-    startCommand: java -jar -Dspring.profiles.active=prod build/libs/nomad-0.0.1-SNAPSHOT.jar
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: prod
@@ -21,6 +20,7 @@ services:
         fromDatabase:
           name: mcm-nomad-db
           property: password
+
 
 
 databases:
