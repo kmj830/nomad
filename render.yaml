@@ -8,26 +8,10 @@ services:
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: prod
-      - key: SPRING_DATASOURCE_HOST
+      - key: SPRING_DATASOURCE_URL
         fromDatabase:
           name: mcm-nomad-db
-          property: host
-      - key: SPRING_DATASOURCE_PORT
-        fromDatabase:
-          name: mcm-nomad-db
-          property: port
-      - key: SPRING_DATASOURCE_DATABASE
-        fromDatabase:
-          name: mcm-nomad-db
-          property: database
-      - key: SPRING_DATASOURCE_USERNAME
-        fromDatabase:
-          name: mcm-nomad-db
-          property: user
-      - key: SPRING_DATASOURCE_PASSWORD
-        fromDatabase:
-          name: mcm-nomad-db
-          property: password
+          property: connectionString
 
 databases:
   - name: mcm-nomad-db
