@@ -1,11 +1,17 @@
-# Build stage with memory limit optimization for Render Free Tier
-FROM eclipse-temurin:17-jdk-jammy AS build
+# Stage 1: Dependency Caching Layer
+FROM eclipse-temurin:17-jdk-jammy AS deps
 WORKDIR /app
-COPY . .
+COPY gradle gradle
+COPY gradlew build.gradle settings.gradle ./
 RUN chmod +x gradlew
+RUN ./gradlew dependencies --no-daemon
+
+# Stage 2: Fast Compilation Layer
+FROM deps AS build
+COPY src src
 RUN ./gradlew bootJar --no-daemon -Dorg.gradle.jvmargs="-Xmx384m"
 
-# Run stage
+# Stage 3: Lightweight Runtime Layer
 FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 COPY --from=build /app/build/libs/*.jar app.jar

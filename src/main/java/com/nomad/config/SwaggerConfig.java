@@ -23,6 +23,8 @@ public class SwaggerConfig {
         localServer.setUrl("http://localhost:8080" + contextPath);
         localServer.setDescription("Local Development Server");
 
+
+
         Server renderServer = new Server();
         renderServer.setUrl("https://mcm-nomad-backend.onrender.com" + contextPath);
         renderServer.setDescription("Render Production Server");
