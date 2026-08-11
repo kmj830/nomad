@@ -1,6 +1,7 @@
 services:
-  - type: image
+  - type: web
     name: mcm-nomad-backend
+    env: image
     image:
       url: ghcr.io/kmj830/nomad:latest
     plan: free
