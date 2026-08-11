@@ -27,7 +27,13 @@ public class RenderDatabaseEnvironmentPostProcessor implements EnvironmentPostPr
 
             Map<String, Object> map = new HashMap<>();
             map.put("spring.datasource.url", fixedUrl);
-            environment.getPropertySources().addFirst(new MapPropertySource("renderDbUrlFix", map));
+            map.put("SPRING_DATASOURCE_URL", fixedUrl);
+
+            if (environment.getPropertySources().contains("renderDbUrlFix")) {
+                environment.getPropertySources().replace("renderDbUrlFix", new MapPropertySource("renderDbUrlFix", map));
+            } else {
+                environment.getPropertySources().addFirst(new MapPropertySource("renderDbUrlFix", map));
+            }
         }
     }
 }
