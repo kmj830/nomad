@@ -1,8 +1,8 @@
 services:
-  - type: web
+  - type: image
     name: mcm-nomad-backend
-    env: docker
-    dockerfilePath: ./Dockerfile
+    image:
+      url: ghcr.io/kmj830/nomad:latest
     plan: free
     region: singapore
     envVars:
@@ -29,12 +29,8 @@ services:
           name: mcm-nomad-db
           property: password
 
-
-
-
 databases:
   - name: mcm-nomad-db
     plan: free
     region: singapore
     databaseName: nomaddb
-

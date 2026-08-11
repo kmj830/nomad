@@ -1,12 +1,15 @@
-name: MCM Nomad Passport AI - CI/CD Pipeline
+name: MCM Nomad Passport AI - Fast GHCR CI/CD Pipeline
 
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-  build-and-test:
+  build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout Source Code
@@ -22,10 +25,24 @@ jobs:
       - name: Grant Execute Permission for Gradlew
         run: chmod +x gradlew
 
-      - name: Build & Run Unit Tests with Gradle
+      - name: Build & Run Tests
         run: ./gradlew build --no-daemon
 
-      - name: Trigger Render Deploy Webhook (Optional)
+      - name: Log in to GitHub Container Registry (GHCR)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Docker Image to GHCR
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/kmj830/nomad:latest
+
+      - name: Trigger Render Fast Deploy
         if: env.RENDER_DEPLOY_HOOK != ''
         env:
           RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
