@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: mcm-nomad-backend
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: singapore
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: mcm-nomad-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: mcm-nomad-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: mcm-nomad-db
+          property: password
+
+databases:
+  - name: mcm-nomad-db
+    plan: free
+    region: singapore
+    databaseName: nomaddb
+    user: postgres
