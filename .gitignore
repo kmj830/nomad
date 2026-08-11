@@ -36,8 +36,10 @@ out/
 ### VS Code ###
 .vscode/
 
-### Antigravity Rules ###
+### Antigravity Rules & Local Documents ###
 .agents/
 AGENTS.md
 GEMINI.md
+requirements/
+
 
