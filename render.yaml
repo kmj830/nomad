@@ -26,4 +26,4 @@ databases:
     plan: free
     region: singapore
     databaseName: nomaddb
-    user: postgres
+
