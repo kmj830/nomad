@@ -43,7 +43,13 @@ jobs:
           tags: ghcr.io/kmj830/nomad:latest
 
       - name: Trigger Render Fast Deploy
-        if: env.RENDER_DEPLOY_HOOK != ''
         env:
           RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
-        run: curl -X POST "$RENDER_DEPLOY_HOOK"
+        run: |
+          if [ -n "$RENDER_DEPLOY_HOOK" ]; then
+            echo "🚀 Triggering Render Deploy Hook..."
+            curl -s -i -X POST "$RENDER_DEPLOY_HOOK"
+          else
+            echo "⚠️ RENDER_DEPLOY_HOOK secret is not set."
+          fi
+
