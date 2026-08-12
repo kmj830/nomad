@@ -49,6 +49,15 @@ public class JourneyController {
                 .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"mcm-boarding-pass.pkpass\"")
                 .body(pkpassBytes);
     }
+
+    @Operation(summary = "아이폰 범용 패스 파일 다운로드 (Safari 다운로드 호환)", description = "iOS Safari 보안 차단 없이 아이폰 파일 앱(Downloads)으로 직접 다운로드할 수 있는 패스 파일 API입니다.")
+    @GetMapping(value = {"/apple-wallet-pass/download-file/{journeyId}", "/apple-wallet-pass/download-file/{journeyId}.zip"}, produces = org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<byte[]> downloadAppleWalletPassFile(@PathVariable String journeyId) {
+        byte[] pkpassBytes = passKitService.generatePkpassZipBytes(1L, journeyId, "BKK");
+        return ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"mcm-pass-" + journeyId + ".pkpass\"")
+                .body(pkpassBytes);
+    }
 }
 
 
