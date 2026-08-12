@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class JourneyController {
 
     private final JourneyService journeyService;
+    private final com.nomad.service.PassKitService passKitService;
 
     @Operation(summary = "보딩패스 OCR 스캔 & 여정 등록", description = "탑승권 OCR 스캔을 통해 PNR을 추출하고 비행 여정을 저장합니다.")
     @PostMapping("/scan")
@@ -33,5 +34,12 @@ public class JourneyController {
     public ResponseEntity<JourneyDto.LiveCardResponse> getLiveCard(@PathVariable Long journeyId) {
         return ResponseEntity.ok(journeyService.getLiveCard(journeyId));
     }
+
+    @Operation(summary = "SCR-201 Apple Wallet 디지털 패스(.pkpass) 생성", description = "비행 탑승권 및 VIP 여정 보딩패스를 Apple Wallet PKPass 형태로 생성합니다.")
+    @GetMapping("/apple-wallet-pass/{journeyId}")
+    public ResponseEntity<com.nomad.service.PassKitService.AppleWalletPassResponse> getAppleWalletPass(@PathVariable Long journeyId) {
+        return ResponseEntity.ok(passKitService.generateNomadPassportPass(journeyId, "MCM999", "BKK (방콕 수완나품)"));
+    }
 }
+
 

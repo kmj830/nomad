@@ -91,8 +91,26 @@ class NomadApiIntegrationTests {
                         .content(objectMapper.writeValueAsString(checkoutReq)))
                 .andExpect(status().isOk());
 
+        // Phase 1: Apple Wallet Pass Generation Check
+        mockMvc.perform(get("/api/v1/journey/apple-wallet-pass/" + journeyId))
+                .andExpect(status().isOk());
+
         // Phase 3: Post-flight Visetos Spots & Care Message
         mockMvc.perform(get("/api/v1/care/visetos-spots").param("memberId", memberId.toString()))
+                .andExpect(status().isOk());
+
+        // Phase 3: Google Maps Integration Search
+        mockMvc.perform(get("/api/v1/care/google-maps").param("destination", "Bangkok"))
+                .andExpect(status().isOk());
+
+        // Phase 3: OpenAI AI Care Tip Generation
+        mockMvc.perform(get("/api/v1/care/ai-care-tip"))
+                .andExpect(status().isOk());
+
+        // Phase 3: FCM Push Test
+        mockMvc.perform(post("/api/v1/care/push-test")
+                        .param("title", "테스트 푸시")
+                        .param("body", "MCM 가죽 케어 가이드"))
                 .andExpect(status().isOk());
 
         // Phase 3: City Passport Stamp Check-in & Bonus Miles
@@ -102,6 +120,7 @@ class NomadApiIntegrationTests {
                         .content(objectMapper.writeValueAsString(stampReq)))
                 .andExpect(status().isOk());
     }
+
 
     @Test
     @DisplayName("예외 발생 시 GlobalExceptionHandler를 통한 표준 ErrorResponse 반환 검증")

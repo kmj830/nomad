@@ -42,6 +42,12 @@ class JourneyServiceTest {
     @Mock
     private WeatherService weatherService;
 
+    @Mock
+    private OpenAiService openAiService;
+
+    @Mock
+    private VisionOcrService visionOcrService;
+
     @InjectMocks
     private JourneyService journeyService;
 
@@ -88,8 +94,10 @@ class JourneyServiceTest {
     @Test
     @DisplayName("여정 분석 및 기후 추천 데이터 반환")
     void analyzeJourney_Success() {
+        Member member = Member.builder().id(1L).vipTier(VipTier.VIP).build();
         Journey journey = Journey.builder()
                 .id(10L)
+                .member(member)
                 .destination("BKK (방콕 수완나품)")
                 .destinationWeather("Tropical Wet Season")
                 .recommendationReason("방수 전용 제품 추천")
@@ -106,6 +114,7 @@ class JourneyServiceTest {
         when(productRepository.findAll()).thenReturn(List.of(product));
         when(weatherService.fetchDestinationWeather(any())).thenReturn(WeatherService.WeatherData.builder()
                 .cityName("Bangkok").temperature(30.0).humidity(80.0).isRainy(true).weatherDescription("Tropical Wet Season").build());
+        when(openAiService.generatePersonalizedStylingAdvice(any(), any(), any(), any())).thenReturn("AI 스타일링 추천");
 
         JourneyDto.JourneyAnalysisResponse response = journeyService.analyzeJourney(10L);
 
@@ -114,4 +123,5 @@ class JourneyServiceTest {
         assertThat(response.getWeatherInfo()).isEqualTo("Tropical Wet Season");
     }
 }
+
 

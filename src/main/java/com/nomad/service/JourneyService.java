@@ -27,6 +27,8 @@ public class JourneyService {
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
     private final WeatherService weatherService;
+    private final OpenAiService openAiService;
+    private final VisionOcrService visionOcrService;
 
     @Transactional
     public JourneyDto.ScanResponse scanBoardingPass(JourneyDto.ScanRequest request) {
@@ -35,7 +37,8 @@ public class JourneyService {
 
         String pnr = request.getPnr();
         if (pnr == null || pnr.isBlank()) {
-            pnr = extractPnrFromOcr(request.getRawOcrText());
+            var ocrResult = visionOcrService.processBoardingPassOcr(request.getRawOcrText());
+            pnr = ocrResult.getOrDefault("pnr", extractPnrFromOcr(request.getRawOcrText()));
         }
 
         String origin = request.getOrigin() != null ? request.getOrigin() : "ICN (인천국제공항)";
@@ -89,12 +92,20 @@ public class JourneyService {
             recommended = allProducts;
         }
 
+        String topProductName = recommended.isEmpty() ? "MCM 비세토스 백팩" : recommended.get(0).getName();
+        String aiAdvice = openAiService.generatePersonalizedStylingAdvice(
+                journey.getDestination(),
+                weather.getWeatherDescription(),
+                journey.getMember().getVipTier().name(),
+                topProductName
+        );
+
         return JourneyDto.JourneyAnalysisResponse.builder()
                 .journeyId(journey.getId())
                 .destination(journey.getDestination())
                 .weatherInfo(weather.getWeatherDescription())
                 .climateSummary("실시간 글로벌 기상 API 조회 결과: " + weather.getWeatherDescription())
-                .recommendationReason(journey.getRecommendationReason() != null ? journey.getRecommendationReason() : "AI 기반 기후 맞춤 큐레이션")
+                .recommendationReason(aiAdvice)
                 .recommendedProducts(recommended)
                 .build();
     }
