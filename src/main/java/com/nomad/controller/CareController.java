@@ -31,11 +31,12 @@ public class CareController {
         return ResponseEntity.ok(googleMapsService.findMcmSpotsWithMaps(destination));
     }
 
-    @Operation(summary = "SCR-501 OpenAI 기반 가죽 케어 AI 가이드 생성", description = "OpenAI GPT-4o를 활용해 구입 제품 및 현지 기후 조건 맞춤형 가죽 관리 팁을 생성합니다.")
+    @Operation(summary = "SCR-501 OpenAI 기반 가죽 케어 AI 가이드 생성 (다국어 지원: ko, en, ja, zh)", description = "OpenAI GPT-4o를 활용해 구입 제품, 현지 기후 조건 및 다국어(ko, en, ja, zh) 맞춤형 가죽 관리 팁을 생성합니다.")
     @GetMapping("/ai-care-tip")
     public ResponseEntity<String> getAiCareTip(@RequestParam(defaultValue = "MCM Visetos 백팩") String productName,
-                                                @RequestParam(defaultValue = "습도 88% 열대성 스콜") String weather) {
-        return ResponseEntity.ok(openAiService.generateLeatherCareTip(productName, weather));
+                                                @RequestParam(defaultValue = "습도 88% 열대성 스콜") String weather,
+                                                @RequestParam(defaultValue = "ko") String lang) {
+        return ResponseEntity.ok(openAiService.generateLeatherCareTip(productName, weather, lang));
     }
 
     @Operation(summary = "FCM 디바이스 푸시 알림 테스트", description = "Firebase Cloud Messaging(FCM) 푸시 알림 발송 테스트를 진행합니다.")

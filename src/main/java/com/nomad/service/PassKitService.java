@@ -45,7 +45,38 @@ public class PassKitService {
                 .description("MCM Nomad Passport VIP Flight Boarding & Fitting Pass")
                 .logoText("MCM NOMAD PASSPORT AI")
                 .boardingPassDetails(details)
-                .pkpassDownloadUrl("https://mcm-nomad-backend.onrender.com/api/v1/journey/apple-wallet-pass/" + serial + ".pkpass")
+                .pkpassDownloadUrl("https://mcm-nomad-backend.onrender.com/api/v1/journey/apple-wallet-pass/download/" + (pnr != null ? pnr : "MCM999") + ".pkpass")
                 .build();
+    }
+
+    public byte[] generatePkpassZipBytes(Long memberId, String pnr, String destination) {
+        try {
+            java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+            java.util.zip.ZipOutputStream zos = new java.util.zip.ZipOutputStream(baos);
+
+            // Add pass.json
+            zos.putNextEntry(new java.util.zip.ZipEntry("pass.json"));
+            String jsonContent = String.format("{\n" +
+                    "  \"formatVersion\": 1,\n" +
+                    "  \"passTypeIdentifier\": \"pass.com.mcmworldwide.nomadpassport\",\n" +
+                    "  \"serialNumber\": \"MCM-%s-%d\",\n" +
+                    "  \"teamIdentifier\": \"MCM99PASSKIT\",\n" +
+                    "  \"organizationName\": \"MCM Worldwide\",\n" +
+                    "  \"description\": \"MCM Nomad Passport VIP Pass\",\n" +
+                    "  \"logoText\": \"MCM NOMAD PASSPORT\",\n" +
+                    "  \"foregroundColor\": \"rgb(255, 255, 255)\",\n" +
+                    "  \"backgroundColor\": \"rgb(17, 17, 17)\",\n" +
+                    "  \"boardingPass\": {\n" +
+                    "    \"transitType\": \"PKTransitTypeAir\"\n" +
+                    "  }\n" +
+                    "}", pnr != null ? pnr : "MCM999", memberId != null ? memberId : 1);
+            zos.write(jsonContent.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            zos.closeEntry();
+
+            zos.finish();
+            return baos.toByteArray();
+        } catch (Exception e) {
+            return "PKPASS_GEN_ERROR".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        }
     }
 }

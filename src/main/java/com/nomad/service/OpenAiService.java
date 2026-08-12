@@ -49,20 +49,37 @@ public class OpenAiService {
         }
     }
 
-    public String generateLeatherCareTip(String productName, String destinationWeather) {
+    public String generateLeatherCareTip(String productName, String destinationWeather, String lang) {
+        String language = (lang != null && !lang.isBlank()) ? lang.toLowerCase() : "ko";
+        String langInstruction = "in Korean";
+        if ("en".equals(language)) langInstruction = "in English";
+        else if ("ja".equals(language)) langInstruction = "in Japanese";
+        else if ("zh".equals(language)) langInstruction = "in Simplified Chinese";
+
         if (!isApiKeyAvailable()) {
+            if ("en".equals(language)) {
+                return String.format("MCM %s leather care and weather protection guide for %s climate.", productName, destinationWeather);
+            } else if ("ja".equals(language)) {
+                return String.format("%s 気候における MCM %s レザーケアおよび防水保護ガイドです。", destinationWeather, productName);
+            } else if ("zh".equals(language)) {
+                return String.format("MCM %s 皮革针对 %s 气候的特别保养与防护指南。", productName, destinationWeather);
+            }
             return String.format("MCM %s 가죽 제품의 %s 기후 조건 맞춤 수분/코팅 케어 가이드입니다.", productName, destinationWeather);
         }
 
         try {
             String prompt = String.format(
-                    "Generate a 2-sentence professional MCM Visetos leather care tip in Korean for %s under destination weather condition: %s.",
-                    productName, destinationWeather
+                    "Generate a 2-sentence professional MCM Visetos leather care tip %s for %s under destination weather condition: %s.",
+                    langInstruction, productName, destinationWeather
             );
             return callOpenAiGpt(prompt, 150);
         } catch (Exception e) {
             return String.format("%s 가죽 제품의 현지 기후 맞춤 케어 팁입니다.", productName);
         }
+    }
+
+    public String generateLeatherCareTip(String productName, String destinationWeather) {
+        return generateLeatherCareTip(productName, destinationWeather, "ko");
     }
 
     public Map<String, String> parseBoardingPassText(String rawText) {

@@ -28,6 +28,7 @@ public class WeatherService {
         private String weatherDescription;
     }
 
+    @org.springframework.cache.annotation.Cacheable(value = "weatherCache", key = "#destination != null ? #destination.toLowerCase() : 'bkk'")
     public WeatherData fetchDestinationWeather(String destination) {
         // Map common destinations to Lat/Lon
         double lat = 13.7563; // Default Bangkok BKK

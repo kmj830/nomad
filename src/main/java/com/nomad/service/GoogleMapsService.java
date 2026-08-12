@@ -25,6 +25,7 @@ public class GoogleMapsService {
         return mapsApiKey != null && !mapsApiKey.isBlank() && !mapsApiKey.startsWith("YOUR_");
     }
 
+    @org.springframework.cache.annotation.Cacheable(value = "googleMapsCache", key = "#destination != null ? #destination.toLowerCase() : 'bangkok'")
     public List<CareDto.VisetosSpot> findMcmSpotsWithMaps(String destination) {
         List<CareDto.VisetosSpot> spots = new ArrayList<>();
 

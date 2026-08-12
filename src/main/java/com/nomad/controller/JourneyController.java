@@ -40,6 +40,15 @@ public class JourneyController {
     public ResponseEntity<com.nomad.service.PassKitService.AppleWalletPassResponse> getAppleWalletPass(@PathVariable Long journeyId) {
         return ResponseEntity.ok(passKitService.generateNomadPassportPass(journeyId, "MCM999", "BKK (방콕 수완나품)"));
     }
+
+    @Operation(summary = "Apple Wallet (.pkpass) 바이너리 파일 다운로드", description = "iOS 아이폰 디바이스 지갑(Wallet) 앱에 직접 추가할 수 있는 .pkpass 패스 파일을 다운로드합니다.")
+    @GetMapping(value = {"/apple-wallet-pass/download/{journeyId}", "/apple-wallet-pass/download/{journeyId}.pkpass"}, produces = "application/vnd.apple.pkpass")
+    public ResponseEntity<byte[]> downloadAppleWalletPass(@PathVariable String journeyId) {
+        byte[] pkpassBytes = passKitService.generatePkpassZipBytes(1L, journeyId, "BKK");
+        return ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"mcm-boarding-pass.pkpass\"")
+                .body(pkpassBytes);
+    }
 }
 
 

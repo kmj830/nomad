@@ -103,8 +103,12 @@ class NomadApiIntegrationTests {
         mockMvc.perform(get("/api/v1/care/google-maps").param("destination", "Bangkok"))
                 .andExpect(status().isOk());
 
-        // Phase 3: OpenAI AI Care Tip Generation
-        mockMvc.perform(get("/api/v1/care/ai-care-tip"))
+        // Phase 3: OpenAI AI Care Tip Generation (Multilingual ko/en/ja/zh)
+        mockMvc.perform(get("/api/v1/care/ai-care-tip").param("lang", "en"))
+                .andExpect(status().isOk());
+
+        // Phase 1: Apple Wallet Pass Download (.pkpass)
+        mockMvc.perform(get("/api/v1/journey/apple-wallet-pass/download/" + journeyId))
                 .andExpect(status().isOk());
 
         // Phase 3: FCM Push Test
