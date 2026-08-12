@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class StoreController {
 
     private final StoreService storeService;
+    private final com.nomad.service.SseService sseService;
 
     @Operation(summary = "공항 면세점 체크인 처리", description = "BLE/NFC 또는 수동 QR 체크인을 진행하고 매장 어시스턴트 태블릿 알림 및 웰컴 쿠폰을 전달합니다.")
     @PostMapping("/check-in")
@@ -27,5 +28,12 @@ public class StoreController {
     public ResponseEntity<StoreDto.ReEntryResponse> getReEntryOptions(@PathVariable Long memberId) {
         return ResponseEntity.ok(storeService.getReEntryOptions(memberId));
     }
+
+    @Operation(summary = "SCR-402 매장 직원 태블릿 실시간 SSE 알림 스트림", description = "고객이 면세점에 체크인할 때 매장 어시스턴트 태블릿으로 실시간 푸시 이벤트를 전송(Server-Sent Events)합니다.")
+    @GetMapping(value = "/notifications/stream", produces = org.springframework.http.MediaType.TEXT_EVENT_STREAM_VALUE)
+    public org.springframework.web.servlet.mvc.method.annotation.SseEmitter subscribeStaffTablet() {
+        return sseService.subscribeStaffTablet();
+    }
 }
+
 

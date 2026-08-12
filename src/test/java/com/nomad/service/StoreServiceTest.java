@@ -35,6 +35,9 @@ class StoreServiceTest {
     @Mock
     private SmartCartRepository smartCartRepository;
 
+    @Mock
+    private SseService sseService;
+
     @InjectMocks
     private StoreService storeService;
 

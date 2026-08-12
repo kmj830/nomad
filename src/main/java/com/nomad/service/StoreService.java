@@ -22,6 +22,7 @@ public class StoreService {
     private final StoreVisitRepository storeVisitRepository;
     private final MemberRepository memberRepository;
     private final SmartCartRepository smartCartRepository;
+    private final SseService sseService;
 
     @Transactional
     public StoreDto.CheckInResponse checkIn(StoreDto.CheckInRequest request) {
@@ -35,7 +36,6 @@ public class StoreService {
         if (checkInType == null) {
             checkInType = (request.getQrCode() != null && !request.getQrCode().isBlank()) ? CheckInType.QR : CheckInType.MANUAL;
         }
-
 
         // Staff tablet notification status
         boolean assistantNotified = true;
@@ -58,7 +58,7 @@ public class StoreService {
 
         StoreVisit savedVisit = storeVisitRepository.save(visit);
 
-        return StoreDto.CheckInResponse.builder()
+        StoreDto.CheckInResponse response = StoreDto.CheckInResponse.builder()
                 .visitId(savedVisit.getId())
                 .memberId(member.getId())
                 .memberName(member.getName())
@@ -71,6 +71,11 @@ public class StoreService {
                 .purchaseStatus(savedVisit.getPurchaseStatus())
                 .visitedAt(savedVisit.getVisitedAt())
                 .build();
+
+        // Broadcast to all connected Store Staff Tablets via SSE
+        sseService.broadcastCheckInEvent(response);
+
+        return response;
     }
 
     public StoreDto.ReEntryResponse getReEntryOptions(Long memberId) {

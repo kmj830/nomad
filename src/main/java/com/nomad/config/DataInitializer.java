@@ -37,6 +37,14 @@ public class DataInitializer implements CommandLineRunner {
                     .vipTier(VipTier.GOLD)
                     .nomadMiles(4500L)
                     .build());
+
+            memberRepository.save(Member.builder()
+                    .email("platinum@mcmworldwide.com")
+                    .name("박스타 (Platinum)")
+                    .phone("010-5555-7777")
+                    .vipTier(VipTier.PLATINUM)
+                    .nomadMiles(9800L)
+                    .build());
         }
 
         if (productRepository.count() == 0) {
@@ -68,6 +76,16 @@ public class DataInitializer implements CommandLineRunner {
                     .imageUrl("https://images.mcmworldwide.com/products/passport_holder.jpg")
                     .description("NFC/BLE 칩 내장 오토 체크인 지원 프리미엄 여권 케이스")
                     .isVipExclusive(false)
+                    .build());
+
+            productRepository.save(Product.builder()
+                    .name("MCM 베를린 골드 한정판 클러치백")
+                    .category(ProductCategory.ACCESSORY)
+                    .price(new BigDecimal("1850000.00"))
+                    .stock(10)
+                    .imageUrl("https://images.mcmworldwide.com/products/clutch_gold.jpg")
+                    .description("독일 베를린 에디션 24K 골드 아키텍처 하드웨어 한정판 미니 클러치")
+                    .isVipExclusive(true)
                     .build());
 
             productRepository.save(Product.builder()

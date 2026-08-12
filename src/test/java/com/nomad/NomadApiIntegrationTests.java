@@ -117,6 +117,10 @@ class NomadApiIntegrationTests {
         mockMvc.perform(get("/api/v1/flight/lookup").param("flightNumber", "KE651"))
                 .andExpect(status().isOk());
 
+        // System Monitoring Health Check Test
+        mockMvc.perform(get("/api/v1/health"))
+                .andExpect(status().isOk());
+
         // Phase 3: City Passport Stamp Check-in & Bonus Miles
         CareDto.StampRequest stampReq = new CareDto.StampRequest(memberId, "MCM 방콕 시암파라곤");
         mockMvc.perform(post("/api/v1/care/stamp-checkin")
