@@ -19,15 +19,17 @@ public class SwaggerConfig {
 
     @Bean
     public OpenAPI nomadOpenAPI() {
+        Server renderServer = new Server();
+        renderServer.setUrl("https://mcm-nomad-backend.onrender.com" + contextPath);
+        renderServer.setDescription("Render Production Server (Live)");
+
+        Server relativeServer = new Server();
+        relativeServer.setUrl("/" + (contextPath.startsWith("/") ? contextPath.substring(1) : contextPath));
+        relativeServer.setDescription("Current Host Server (Relative)");
+
         Server localServer = new Server();
         localServer.setUrl("http://localhost:8080" + contextPath);
         localServer.setDescription("Local Development Server");
-
-
-
-        Server renderServer = new Server();
-        renderServer.setUrl("https://mcm-nomad-backend.onrender.com" + contextPath);
-        renderServer.setDescription("Render Production Server");
 
         return new OpenAPI()
                 .info(new Info()
@@ -43,6 +45,7 @@ public class SwaggerConfig {
                         .version("v1.0.0")
                         .contact(new Contact().name("MCM Nomad Tech Team").email("tech@mcmworldwide.com"))
                         .license(new License().name("MCM Worldwide License").url("https://mcmworldwide.com")))
-                .servers(List.of(localServer, renderServer));
+                .servers(List.of(renderServer, relativeServer, localServer));
     }
 }
+
