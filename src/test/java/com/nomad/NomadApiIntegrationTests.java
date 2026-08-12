@@ -113,6 +113,10 @@ class NomadApiIntegrationTests {
                         .param("body", "MCM 가죽 케어 가이드"))
                 .andExpect(status().isOk());
 
+        // Phase 1: Real-time Flight Lookup Test
+        mockMvc.perform(get("/api/v1/flight/lookup").param("flightNumber", "KE651"))
+                .andExpect(status().isOk());
+
         // Phase 3: City Passport Stamp Check-in & Bonus Miles
         CareDto.StampRequest stampReq = new CareDto.StampRequest(memberId, "MCM 방콕 시암파라곤");
         mockMvc.perform(post("/api/v1/care/stamp-checkin")
@@ -120,6 +124,7 @@ class NomadApiIntegrationTests {
                         .content(objectMapper.writeValueAsString(stampReq)))
                 .andExpect(status().isOk());
     }
+
 
 
     @Test
