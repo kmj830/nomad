@@ -36,4 +36,20 @@ public class StoreDto {
         private PurchaseStatus purchaseStatus;
         private LocalDateTime visitedAt;
     }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ReEntryResponse {
+        private Long memberId;
+        private String memberName;
+        private PurchaseStatus purchaseStatus;
+        private Boolean hasPendingCart;
+        private int pendingCartItemCount;
+        private String recommendedAction;
+        private java.util.List<String> availableOptions;
+    }
 }
+

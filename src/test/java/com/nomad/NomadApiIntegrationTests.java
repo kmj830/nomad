@@ -52,6 +52,10 @@ class NomadApiIntegrationTests {
         assertThat(scanRes.getJourneyId()).isNotNull();
         Long journeyId = scanRes.getJourneyId();
 
+        // Phase 1: AI Live Card Widget Check
+        mockMvc.perform(get("/api/v1/journey/live-card/" + journeyId))
+                .andExpect(status().isOk());
+
         // Phase 1: Destination Weather & Climate Analysis
         mockMvc.perform(get("/api/v1/journey/analysis/" + journeyId))
                 .andExpect(status().isOk());
@@ -76,6 +80,10 @@ class NomadApiIntegrationTests {
                         .content(objectMapper.writeValueAsString(checkInReq)))
                 .andExpect(status().isOk());
 
+        // Phase 2: Store Re-entry Options Check
+        mockMvc.perform(get("/api/v1/store/re-entry-options/" + memberId))
+                .andExpect(status().isOk());
+
         // Phase 2: Duty-Free Checkout & Miles Accrual
         OrderDto.CheckoutRequest checkoutReq = new OrderDto.CheckoutRequest(memberId, journeyId);
         mockMvc.perform(post("/api/v1/order/checkout")
@@ -86,5 +94,25 @@ class NomadApiIntegrationTests {
         // Phase 3: Post-flight Visetos Spots & Care Message
         mockMvc.perform(get("/api/v1/care/visetos-spots").param("memberId", memberId.toString()))
                 .andExpect(status().isOk());
+
+        // Phase 3: City Passport Stamp Check-in & Bonus Miles
+        CareDto.StampRequest stampReq = new CareDto.StampRequest(memberId, "MCM 방콕 시암파라곤");
+        mockMvc.perform(post("/api/v1/care/stamp-checkin")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(stampReq)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("예외 발생 시 GlobalExceptionHandler를 통한 표준 ErrorResponse 반환 검증")
+    void globalExceptionHandlerTest() throws Exception {
+        // 존재하지 않는 회원 ID로 장바구니 상품 추가 시 400 Bad Request
+        CartDto.AddItemRequest invalidReq = new CartDto.AddItemRequest(99999L, 1L, 1);
+        mockMvc.perform(post("/api/v1/cart/add")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidReq)))
+                .andExpect(status().isBadRequest());
     }
 }
+
+

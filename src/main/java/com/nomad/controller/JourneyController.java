@@ -27,4 +27,11 @@ public class JourneyController {
     public ResponseEntity<JourneyDto.JourneyAnalysisResponse> analyzeJourney(@PathVariable Long journeyId) {
         return ResponseEntity.ok(journeyService.analyzeJourney(journeyId));
     }
+
+    @Operation(summary = "SCR-102 AI 라이브 카드 위젯 정보 조회", description = "실시간 항공편 탑승 카운트다운, 게이트 번호, 공항 라운지 현황 및 안내 메시지를 조회합니다.")
+    @GetMapping("/live-card/{journeyId}")
+    public ResponseEntity<JourneyDto.LiveCardResponse> getLiveCard(@PathVariable Long journeyId) {
+        return ResponseEntity.ok(journeyService.getLiveCard(journeyId));
+    }
 }
+

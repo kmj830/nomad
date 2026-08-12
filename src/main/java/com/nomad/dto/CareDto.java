@@ -29,4 +29,28 @@ public class CareDto {
         private String pushNotificationMessage;
         private List<VisetosSpot> visetosSpots;
     }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class StampRequest {
+        private Long memberId;
+        private String spotName;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class StampResponse {
+        private Long memberId;
+        private String spotName;
+        private String cityName;
+        private int earnedMiles;
+        private Long totalMiles;
+        private String message;
+    }
 }
+

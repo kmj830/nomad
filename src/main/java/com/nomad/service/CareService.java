@@ -2,6 +2,8 @@ package com.nomad.service;
 
 import com.nomad.domain.journey.Journey;
 import com.nomad.domain.journey.JourneyRepository;
+import com.nomad.domain.member.Member;
+import com.nomad.domain.member.MemberRepository;
 import com.nomad.domain.order.OrderRepository;
 import com.nomad.dto.CareDto;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ public class CareService {
 
     private final JourneyRepository journeyRepository;
     private final OrderRepository orderRepository;
+    private final MemberRepository memberRepository;
 
     public CareDto.CareResponse getVisetosSpots(Long memberId) {
         String destination = journeyRepository.findTopByMemberIdOrderByDepartureDateTimeDesc(memberId)
@@ -54,4 +57,25 @@ public class CareService {
                 .visetosSpots(spots)
                 .build();
     }
+
+    @Transactional
+    public CareDto.StampResponse checkInCityStamp(CareDto.StampRequest request) {
+        Member member = memberRepository.findById(request.getMemberId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. ID: " + request.getMemberId()));
+
+        int earnedMiles = 1000;
+        member.addMiles(earnedMiles);
+
+        String spotName = request.getSpotName() != null ? request.getSpotName() : "MCM 시암파라곤 플래그십 스토어";
+
+        return CareDto.StampResponse.builder()
+                .memberId(member.getId())
+                .spotName(spotName)
+                .cityName("Bangkok (방콕)")
+                .earnedMiles(earnedMiles)
+                .totalMiles(member.getNomadMiles())
+                .message("🎉 ['" + spotName + "'] 시티 패스포트 스탬프 획득! 보상 보너스 +" + earnedMiles + " Nomad Miles가 적립되었습니다.")
+                .build();
+    }
 }
+

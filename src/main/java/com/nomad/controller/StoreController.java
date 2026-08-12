@@ -21,4 +21,11 @@ public class StoreController {
     public ResponseEntity<StoreDto.CheckInResponse> checkIn(@RequestBody StoreDto.CheckInRequest request) {
         return ResponseEntity.ok(storeService.checkIn(request));
     }
+
+    @Operation(summary = "매장 재방문(Re-entry Flow) 선택 분기 조회", description = "구매 미완료 고객 재방문 시 바로 결제 / 다시 피팅 / 새 상품 보기 분기를 제공합니다.")
+    @GetMapping("/re-entry-options/{memberId}")
+    public ResponseEntity<StoreDto.ReEntryResponse> getReEntryOptions(@PathVariable Long memberId) {
+        return ResponseEntity.ok(storeService.getReEntryOptions(memberId));
+    }
 }
+

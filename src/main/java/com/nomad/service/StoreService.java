@@ -73,6 +73,37 @@ public class StoreService {
                 .build();
     }
 
+    public StoreDto.ReEntryResponse getReEntryOptions(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. ID: " + memberId));
+
+        Optional<SmartCart> cartOpt = smartCartRepository.findByMemberIdAndStatus(member.getId(), CartStatus.IN_CART);
+        boolean hasPendingCart = cartOpt.isPresent() && !cartOpt.get().getItems().isEmpty();
+        int pendingCount = cartOpt.map(c -> c.getItems().size()).orElse(0);
+
+        Optional<StoreVisit> latestVisit = storeVisitRepository.findTopByMemberIdOrderByVisitedAtDesc(memberId);
+        PurchaseStatus status = latestVisit.map(StoreVisit::getPurchaseStatus).orElse(PurchaseStatus.PENDING_REENTRY);
+
+        String recommendedAction;
+        if (hasPendingCart) {
+            recommendedAction = "이전에 담아두신 상품 " + pendingCount + "건이 장바구니에 보관되어 있습니다. 바로 결제하시겠습니까?";
+        } else {
+            recommendedAction = "MCM 매장에 재방문하신 것을 환영합니다! 신상품 큐레이션을 둘러보세요.";
+        }
+
+        java.util.List<String> options = java.util.List.of("바로 결제 (DIRECT_CHECKOUT)", "다시 피팅 (RE_FITTING)", "새 상품 보기 (BROWSE_NEW_PRODUCTS)");
+
+        return StoreDto.ReEntryResponse.builder()
+                .memberId(member.getId())
+                .memberName(member.getName())
+                .purchaseStatus(status)
+                .hasPendingCart(hasPendingCart)
+                .pendingCartItemCount(pendingCount)
+                .recommendedAction(recommendedAction)
+                .availableOptions(options)
+                .build();
+    }
+
     // Helper for fallback check-in logic
     private CheckInType getCheckInTypeFallback(StoreDto.CheckInRequest request) {
         if (request.getQrCode() != null && !request.getQrCode().isBlank()) {

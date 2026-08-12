@@ -48,4 +48,23 @@ public class JourneyDto {
         private String recommendationReason;
         private List<Product> recommendedProducts;
     }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class LiveCardResponse {
+        private Long journeyId;
+        private String pnr;
+        private String destination;
+        private LocalDateTime departureDateTime;
+        private long remainingMinutesToDeparture;
+        private String gate;
+        private FlightStatus flightStatus;
+        private String loungeLocation;
+        private String loungeWaitTime;
+        private String liveGuideMessage;
+    }
 }
+
