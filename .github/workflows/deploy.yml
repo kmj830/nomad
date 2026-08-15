@@ -1,4 +1,4 @@
-name: MCM Nomad Passport AI - Fast GHCR CI/CD Pipeline
+name: Herstory AI - Fast GHCR CI/CD Pipeline
 
 on:
   push:

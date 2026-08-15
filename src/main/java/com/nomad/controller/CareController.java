@@ -45,7 +45,7 @@ public class CareController {
         return ResponseEntity.ok(fcmService.sendPushNotification("SAMPLE_TOKEN", title, body));
     }
 
-    @Operation(summary = "SCR-502 현지 시티 패스포트 스탬프 획득 & 보상 적립", description = "목적지 도시 MCM 부티크 방문 시 패스포트 스탬프를 획득하고 보너스 Nomad Miles를 적립합니다.")
+    @Operation(summary = "SCR-502 현지 시티 패스포트 스탬프 획득 & 보상 적립", description = "목적지 도시 MCM 부티크 방문 시 패스포트 스탬프를 획득하고 보너스 Herstory Miles를 적립합니다.")
     @PostMapping("/stamp-checkin")
     public ResponseEntity<CareDto.StampResponse> checkInCityStamp(@RequestBody CareDto.StampRequest request) {
         return ResponseEntity.ok(careService.checkInCityStamp(request));

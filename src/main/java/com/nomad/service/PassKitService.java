@@ -27,25 +27,25 @@ public class PassKitService {
     }
 
     public AppleWalletPassResponse generateNomadPassportPass(Long memberId, String pnr, String destination) {
-        String serial = "MCM-PASS-" + (pnr != null ? pnr : "MCM999") + "-" + memberId;
+        String serial = "HERSTORY-PASS-" + (pnr != null ? pnr : "HST999") + "-" + memberId;
 
         Map<String, Object> details = Map.of(
                 "transitType", "PKTransitTypeAir",
                 "headerFields", Map.of("key", "gate", "label", "GATE", "value", "Gate 24 (T1)"),
                 "primaryFields", Map.of("key", "destination", "label", "DESTINATION", "value", destination),
-                "secondaryFields", Map.of("key", "pnr", "label", "PNR REQ", "value", pnr != null ? pnr : "MCM999"),
-                "auxiliaryFields", Map.of("key", "tier", "label", "VIP MEMBERSHIP", "value", "MCM VIP NOMAD")
+                "secondaryFields", Map.of("key", "pnr", "label", "PNR REQ", "value", pnr != null ? pnr : "HST999"),
+                "auxiliaryFields", Map.of("key", "tier", "label", "VIP MEMBERSHIP", "value", "VIP HERSTORY")
         );
 
         return AppleWalletPassResponse.builder()
-                .passTypeIdentifier("pass.com.mcmworldwide.nomadpassport")
+                .passTypeIdentifier("pass.com.herstory.passport")
                 .serialNumber(serial)
-                .teamIdentifier("MCM99PASSKIT")
-                .organizationName("MCM Worldwide")
-                .description("MCM Nomad Passport VIP Flight Boarding & Fitting Pass")
-                .logoText("MCM NOMAD PASSPORT AI")
+                .teamIdentifier("HST99PASSKIT")
+                .organizationName("Herstory")
+                .description("Herstory VIP Flight Boarding & Fitting Pass")
+                .logoText("HERSTORY AI")
                 .boardingPassDetails(details)
-                .pkpassDownloadUrl("https://mcm-nomad-backend.onrender.com/api/v1/journey/apple-wallet-pass/download/" + (pnr != null ? pnr : "MCM999") + ".pkpass")
+                .pkpassDownloadUrl("https://mcm-nomad-backend.onrender.com/api/v1/journey/apple-wallet-pass/download/" + (pnr != null ? pnr : "HST999") + ".pkpass")
                 .build();
     }
 
@@ -58,18 +58,18 @@ public class PassKitService {
             zos.putNextEntry(new java.util.zip.ZipEntry("pass.json"));
             String jsonContent = String.format("{\n" +
                     "  \"formatVersion\": 1,\n" +
-                    "  \"passTypeIdentifier\": \"pass.com.mcmworldwide.nomadpassport\",\n" +
-                    "  \"serialNumber\": \"MCM-%s-%d\",\n" +
-                    "  \"teamIdentifier\": \"MCM99PASSKIT\",\n" +
-                    "  \"organizationName\": \"MCM Worldwide\",\n" +
-                    "  \"description\": \"MCM Nomad Passport VIP Pass\",\n" +
-                    "  \"logoText\": \"MCM NOMAD PASSPORT\",\n" +
+                    "  \"passTypeIdentifier\": \"pass.com.herstory.passport\",\n" +
+                    "  \"serialNumber\": \"HST-%s-%d\",\n" +
+                    "  \"teamIdentifier\": \"HST99PASSKIT\",\n" +
+                    "  \"organizationName\": \"Herstory\",\n" +
+                    "  \"description\": \"Herstory VIP Pass\",\n" +
+                    "  \"logoText\": \"HERSTORY\",\n" +
                     "  \"foregroundColor\": \"rgb(255, 255, 255)\",\n" +
                     "  \"backgroundColor\": \"rgb(17, 17, 17)\",\n" +
                     "  \"boardingPass\": {\n" +
                     "    \"transitType\": \"PKTransitTypeAir\"\n" +
                     "  }\n" +
-                    "}", pnr != null ? pnr : "MCM999", memberId != null ? memberId : 1);
+                    "}", pnr != null ? pnr : "HST999", memberId != null ? memberId : 1);
             zos.write(jsonContent.getBytes(java.nio.charset.StandardCharsets.UTF_8));
             zos.closeEntry();
 

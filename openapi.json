@@ -1,0 +1,1050 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Herstory AI - Backend REST API Specification",
+    "description": "Herstory AI 백엔드 시스템 OpenAPI 3.0 명세서입니다.\n- Auth API: 로그인 & VIP 허브\n- Journey API: OCR 스캔, 기후 분석, Live Card 위젯, Apple Wallet .pkpass\n- Cart API: 스마트 장바구니 & ChoiceFit 피팅 신청\n- Store API: 면세점 체크인 & 매장 직원 태블릿 SSE 실시간 알림\n- Order API: 면세 결제 & Herstory Miles 적립\n- Care API: 현지 MCM 스팟, Google Maps, OpenAI 가죽 케어, 시티 스탬프, FCM\n- Flight API: 항공편 실시간 운항 정보 조회\n- Health API: 시스템 헬스 모니터링",
+    "version": "v1.0.0",
+    "contact": {
+      "name": "Herstory Tech Team",
+      "email": "tech@herstory.ai"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://mcm-nomad-backend.onrender.com",
+      "description": "Render Production Server (Live)"
+    },
+    {
+      "url": "http://localhost:8080",
+      "description": "Local Development Server"
+    }
+  ],
+  "tags": [
+    { "name": "1. Auth API (인증)", "description": "Herstory 앱 로그인 및 VIP Herstory 허브 회원 접속 API" },
+    { "name": "2. Journey API (여정 & 큐레이션)", "description": "보딩패스 Vision OCR PNR 스캔 및 목적지 날씨/기후 분석 큐레이션 API" },
+    { "name": "3. Cart API (스마트 장바구니 & ChoiceFit)", "description": "스마트 장바구니 상품 담기 및 VIP 피팅 신청(ChoiceFit) 분기 설정 API" },
+    { "name": "4. Store API (공항 면세점 체크인 & 태블릿 연동)", "description": "BLE/NFC/QR 체크인 및 매장 직원 어시스턴트 태블릿 알림 연동 API" },
+    { "name": "5. Order API (면세 결제 & 마일리지)", "description": "선속 결제, VIP 티어별 면세 한도 할인 적용 및 Herstory Miles 마일리지 적립 API" },
+    { "name": "6. Care API (현지 비세토스 스팟 & 케어)", "description": "목적지 현지 MCM 스팟 탐색 및 비세토스 가죽 케어 푸시 메시지 API" },
+    { "name": "7. Flight API (실시간 항공편 & 운항 정보)", "description": "편명(IATA Code) 기준 실시간 항공편 운항 상태, 터미널, 탑승구(Gate) 조회 API" },
+    { "name": "8. System Health API (서버 및 외부 API 모니터링)", "description": "Render PostgreSQL DB, OpenAI GPT-4o, Google Maps, Flight API 실시간 상태 모니터링 API" }
+  ],
+  "paths": {
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": ["1. Auth API (인증)"],
+        "summary": "앱 로그인 & 회원 등록",
+        "description": "이메일과 이름을 통해 로그인하며 VIP 티어 및 Herstory 마일리지를 반환합니다.",
+        "operationId": "login",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 요청",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 내부 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/journey/scan": {
+      "post": {
+        "tags": ["2. Journey API (여정 & 큐레이션)"],
+        "summary": "보딩패스 OCR 스캔 & 여정 등록",
+        "description": "탑승권 OCR 스캔을 통해 PNR을 추출하고 비행 여정을 저장합니다.",
+        "operationId": "scanBoardingPass",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScanRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScanResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 요청",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/journey/analysis/{journeyId}": {
+      "get": {
+        "tags": ["2. Journey API (여정 & 큐레이션)"],
+        "summary": "목적지 기후 및 여행 분석 데이터 조회",
+        "description": "목적지 날씨 및 기후 정보를 분석하여 맞춤형 MCM 상품을 추천합니다.",
+        "operationId": "analyzeJourney",
+        "parameters": [
+          {
+            "name": "journeyId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JourneyAnalysisResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 요청",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/journey/live-card/{journeyId}": {
+      "get": {
+        "tags": ["2. Journey API (여정 & 큐레이션)"],
+        "summary": "SCR-102 AI 라이브 카드 위젯 정보 조회",
+        "description": "실시간 항공편 탑승 카운트다운, 게이트 번호, 공항 라운지 현황 및 안내 메시지를 조회합니다.",
+        "operationId": "getLiveCard",
+        "parameters": [
+          {
+            "name": "journeyId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveCardResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/journey/apple-wallet-pass/{journeyId}": {
+      "get": {
+        "tags": ["2. Journey API (여정 & 큐레이션)"],
+        "summary": "SCR-201 Apple Wallet 디지털 패스(.pkpass) 메타데이터 생성",
+        "description": "비행 탑승권 및 VIP 여정 보딩패스를 Apple Wallet PKPass 형태로 생성합니다.",
+        "operationId": "getAppleWalletPass",
+        "parameters": [
+          {
+            "name": "journeyId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppleWalletPassResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/journey/apple-wallet-pass/download/{journeyId}": {
+      "get": {
+        "tags": ["2. Journey API (여정 & 큐레이션)"],
+        "summary": "Apple Wallet (.pkpass) 바이너리 파일 다운로드",
+        "description": "iOS 아이폰 디바이스 지갑(Wallet) 앱에 직접 추가할 수 있는 .pkpass 패스 파일을 다운로드합니다.",
+        "operationId": "downloadAppleWalletPass",
+        "parameters": [
+          {
+            "name": "journeyId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공 (바이너리 .pkpass 스트림)",
+            "content": {
+              "application/vnd.apple.pkpass": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/journey/apple-wallet-pass/download-file/{journeyId}": {
+      "get": {
+        "tags": ["2. Journey API (여정 & 큐레이션)"],
+        "summary": "아이폰 범용 패스 파일 다운로드 (Safari 다운로드 호환)",
+        "description": "iOS Safari 보안 차단 없이 아이폰 파일 앱(Downloads)으로 직접 다운로드할 수 있는 패스 파일 API입니다.",
+        "operationId": "downloadAppleWalletPassFile",
+        "parameters": [
+          {
+            "name": "journeyId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공 (바이너리 스트림)",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cart/add": {
+      "post": {
+        "tags": ["3. Cart API (스마트 장바구니 & ChoiceFit)"],
+        "summary": "스마트 장바구니 상품 추가",
+        "description": "추천 상품을 스마트 장바구니에 담습니다.",
+        "operationId": "addToCart",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddItemRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 요청",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cart/choice-fit": {
+      "put": {
+        "tags": ["3. Cart API (스마트 장바구니 & ChoiceFit)"],
+        "summary": "ChoiceFit (VIP 피팅 신청 여부) 상태 업데이트",
+        "description": "장바구니 담기 후 피팅 신청 여부(true/false) 상태를 업데이트합니다.",
+        "operationId": "updateChoiceFit",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChoiceFitRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cart/my": {
+      "get": {
+        "tags": ["3. Cart API (스마트 장바구니 & ChoiceFit)"],
+        "summary": "내 스마트 장바구니 조회",
+        "description": "현재 회원의 활성화된 스마트 장바구니 및 품목 목록을 조회합니다.",
+        "operationId": "getMyCart",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/store/check-in": {
+      "post": {
+        "tags": ["4. Store API (공항 면세점 체크인 & 태블릿 연동)"],
+        "summary": "공항 면세점 체크인 처리",
+        "description": "BLE/NFC 또는 수동 QR 체크인을 진행하고 매장 어시스턴트 태블릿 알림 및 웰컴 쿠폰을 전달합니다.",
+        "operationId": "checkIn",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckInRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckInResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/store/re-entry-options/{memberId}": {
+      "get": {
+        "tags": ["4. Store API (공항 면세점 체크인 & 태블릿 연동)"],
+        "summary": "매장 재방문(Re-entry Flow) 선택 분기 조회",
+        "description": "구매 미완료 고객 재방문 시 바로 결제 / 다시 피팅 / 새 상품 보기 분기를 제공합니다.",
+        "operationId": "getReEntryOptions",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReEntryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/store/notifications/stream": {
+      "get": {
+        "tags": ["4. Store API (공항 면세점 체크인 & 태블릿 연동)"],
+        "summary": "SCR-402 매장 직원 태블릿 실시간 SSE 알림 스트림",
+        "description": "고객이 면세점에 체크인할 때 매장 어시스턴트 태블릿으로 실시간 푸시 이벤트를 전송(Server-Sent Events)합니다.",
+        "operationId": "subscribeStaffTablet",
+        "responses": {
+          "200": {
+            "description": "실시간 SSE 이벤트 스트림",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/order/checkout": {
+      "post": {
+        "tags": ["5. Order API (면세 결제 & 마일리지)"],
+        "summary": "면세점 주문 결제 및 마일리지 적립",
+        "description": "장바구니 품목을 결제하고 VIP 티어별 면세 할인을 적용한 후 Herstory Miles를 적립합니다.",
+        "operationId": "checkout",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckoutRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 요청",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "상태 불일치 (빈 장바구니 등)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/care/visetos-spots": {
+      "get": {
+        "tags": ["6. Care API (현지 비세토스 스팟 & 케어)"],
+        "summary": "현지 비세토스 스팟 탐색 및 가죽 케어 메시지 조회",
+        "description": "목적지의 현지 MCM 플래그십 스토어 및 Care Desk 정보를 조회하고 맞춤형 케어 가이드를 반환합니다.",
+        "operationId": "getVisetosSpots",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/care/google-maps": {
+      "get": {
+        "tags": ["6. Care API (현지 비세토스 스팟 & 케어)"],
+        "summary": "SCR-502 Google Maps API 실시간 MCM 매장 탐색",
+        "description": "Google Maps API를 활용해 현지 MCM 부티크 위치 좌표 및 구글 지도 길안내 링크를 반환합니다.",
+        "operationId": "getGoogleMapsSpots",
+        "parameters": [
+          {
+            "name": "destination",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "default": "Bangkok" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/VisetosSpot" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/care/ai-care-tip": {
+      "get": {
+        "tags": ["6. Care API (현지 비세토스 스팟 & 케어)"],
+        "summary": "SCR-501 OpenAI 기반 가죽 케어 AI 가이드 생성 (다국어 지원: ko, en, ja, zh)",
+        "description": "OpenAI GPT-4o를 활용해 구입 제품, 현지 기후 조건 및 다국어(ko, en, ja, zh) 맞춤형 가죽 관리 팁을 생성합니다.",
+        "operationId": "getAiCareTip",
+        "parameters": [
+          {
+            "name": "productName",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "default": "MCM Visetos 백팩" }
+          },
+          {
+            "name": "weather",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "default": "습도 88% 열대성 스콜" }
+          },
+          {
+            "name": "lang",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "default": "ko", "enum": ["ko", "en", "ja", "zh"] }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공 (텍스트 가이드)",
+            "content": {
+              "text/plain": {
+                "schema": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/care/push-test": {
+      "post": {
+        "tags": ["6. Care API (현지 비세토스 스팟 & 케어)"],
+        "summary": "FCM 디바이스 푸시 알림 테스트",
+        "description": "Firebase Cloud Messaging(FCM) 푸시 알림 발송 테스트를 진행합니다.",
+        "operationId": "testPushNotification",
+        "parameters": [
+          {
+            "name": "title",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "body",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/care/stamp-checkin": {
+      "post": {
+        "tags": ["6. Care API (현지 비세토스 스팟 & 케어)"],
+        "summary": "SCR-502 현지 시티 패스포트 스탬프 획득 & 보상 적립",
+        "description": "목적지 도시 MCM 부티크 방문 시 패스포트 스탬프를 획득하고 보너스 Herstory Miles를 적립합니다.",
+        "operationId": "checkInCityStamp",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StampRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StampResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/flight/lookup": {
+      "get": {
+        "tags": ["7. Flight API (실시간 항공편 & 운항 정보)"],
+        "summary": "실시간 항공편 운항 정보 조회",
+        "description": "편명(예: KE651, OZ741, SQ607, LH713)을 입력받아 항공사, 출발 터미널, 게이트, 목적지 정보를 조회합니다.",
+        "operationId": "lookupFlight",
+        "parameters": [
+          {
+            "name": "flightNumber",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "default": "KE651" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FlightInfoResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/health": {
+      "get": {
+        "tags": ["8. System Health API (서버 및 외부 API 모니터링)"],
+        "summary": "시스템 전체 및 외부 API 실시간 상태 체크",
+        "description": "DB 커넥션, OpenAI API, Google Maps API, Flight API, Weather API 활성화 여부를 점검합니다.",
+        "operationId": "checkHealth",
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthStatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "VipTier": {
+        "type": "string",
+        "enum": ["SILVER", "GOLD", "PLATINUM", "VIP"]
+      },
+      "FlightStatus": {
+        "type": "string",
+        "enum": ["SCHEDULED", "BOARDING", "COMPLETED", "CANCELLED"]
+      },
+      "CartStatus": {
+        "type": "string",
+        "enum": ["IN_CART", "CHECKED_OUT", "CANCELLED"]
+      },
+      "OrderStatus": {
+        "type": "string",
+        "enum": ["PAID", "PENDING", "CANCELLED"]
+      },
+      "ProductCategory": {
+        "type": "string",
+        "enum": ["WATERPROOF", "BACKPACK", "TRAVEL_BAG", "ACCESSORY", "LEATHER_CARE"]
+      },
+      "CheckInType": {
+        "type": "string",
+        "enum": ["BLE", "NFC", "QR", "MANUAL"]
+      },
+      "CheckInStatus": {
+        "type": "string",
+        "enum": ["COMPLETED", "PENDING", "EXPIRED"]
+      },
+      "PurchaseStatus": {
+        "type": "string",
+        "enum": ["PURCHASED", "PENDING_REENTRY", "ABANDONED"]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "integer", "example": 400 },
+          "error": { "type": "string", "example": "Bad Request" },
+          "message": { "type": "string", "example": "해당 회원을 찾을 수 없습니다." },
+          "timestamp": { "type": "string", "format": "date-time" }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["email"],
+        "properties": {
+          "email": { "type": "string", "example": "vip@mcmworldwide.com" },
+          "name": { "type": "string", "example": "김노마드 (VIP)" }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "memberId": { "type": "integer", "format": "int64", "example": 1 },
+          "email": { "type": "string", "example": "vip@mcmworldwide.com" },
+          "name": { "type": "string", "example": "김노마드 (VIP)" },
+          "vipTier": { "$ref": "#/components/schemas/VipTier" },
+          "nomadMiles": { "type": "integer", "format": "int64", "example": 15400 },
+          "message": { "type": "string", "example": "MCM VIP 노마드 허브에 오신 것을 환영합니다." }
+        }
+      },
+      "ScanRequest": {
+        "type": "object",
+        "required": ["memberId"],
+        "properties": {
+          "memberId": { "type": "integer", "format": "int64", "example": 1 },
+          "pnr": { "type": "string", "example": "MCM999" },
+          "rawOcrText": { "type": "string", "example": "BOARDING PASS PASSENGER: KIM/NOMAD FLIGHT: KE651 ICN BKK" },
+          "origin": { "type": "string", "example": "ICN" },
+          "destination": { "type": "string", "example": "BKK" }
+        }
+      },
+      "ScanResponse": {
+        "type": "object",
+        "properties": {
+          "journeyId": { "type": "integer", "format": "int64", "example": 1 },
+          "pnr": { "type": "string", "example": "MCM999" },
+          "origin": { "type": "string", "example": "ICN" },
+          "destination": { "type": "string", "example": "BKK" },
+          "departureDateTime": { "type": "string", "format": "date-time" },
+          "flightStatus": { "$ref": "#/components/schemas/FlightStatus" },
+          "message": { "type": "string", "example": "보딩패스 OCR 스캔이 성공적으로 완료되었습니다." }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64", "example": 1 },
+          "name": { "type": "string", "example": "MCM 클래식 비세토스 방수 스타크 백팩" },
+          "category": { "$ref": "#/components/schemas/ProductCategory" },
+          "price": { "type": "number", "example": 1250000.00 },
+          "stock": { "type": "integer", "example": 45 },
+          "imageUrl": { "type": "string", "example": "https://kr.mcmworldwide.com/images/backpack-01.png" },
+          "description": { "type": "string", "example": "열대 스콜 방수 코팅 캔버스 백팩" },
+          "isVipExclusive": { "type": "boolean", "example": false }
+        }
+      },
+      "JourneyAnalysisResponse": {
+        "type": "object",
+        "properties": {
+          "journeyId": { "type": "integer", "format": "int64", "example": 1 },
+          "destination": { "type": "string", "example": "BKK (방콕 수완나품)" },
+          "weatherInfo": { "type": "string", "example": "기온 32.5°C, 습도 88%" },
+          "climateSummary": { "type": "string", "example": "고온 다습한 열대 몬순 기후" },
+          "recommendationReason": { "type": "string", "example": "방수 에센셜 라인업 제안" },
+          "recommendedProducts": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Product" }
+          }
+        }
+      },
+      "LiveCardResponse": {
+        "type": "object",
+        "properties": {
+          "journeyId": { "type": "integer", "format": "int64", "example": 1 },
+          "pnr": { "type": "string", "example": "MCM999" },
+          "destination": { "type": "string", "example": "BKK" },
+          "departureDateTime": { "type": "string", "format": "date-time" },
+          "remainingMinutesToDeparture": { "type": "integer", "format": "int64", "example": 125 },
+          "gate": { "type": "string", "example": "Gate 24 (T1)" },
+          "flightStatus": { "$ref": "#/components/schemas/FlightStatus" },
+          "loungeLocation": { "type": "string", "example": "인천공항 제1여객터미널 4층 MCM 라운지" },
+          "loungeWaitTime": { "type": "string", "example": "대기 없음" },
+          "liveGuideMessage": { "type": "string", "example": "탑승까지 125분 남았습니다." }
+        }
+      },
+      "AppleWalletPassResponse": {
+        "type": "object",
+        "properties": {
+          "passTypeIdentifier": { "type": "string", "example": "pass.com.herstory.passport" },
+          "serialNumber": { "type": "string", "example": "HERSTORY-PASS-HST999-1" },
+          "teamIdentifier": { "type": "string", "example": "HST99PASSKIT" },
+          "organizationName": { "type": "string", "example": "Herstory" },
+          "description": { "type": "string", "example": "Herstory VIP Pass" },
+          "logoText": { "type": "string", "example": "HERSTORY AI" },
+          "boardingPassDetails": { "type": "object" },
+          "pkpassDownloadUrl": { "type": "string", "example": "https://mcm-nomad-backend.onrender.com/api/v1/journey/apple-wallet-pass/download/HST999.pkpass" }
+        }
+      },
+      "AddItemRequest": {
+        "type": "object",
+        "required": ["memberId", "productId"],
+        "properties": {
+          "memberId": { "type": "integer", "format": "int64", "example": 1 },
+          "productId": { "type": "integer", "format": "int64", "example": 1 },
+          "quantity": { "type": "integer", "default": 1, "example": 1 }
+        }
+      },
+      "ChoiceFitRequest": {
+        "type": "object",
+        "required": ["memberId", "choiceFit"],
+        "properties": {
+          "memberId": { "type": "integer", "format": "int64", "example": 1 },
+          "choiceFit": { "type": "boolean", "example": true }
+        }
+      },
+      "ItemDetail": {
+        "type": "object",
+        "properties": {
+          "cartItemId": { "type": "integer", "format": "int64", "example": 1 },
+          "productId": { "type": "integer", "format": "int64", "example": 1 },
+          "productName": { "type": "string", "example": "MCM 클래식 비세토스 방수 스타크 백팩" },
+          "category": { "type": "string", "example": "BACKPACK" },
+          "price": { "type": "number", "example": 1250000.00 },
+          "quantity": { "type": "integer", "example": 1 },
+          "imageUrl": { "type": "string", "example": "https://kr.mcmworldwide.com/images/backpack-01.png" }
+        }
+      },
+      "CartResponse": {
+        "type": "object",
+        "properties": {
+          "cartId": { "type": "integer", "format": "int64", "example": 1 },
+          "memberId": { "type": "integer", "format": "int64", "example": 1 },
+          "choiceFit": { "type": "boolean", "example": true },
+          "status": { "$ref": "#/components/schemas/CartStatus" },
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ItemDetail" }
+          },
+          "totalPrice": { "type": "number", "example": 1250000.00 }
+        }
+      },
+      "CheckInRequest": {
+        "type": "object",
+        "required": ["memberId"],
+        "properties": {
+          "memberId": { "type": "integer", "format": "int64", "example": 1 },
+          "checkInType": { "$ref": "#/components/schemas/CheckInType", "default": "BLE" },
+          "qrCode": { "type": "string", "example": "MCM-VIP-GATE24" }
+        }
+      },
+      "CheckInResponse": {
+        "type": "object",
+        "properties": {
+          "visitId": { "type": "integer", "format": "int64", "example": 101 },
+          "memberId": { "type": "integer", "format": "int64", "example": 1 },
+          "memberName": { "type": "string", "example": "김노마드 (VIP)" },
+          "vipTier": { "type": "string", "example": "VIP" },
+          "checkInType": { "$ref": "#/components/schemas/CheckInType" },
+          "checkInStatus": { "$ref": "#/components/schemas/CheckInStatus" },
+          "assistantNotified": { "type": "boolean", "example": true },
+          "choiceFitRequested": { "type": "boolean", "example": true },
+          "welcomeCouponMessage": { "type": "string", "example": "15% 즉시할인 웰컴 쿠폰 발급" },
+          "purchaseStatus": { "$ref": "#/components/schemas/PurchaseStatus" },
+          "visitedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ReEntryResponse": {
+        "type": "object",
+        "properties": {
+          "memberId": { "type": "integer", "format": "int64", "example": 1 },
+          "memberName": { "type": "string", "example": "김노마드 (VIP)" },
+          "purchaseStatus": { "$ref": "#/components/schemas/PurchaseStatus" },
+          "hasPendingCart": { "type": "boolean", "example": true },
+          "pendingCartItemCount": { "type": "integer", "example": 1 },
+          "recommendedAction": { "type": "string", "example": "담아두신 상품 피팅 준비됨" },
+          "availableOptions": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "CheckoutRequest": {
+        "type": "object",
+        "required": ["memberId"],
+        "properties": {
+          "memberId": { "type": "integer", "format": "int64", "example": 1 },
+          "journeyId": { "type": "integer", "format": "int64", "example": 1 }
+        }
+      },
+      "OrderItemDetail": {
+        "type": "object",
+        "properties": {
+          "productId": { "type": "integer", "format": "int64", "example": 1 },
+          "productName": { "type": "string", "example": "MCM 클래식 비세토스 방수 스타크 백팩" },
+          "quantity": { "type": "integer", "example": 1 },
+          "price": { "type": "number", "example": 1250000.00 }
+        }
+      },
+      "OrderResponse": {
+        "type": "object",
+        "properties": {
+          "orderId": { "type": "integer", "format": "int64", "example": 501 },
+          "memberId": { "type": "integer", "format": "int64", "example": 1 },
+          "journeyId": { "type": "integer", "format": "int64", "example": 1 },
+          "totalAmount": { "type": "number", "example": 1250000.00 },
+          "dutyFreeDiscount": { "type": "number", "example": 187500.00 },
+          "finalAmount": { "type": "number", "example": 1062500.00 },
+          "earnedMiles": { "type": "integer", "example": 53125 },
+          "orderStatus": { "$ref": "#/components/schemas/OrderStatus" },
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/OrderItemDetail" }
+          },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "VisetosSpot": {
+        "type": "object",
+        "properties": {
+          "spotName": { "type": "string", "example": "MCM Siam Paragon Flagship" },
+          "address": { "type": "string", "example": "991 Rama I Rd, Bangkok" },
+          "locationType": { "type": "string", "example": "MCM Flagship & VIP Lounge" },
+          "latitude": { "type": "number", "example": 13.7466 },
+          "longitude": { "type": "number", "example": 100.5349 },
+          "careServiceAvailable": { "type": "string", "example": "가죽 방수 코팅 케어 제공" }
+        }
+      },
+      "CareResponse": {
+        "type": "object",
+        "properties": {
+          "destination": { "type": "string", "example": "Bangkok" },
+          "pushNotificationMessage": { "type": "string", "example": "방콕 도착 환영 가이드" },
+          "visetosSpots": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/VisetosSpot" }
+          }
+        }
+      },
+      "StampRequest": {
+        "type": "object",
+        "required": ["memberId", "spotName"],
+        "properties": {
+          "memberId": { "type": "integer", "format": "int64", "example": 1 },
+          "spotName": { "type": "string", "example": "MCM Siam Paragon" }
+        }
+      },
+      "StampResponse": {
+        "type": "object",
+        "properties": {
+          "memberId": { "type": "integer", "format": "int64", "example": 1 },
+          "spotName": { "type": "string", "example": "MCM Siam Paragon Flagship" },
+          "cityName": { "type": "string", "example": "Bangkok" },
+          "earnedMiles": { "type": "integer", "example": 1000 },
+          "totalMiles": { "type": "integer", "format": "int64", "example": 69525 },
+          "message": { "type": "string", "example": "+1,000 Herstory Miles 적립" }
+        }
+      },
+      "PushResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": true },
+          "messageId": { "type": "string", "example": "projects/mcm-nomad-ai/messages/fcm-12345" },
+          "title": { "type": "string", "example": "MCM VIP 알림" },
+          "body": { "type": "string", "example": "매장 방문을 환영합니다" },
+          "statusMessage": { "type": "string", "example": "FCM 푸시 메시지 발송 완료" }
+        }
+      },
+      "FlightInfoResponse": {
+        "type": "object",
+        "properties": {
+          "flightNumber": { "type": "string", "example": "KE651" },
+          "airlineName": { "type": "string", "example": "대한항공 (Korean Air)" },
+          "originCode": { "type": "string", "example": "ICN" },
+          "originName": { "type": "string", "example": "인천국제공항" },
+          "originTerminal": { "type": "string", "example": "T2" },
+          "destinationCode": { "type": "string", "example": "BKK" },
+          "destinationName": { "type": "string", "example": "방콕 수완나품" },
+          "gate": { "type": "string", "example": "Gate 24" },
+          "flightStatus": { "$ref": "#/components/schemas/FlightStatus" },
+          "scheduledDepartureTime": { "type": "string", "format": "date-time" },
+          "estimatedDepartureTime": { "type": "string", "format": "date-time" },
+          "delayMinutes": { "type": "integer", "example": 0 },
+          "dataSource": { "type": "string", "example": "Real-time Aviationstack Tracker" }
+        }
+      },
+      "HealthStatusResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "HEALTHY" },
+          "serverUptime": { "type": "string", "example": "OK" },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "services": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      }
+    }
+  }
+}
