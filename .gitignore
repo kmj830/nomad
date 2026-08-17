@@ -49,10 +49,15 @@ docs/specs/
 docs/프로토타입/
 docs/프로토타입/
 docs/design/
+docs/products/
+docs/api/notion-guide.md
 requirements/
 *.png
 *.jpg
 *.jpeg
+*.docx
+*.pptx
+*.pdf
 
 ### Security & Secrets (Never commit) ###
 .env
