@@ -25,7 +25,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class FlightService {
 
-    @Value("${INCHEON_AIRPORT_API_KEY:${incheon.airport.api.key:sGA0vUkAcKvv%2BW1MB7KihmUw1HwE0KW1H70opWyx26oDVs81CTbO1ezAgDeh2DLUDNL1zSxd2PhunWURPuKoZw%3D%3D}}")
+    @Value("${INCHEON_AIRPORT_API_KEY:${incheon.airport.api.key:}}")
     private String incheonAirportApiKey;
 
     private final RestTemplate restTemplate = new RestTemplate();
