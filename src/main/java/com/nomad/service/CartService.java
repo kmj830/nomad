@@ -63,18 +63,35 @@ public class CartService {
     @Transactional
     public CartDto.CartResponse updateChoiceFit(CartDto.ChoiceFitRequest request) {
         SmartCart cart = smartCartRepository.findByMemberIdAndStatus(request.getMemberId(), CartStatus.IN_CART)
-                .orElseThrow(() -> new IllegalArgumentException("활성화된 장바구니가 없습니다."));
+                .orElseGet(() -> {
+                    Member member = memberRepository.findById(request.getMemberId())
+                            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. ID: " + request.getMemberId()));
+                    return smartCartRepository.save(
+                            SmartCart.builder()
+                                    .member(member)
+                                    .choiceFit(request.getChoiceFit())
+                                    .status(CartStatus.IN_CART)
+                                    .build()
+                    );
+                });
 
         cart.setChoiceFit(request.getChoiceFit());
         return convertToResponse(cart);
     }
 
+    @Transactional
     public CartDto.CartResponse getMyCart(Long memberId) {
         SmartCart cart = smartCartRepository.findByMemberIdAndStatus(memberId, CartStatus.IN_CART)
                 .orElseGet(() -> {
                     Member member = memberRepository.findById(memberId)
                             .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
-                    return smartCartRepository.save(SmartCart.builder().member(member).status(CartStatus.IN_CART).build());
+                    return smartCartRepository.save(
+                            SmartCart.builder()
+                                    .member(member)
+                                    .choiceFit(false)
+                                    .status(CartStatus.IN_CART)
+                                    .build()
+                    );
                 });
 
         return convertToResponse(cart);
