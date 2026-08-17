@@ -9,6 +9,7 @@ import com.nomad.domain.member.VipTier;
 import com.nomad.domain.product.Product;
 import com.nomad.domain.product.ProductCategory;
 import com.nomad.domain.product.ProductRepository;
+import com.nomad.dto.FlightDto;
 import com.nomad.dto.JourneyDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,6 +49,9 @@ class JourneyServiceTest {
     @Mock
     private VisionOcrService visionOcrService;
 
+    @Mock
+    private FlightService flightService;
+
     @InjectMocks
     private JourneyService journeyService;
 
@@ -58,7 +62,10 @@ class JourneyServiceTest {
         Member member = Member.builder().id(1L).email("test@mcm.com").name("테스트").vipTier(VipTier.VIP).build();
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
         when(weatherService.fetchDestinationWeather(any())).thenReturn(WeatherService.WeatherData.builder()
-                .cityName("Bangkok").temperature(30.0).humidity(80.0).isRainy(true).weatherDescription("Bangkok 현지 기후").build());
+                .temperature(28.0)
+                .weatherDescription("Sunny")
+                .isRainy(false)
+                .build());
 
         Journey savedJourney = Journey.builder()
                 .id(10L)
@@ -66,7 +73,6 @@ class JourneyServiceTest {
                 .pnr("MCM123")
                 .origin("ICN (인천국제공항)")
                 .destination("BKK (방콕 수완나품)")
-                .departureDateTime(LocalDateTime.now().plusDays(2))
                 .flightStatus(FlightStatus.SCHEDULED)
                 .build();
 
@@ -98,6 +104,7 @@ class JourneyServiceTest {
         Journey journey = Journey.builder()
                 .id(10L)
                 .member(member)
+                .pnr("OZ741")
                 .destination("BKK (방콕 수완나품)")
                 .destinationWeather("Tropical Wet Season")
                 .recommendationReason("방수 전용 제품 추천")
@@ -111,16 +118,29 @@ class JourneyServiceTest {
                 .build();
 
         when(journeyRepository.findById(10L)).thenReturn(Optional.of(journey));
-        when(productRepository.findAll()).thenReturn(List.of(product));
         when(weatherService.fetchDestinationWeather(any())).thenReturn(WeatherService.WeatherData.builder()
-                .cityName("Bangkok").temperature(30.0).humidity(80.0).isRainy(true).weatherDescription("Tropical Wet Season").build());
-        when(openAiService.generatePersonalizedStylingAdvice(any(), any(), any(), any())).thenReturn("AI 스타일링 추천");
+                .temperature(31.0)
+                .weatherDescription("Rainy and humid")
+                .isRainy(true)
+                .build());
+        when(productRepository.findAll()).thenReturn(List.of(product));
+        when(openAiService.generatePersonalizedStylingAdvice(any(), any(), any(), any()))
+                .thenReturn("방수 전용 비세토스 백팩 스타일링 제안");
+        when(flightService.getFlightInfo(any())).thenReturn(FlightDto.FlightInfoResponse.builder()
+                .flightNumber("OZ741")
+                .airlineName("아시아나항공")
+                .originCode("ICN")
+                .originTerminal("제2여객터미널")
+                .scheduledDepartureFormatted("오후 7:35")
+                .scheduledArrivalFormatted("오후 11:35")
+                .flightDuration("6시간 0분")
+                .build());
 
         JourneyDto.JourneyAnalysisResponse response = journeyService.analyzeJourney(10L);
 
         assertThat(response.getJourneyId()).isEqualTo(10L);
         assertThat(response.getRecommendedProducts()).hasSize(1);
-        assertThat(response.getWeatherInfo()).isEqualTo("Tropical Wet Season");
+        assertThat(response.getWeatherInfo()).isEqualTo("Rainy and humid");
     }
 }
 

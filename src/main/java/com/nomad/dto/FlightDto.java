@@ -24,6 +24,10 @@ public class FlightDto {
         private FlightStatus flightStatus;
         private LocalDateTime scheduledDepartureTime;
         private LocalDateTime estimatedDepartureTime;
+        private LocalDateTime scheduledArrivalTime;
+        private String scheduledDepartureFormatted; // e.g. "오후 7:35"
+        private String scheduledArrivalFormatted;   // e.g. "오후 11:35"
+        private String flightDuration;              // e.g. "6시간 0분"
         private int delayMinutes;
         private String dataSource;
     }

@@ -27,6 +27,9 @@ class FlightServiceTest {
 
         assertThat(response.getFlightNumber()).isEqualTo("OZ741");
         assertThat(response.getAirlineName()).contains("Asiana");
-        assertThat(response.getDestinationCode()).isEqualTo("NRT");
+        assertThat(response.getDestinationCode()).isEqualTo("BKK");
+        assertThat(response.getScheduledDepartureFormatted()).isEqualTo("오후 7:35");
+        assertThat(response.getScheduledArrivalFormatted()).isEqualTo("오후 11:35");
+        assertThat(response.getFlightDuration()).isEqualTo("6시간 0분");
     }
 }

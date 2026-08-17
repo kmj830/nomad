@@ -8,6 +8,7 @@ import com.nomad.domain.member.MemberRepository;
 import com.nomad.domain.product.Product;
 import com.nomad.domain.product.ProductCategory;
 import com.nomad.domain.product.ProductRepository;
+import com.nomad.dto.FlightDto;
 import com.nomad.dto.JourneyDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class JourneyService {
     private final WeatherService weatherService;
     private final OpenAiService openAiService;
     private final VisionOcrService visionOcrService;
+    private final FlightService flightService;
 
     @Transactional
     public JourneyDto.ScanResponse scanBoardingPass(JourneyDto.ScanRequest request) {
@@ -102,27 +104,30 @@ public class JourneyService {
 
         String rainProb = weather.isRainy() ? "76%" : "20%";
 
+        // Fetch official schedule from FlightService
+        FlightDto.FlightInfoResponse flightInfo = flightService.getFlightInfo(journey.getPnr());
+
         List<JourneyDto.TimelineItem> timeline = List.of(
                 JourneyDto.TimelineItem.builder()
                         .stepType("DEPARTURE")
-                        .title("인천국제공항 (ICN) 제2여객터미널 탑승구")
-                        .time("14:50 출발")
+                        .title("인천국제공항 (" + flightInfo.getOriginCode() + ") " + flightInfo.getOriginTerminal() + " 탑승구")
+                        .time(flightInfo.getScheduledDepartureFormatted() + " 출발")
                         .description("탑승 전, 2층 면세구역에서 50분 여유가 있습니다.")
                         .tipMessage("면세점 방문 추천: 사전 신청하신 ChoiceFit VIP 피팅 룸을 이용해보세요.")
                         .iconType("AIRPLANE_DEPARTURE")
                         .build(),
                 JourneyDto.TimelineItem.builder()
                         .stepType("IN_FLIGHT")
-                        .title("비행중 (" + journey.getPnr() + ")")
-                        .time("약 2시간 20분 소요")
+                        .title("비행중 (" + flightInfo.getFlightNumber() + " / " + flightInfo.getAirlineName() + ")")
+                        .time(flightInfo.getFlightDuration() + " 비행")
                         .description("목적지 상공 기류 안정, 편안한 비행 되세요.")
                         .tipMessage("기내 좌석에서 면세 상품 추가 주문 및 도착지 가죽 케어 예약 가능")
                         .iconType("AIRPLANE_IN_FLIGHT")
                         .build(),
                 JourneyDto.TimelineItem.builder()
                         .stepType("ARRIVAL")
-                        .title(journey.getDestination() + " 제1터미널")
-                        .time("17:10 도착 예정")
+                        .title(journey.getDestination() + " 도착")
+                        .time(flightInfo.getScheduledArrivalFormatted() + " 도착 예정")
                         .description("우천 대비 방수 트렌치 코트 및 픽업 상품을 확인하세요.")
                         .tipMessage("목적지 현지 럭셔리 Care Desk 위치가 지도에 표시됩니다.")
                         .iconType("AIRPLANE_ARRIVAL")
