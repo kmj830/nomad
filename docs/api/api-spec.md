@@ -938,45 +938,57 @@ data: {"type":"VIP_CHECKIN","memberId":1,"memberName":"김노마드 (VIP)","vipT
 ### 5.7 Flight API (실시간 항공편 운항 정보)
 
 #### `GET /api/v1/flight/lookup`
-- **설명**: IATA 편명(예: `KE651`, `OZ741`, `SQ607`, `LH713`)을 입력받아 항공사, 출발 터미널, 게이트, 목적지, 지연 여부를 실시간 조회합니다. (Aviationstack API 연동 및 지능형 루트 파서 탑재)
+- **설명**: IATA 편명(예: `OZ741`, `KE651`, `JL92`, `SQ607`, `LH713`)을 입력받아 인천국제공항공사 관제탑(AODB) 1분 단위 실시간 관제 데이터 및 공식 스케줄을 조회합니다. (실시간 게이트 번호, 체크인 카운터, 19분 지연 분 단위 자동 계산, 터미널 정보 포함)
 
 ##### Query Parameters
 | 파라미터 | 타입 | 필수 | 기본값 | 설명 |
 | :--- | :--- | :---: | :--- | :--- |
-| `flightNumber` | `String` | N | `"KE651"` | 항공 편명 (예: `KE651`, `OZ741`) |
+| `flightNumber` | `String` | N | `"OZ741"` | 항공 편명 (예: `OZ741`, `KE651`) |
 
 ##### Response Body (`200 OK` - `FlightDto.FlightInfoResponse`)
 | 필드명 | 타입 | 설명 |
 | :--- | :--- | :--- |
-| `flightNumber` | `String` | 항공 편명 |
-| `airlineName` | `String` | 항공사 명칭 |
-| `originCode` | `String` | 출발지 공항 IATA 코드 |
-| `originName` | `String` | 출발지 공항 이름 |
-| `originTerminal` | `String` | 출발 여객 터미널 (예: `"T1"`, `"T2"`) |
-| `destinationCode` | `String` | 도착지 공항 IATA 코드 |
-| `destinationName` | `String` | 도착지 공항 이름 |
-| `gate` | `String` | 배정 탑승구 게이트 |
-| `flightStatus` | `String (Enum)` | 운항 상태 (`SCHEDULED`, `BOARDING`, `COMPLETED`, `CANCELLED`) |
+| `flightNumber` | `String` | 항공 편명 (예: `"OZ741"`) |
+| `airlineName` | `String` | 항공사 명칭 (예: `"아시아나항공"`) |
+| `originCode` | `String` | 출발지 공항 IATA 코드 (`"ICN"`) |
+| `originName` | `String` | 출발지 공항 이름 (`"ICN (인천국제공항)"`) |
+| `originTerminal` | `String` | 출발 여객 터미널 (예: `"인천공항 제1여객터미널"`, `"인천공항 제2여객터미널"`, `"인천공항 탑승동"`) |
+| `destinationCode` | `String` | 도착지 공항 IATA 코드 (`"BKK"`) |
+| `destinationName` | `String` | 도착지 공항 이름 (`"BKK (방콕/수완나품)"`) |
+| `gate` | `String` | 실시간 배정 탑승구 게이트 (예: `"Gate 256"`) |
+| `flightStatus` | `String (Enum)` | 운항 상태 (`SCHEDULED`, `BOARDING`, `DELAYED`, `COMPLETED`, `CANCELLED`) |
 | `scheduledDepartureTime` | `LocalDateTime` | 정시 출발 예정 일시 |
-| `estimatedDepartureTime` | `LocalDateTime` | 실시간 변경 출발 일시 |
-| `delayMinutes` | `int` | 지연 시간 (분) |
-| `dataSource` | `String` | 운항 데이터 제공 소스 |
+| `estimatedDepartureTime` | `LocalDateTime` | 실시간 변경 출발 일시 (지연 반영) |
+| `scheduledArrivalTime` | `LocalDateTime` | 도착 예정 일시 |
+| `scheduledDepartureFormatted` | `String` | 화면 표시용 출발 시각 (예: `"오후 7:35"`) |
+| `scheduledArrivalFormatted` | `String` | 화면 표시용 도착 시각 (예: `"오전 1:35"`) |
+| `flightDuration` | `String` | 비행 소요 시간 (예: `"6시간 0분"`) |
+| `checkinCounter` | `String` | 실시간 체크인 카운터 구역 (예: `"G17-J34"`) |
+| `remark` | `String` | 실시간 관제 상태 (예: `"출발"`, `"지연"`, `"탑승중"`, `"마감"`) |
+| `delayMinutes` | `int` | 실시간 지연 시간 (분, 예: `19`) |
+| `dataSource` | `String` | 운항 데이터 제공 소스 (`"인천국제공항공사 실시간 관제 AODB 공식 데이터"`) |
 
 ```json
 {
-  "flightNumber": "KE651",
-  "airlineName": "대한항공 (Korean Air)",
+  "flightNumber": "OZ741",
+  "airlineName": "아시아나항공",
   "originCode": "ICN",
-  "originName": "인천국제공항",
-  "originTerminal": "T2",
+  "originName": "ICN (인천국제공항)",
+  "originTerminal": "인천공항 탑승동",
   "destinationCode": "BKK",
-  "destinationName": "방콕 수완나품 국제공항",
-  "gate": "Gate 24",
-  "flightStatus": "SCHEDULED",
-  "scheduledDepartureTime": "2026-08-15T21:30:00",
-  "estimatedDepartureTime": "2026-08-15T21:30:00",
-  "delayMinutes": 0,
-  "dataSource": "Real-time Aviationstack Flight Tracker & MCM Smart Route Engine"
+  "destinationName": "BKK (방콕/수완나품)",
+  "gate": "Gate 256",
+  "flightStatus": "DELAYED",
+  "scheduledDepartureTime": "2026-08-15T19:35:00",
+  "estimatedDepartureTime": "2026-08-15T19:54:00",
+  "scheduledArrivalTime": "2026-08-16T01:35:00",
+  "scheduledDepartureFormatted": "오후 7:35",
+  "scheduledArrivalFormatted": "오전 1:35",
+  "flightDuration": "6시간 0분",
+  "checkinCounter": "G17-J34",
+  "remark": "출발",
+  "delayMinutes": 19,
+  "dataSource": "인천국제공항공사 실시간 관제 AODB 공식 데이터"
 }
 ```
 

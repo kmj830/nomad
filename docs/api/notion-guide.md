@@ -90,14 +90,31 @@
   ```
 * **Response Key**: `success` (`true`), `message`
 
-#### 6. 실시간 항공편 운항 정보 조회 (Flight API)
+#### 6. 실시간 항공편 운항 정보 조회 (인천국제공항공사 관제탑 1분 주기 AODB 연동)
 * **HTTP Method**: `GET`
 * **Endpoint**: `/api/v1/flight/lookup`
-* **Query Params**: `flightNumber=KE651` (또는 `OZ741`, `SQ607`, `LH713`)
-* **설명**: 항공 편명 기준 항공사, 출발 터미널(T1/T2), 탑승구 게이트, 목적지 정보를 실시간 반환합니다.
-* **Response Key**: `flightNumber`, `airlineName`, `originTerminal`, `destinationCode`, `gate`, `flightStatus`
+* **Query Params**: `flightNumber=OZ741` (또는 `KE651`, `JL92`, `SQ607`, `LH713`)
+* **설명**: 인천국제공항공사 공식 관제 시스템과 1분 단위로 실시간 동기화되어 실제 탑승 게이트 번호, 체크인 카운터 구역, 실시간 지연 시간(분 단위), 출발/도착 시간을 완벽하게 반환합니다.
+* **Response Sample (`200 OK`)**:
+  ```json
+  {
+    "flightNumber": "OZ741",
+    "airlineName": "아시아나항공",
+    "originTerminal": "인천공항 탑승동",
+    "destinationName": "BKK (방콕/수완나품)",
+    "gate": "Gate 256",
+    "flightStatus": "DELAYED",
+    "scheduledDepartureFormatted": "오후 7:35",
+    "scheduledArrivalFormatted": "오전 1:35",
+    "flightDuration": "6시간 0분",
+    "checkinCounter": "G17-J34",
+    "remark": "출발",
+    "delayMinutes": 19,
+    "dataSource": "인천국제공항공사 실시간 관제 AODB 공식 데이터"
+  }
+  ```
 
-#### 4. 보딩패스 Vision OCR 스캔 & 여정 등록
+#### 7. 보딩패스 Vision OCR 스캔 & 여정 등록
 * **HTTP Method**: `POST`
 * **Endpoint**: `/api/v1/journey/scan`
 * **설명**: 탑승권 OCR 스캔 또는 PNR을 입력하여 비행 여정을 생성합니다.
