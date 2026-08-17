@@ -140,7 +140,8 @@
 
 | # | 도메인 | HTTP | 엔드포인트 | 요약 설명 |
 | :-: | :--- | :-: | :--- | :--- |
-| **1** | Auth | `POST` | `/api/v1/auth/login` | 앱 로그인 & VIP 회원 등록/조회 |
+| **1** | Auth | `POST` | `/api/v1/auth/register` | 신규 회원가입 & 웰컴 마일리지 지급 |
+| **2** | Auth | `POST` | `/api/v1/auth/login` | 앱 로그인 (이메일, 비밀번호) |
 | **2** | Journey | `POST` | `/api/v1/journey/scan` | 보딩패스 Vision OCR 스캔 & 여정 등록 |
 | **3** | Journey | `GET` | `/api/v1/journey/analysis/{journeyId}` | 목적지 기후 분석 & 맞춤 MCM 상품 Curation |
 | **4** | Journey | `GET` | `/api/v1/journey/live-card/{journeyId}` | SCR-102 실시간 AI 라이브 카드 위젯 |
@@ -170,20 +171,64 @@
 
 ### 5.1 Auth API (인증 & VIP Herstory 허브)
 
+#### `POST /api/v1/auth/register`
+- **설명**: 이메일, 비밀번호, 이름, 연락처를 통해 신규 회원을 등록하고 웰컴 마일리지(1,000 마일)를 지급합니다.
+- **Content-Type**: `application/json`
+
+##### Request Body (`AuthDto.RegisterRequest`)
+| 필드명 | 타입 | 필수 | 기본값 | 설명 |
+| :--- | :--- | :--- | :--- | :--- |
+| `email` | `String` | Y | - | 회원 이메일 (예: `user@example.com`) |
+| `password` | `String` | Y | - | 계정 비밀번호 (예: `password123!`) |
+| `name` | `String` | Y | - | 회원 이름 (예: `홍길동`) |
+| `phone` | `String` | N | - | 회원 연락처 (예: `010-1234-5678`) |
+
+```json
+{
+  "email": "user@example.com",
+  "password": "password123!",
+  "name": "홍길동",
+  "phone": "010-1234-5678"
+}
+```
+
+##### Response Body (`200 OK` - `AuthDto.RegisterResponse`)
+| 필드명 | 타입 | 설명 |
+| :--- | :--- | :--- |
+| `memberId` | `Long` | 생성된 회원 고유 식별자 ID |
+| `email` | `String` | 회원 이메일 |
+| `name` | `String` | 회원 이름 |
+| `vipTier` | `String (Enum)` | 초기 VIP 등급 (`SILVER`) |
+| `nomadMiles` | `Long` | 초기 부여된 Herstory 마일리지 잔액 (1,000) |
+| `message` | `String` | 가입 완료 안내 메시지 |
+
+```json
+{
+  "memberId": 4,
+  "email": "user@example.com",
+  "name": "홍길동",
+  "vipTier": "SILVER",
+  "nomadMiles": 1000,
+  "message": "Herstory Club 회원가입이 완료되었습니다. (웰컴 1,000 마일리지 적립)"
+}
+```
+
+---
+
 #### `POST /api/v1/auth/login`
-- **설명**: 회원 이메일과 이름을 통해 로그인하며 VIP 등급(VipTier) 및 보유 Herstory Miles를 반환합니다. (신규 이메일의 경우 자동 가입 처리)
+- **설명**: 회원 이메일과 비밀번호를 통해 로그인하며 VIP 등급(VipTier) 및 보유 Herstory Miles를 반환합니다.
 - **Content-Type**: `application/json`
 
 ##### Request Body (`AuthDto.LoginRequest`)
 | 필드명 | 타입 | 필수 | 기본값 | 설명 |
-| :--- | :--- | :---: | :--- | :--- |
+| :--- | :--- | :--- | :--- | :--- |
 | `email` | `String` | Y | - | 회원 이메일 (예: `vip@mcmworldwide.com`) |
-| `name` | `String` | N | - | 회원 이름 (예: `김노마드`) |
+| `password` | `String` | Y | - | 계정 비밀번호 (예: `1234`) |
 
 ```json
 {
   "email": "vip@mcmworldwide.com",
-  "name": "김노마드 (VIP)"
+  "password": "1234"
 }
 ```
 
@@ -203,8 +248,8 @@
   "email": "vip@mcmworldwide.com",
   "name": "김노마드 (VIP)",
   "vipTier": "VIP",
-  "nomadMiles": 15400,
-  "message": "Herstory VIP 허브에 오신 것을 환영합니다."
+  "nomadMiles": 15000,
+  "message": "Herstory Hub에 성공적으로 접속되었습니다."
 }
 ```
 
@@ -922,10 +967,28 @@ data: {"type":"VIP_CHECKIN","memberId":1,"memberName":"김노마드 (VIP)","vipT
 
 ### 6.1 `AuthDto`
 ```java
+// 신규 회원가입 요청
+public class RegisterRequest {
+    private String email;
+    private String password;
+    private String name;
+    private String phone;
+}
+
+// 신규 회원가입 응답
+public class RegisterResponse {
+    private Long memberId;
+    private String email;
+    private String name;
+    private VipTier vipTier;
+    private Long nomadMiles;
+    private String message;
+}
+
 // 로그인 요청
 public class LoginRequest {
     private String email;
-    private String name;
+    private String password;
 }
 
 // 로그인 응답

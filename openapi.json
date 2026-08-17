@@ -30,11 +30,61 @@
     { "name": "8. System Health API (서버 및 외부 API 모니터링)", "description": "Render PostgreSQL DB, OpenAI GPT-4o, Google Maps, Flight API 실시간 상태 모니터링 API" }
   ],
   "paths": {
+    "/api/v1/auth/register": {
+      "post": {
+        "tags": ["1. Auth API (인증)"],
+        "summary": "신규 회원가입",
+        "description": "이메일, 비밀번호, 이름, 연락처를 통해 신규 회원을 등록하고 웰컴 마일리지를 지급합니다.",
+        "operationId": "register",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "가입 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 요청 또는 이메일 중복",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 내부 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/auth/login": {
       "post": {
         "tags": ["1. Auth API (인증)"],
-        "summary": "앱 로그인 & 회원 등록",
-        "description": "이메일과 이름을 통해 로그인하며 VIP 티어 및 Herstory 마일리지를 반환합니다.",
+        "summary": "앱 로그인",
+        "description": "이메일과 비밀번호를 통해 로그인하며 VIP 티어 및 Herstory 마일리지를 반환합니다.",
         "operationId": "login",
         "requestBody": {
           "required": true,
@@ -58,7 +108,7 @@
             }
           },
           "400": {
-            "description": "잘못된 요청",
+            "description": "잘못된 요청 또는 인증 실패",
             "content": {
               "application/json": {
                 "schema": {
@@ -749,12 +799,33 @@
           "timestamp": { "type": "string", "format": "date-time" }
         }
       },
+      "RegisterRequest": {
+        "type": "object",
+        "required": ["email", "password", "name"],
+        "properties": {
+          "email": { "type": "string", "example": "user@example.com" },
+          "password": { "type": "string", "example": "password123!" },
+          "name": { "type": "string", "example": "홍길동" },
+          "phone": { "type": "string", "example": "010-1234-5678" }
+        }
+      },
+      "RegisterResponse": {
+        "type": "object",
+        "properties": {
+          "memberId": { "type": "integer", "format": "int64", "example": 4 },
+          "email": { "type": "string", "example": "user@example.com" },
+          "name": { "type": "string", "example": "홍길동" },
+          "vipTier": { "$ref": "#/components/schemas/VipTier" },
+          "nomadMiles": { "type": "integer", "format": "int64", "example": 1000 },
+          "message": { "type": "string", "example": "Herstory Club 회원가입이 완료되었습니다. (웰컴 1,000 마일리지 적립)" }
+        }
+      },
       "LoginRequest": {
         "type": "object",
-        "required": ["email"],
+        "required": ["email", "password"],
         "properties": {
           "email": { "type": "string", "example": "vip@mcmworldwide.com" },
-          "name": { "type": "string", "example": "김노마드 (VIP)" }
+          "password": { "type": "string", "example": "1234" }
         }
       },
       "LoginResponse": {
@@ -764,8 +835,8 @@
           "email": { "type": "string", "example": "vip@mcmworldwide.com" },
           "name": { "type": "string", "example": "김노마드 (VIP)" },
           "vipTier": { "$ref": "#/components/schemas/VipTier" },
-          "nomadMiles": { "type": "integer", "format": "int64", "example": 15400 },
-          "message": { "type": "string", "example": "MCM VIP 노마드 허브에 오신 것을 환영합니다." }
+          "nomadMiles": { "type": "integer", "format": "int64", "example": 15000 },
+          "message": { "type": "string", "example": "Herstory Hub에 성공적으로 접속되었습니다." }
         }
       },
       "ScanRequest": {

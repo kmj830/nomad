@@ -24,6 +24,7 @@ public class DataInitializer implements CommandLineRunner {
         if (memberRepository.count() == 0) {
             memberRepository.save(Member.builder()
                     .email("vip@mcmworldwide.com")
+                    .password("1234")
                     .name("김노마드 (VIP)")
                     .phone("010-1234-5678")
                     .vipTier(VipTier.VIP)
@@ -32,6 +33,7 @@ public class DataInitializer implements CommandLineRunner {
 
             memberRepository.save(Member.builder()
                     .email("gold@mcmworldwide.com")
+                    .password("1234")
                     .name("이여행 (Gold)")
                     .phone("010-9876-5432")
                     .vipTier(VipTier.GOLD)
@@ -40,6 +42,7 @@ public class DataInitializer implements CommandLineRunner {
 
             memberRepository.save(Member.builder()
                     .email("platinum@mcmworldwide.com")
+                    .password("1234")
                     .name("박스타 (Platinum)")
                     .phone("010-5555-7777")
                     .vipTier(VipTier.PLATINUM)

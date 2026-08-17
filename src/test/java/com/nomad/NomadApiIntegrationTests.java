@@ -28,8 +28,14 @@ class NomadApiIntegrationTests {
     @Test
     @DisplayName("전체 MCM Nomad Passport AI 핵심 비즈니스 흐름 통합 테스트")
     void fullNomadWorkflowTest() throws Exception {
-        // Phase 1: Auth Login
-        AuthDto.LoginRequest loginReq = new AuthDto.LoginRequest("vip@mcmworldwide.com", "김노마드 (VIP)");
+        // Phase 1: Auth Register & Login
+        AuthDto.RegisterRequest regReq = new AuthDto.RegisterRequest("newuser@mcmworldwide.com", "1234", "신규유저", "010-0000-0000");
+        mockMvc.perform(post("/api/v1/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(regReq)))
+                .andExpect(status().isOk());
+
+        AuthDto.LoginRequest loginReq = new AuthDto.LoginRequest("vip@mcmworldwide.com", "1234");
         MvcResult loginResult = mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginReq)))
