@@ -46,7 +46,13 @@ mcp_config.json
 ### Local Private Docs (Front Handoff & Internal Specs) ###
 docs/frontend-handoff/
 docs/specs/
+docs/프로토타입/
+docs/프로토타입/
+docs/design/
 requirements/
+*.png
+*.jpg
+*.jpeg
 
 ### Security & Secrets (Never commit) ###
 .env

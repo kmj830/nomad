@@ -28,6 +28,25 @@ class NomadApiIntegrationTests {
     @Test
     @DisplayName("전체 MCM Nomad Passport AI 핵심 비즈니스 흐름 통합 테스트")
     void fullNomadWorkflowTest() throws Exception {
+        // Phase 1: Auth SMS Verification & Password Reset
+        AuthDto.SendVerificationCodeRequest sendCodeReq = new AuthDto.SendVerificationCodeRequest("010-1234-5678");
+        mockMvc.perform(post("/api/v1/auth/phone/send-code")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(sendCodeReq)))
+                .andExpect(status().isOk());
+
+        AuthDto.VerifyCodeRequest verifyReq = new AuthDto.VerifyCodeRequest("010-1234-5678", "123456");
+        mockMvc.perform(post("/api/v1/auth/phone/verify-code")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(verifyReq)))
+                .andExpect(status().isOk());
+
+        AuthDto.ResetPasswordRequest resetReq = new AuthDto.ResetPasswordRequest("vip@mcmworldwide.com", "010-1234-5678", "newpassword1234");
+        mockMvc.perform(post("/api/v1/auth/password/reset")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(resetReq)))
+                .andExpect(status().isOk());
+
         // Phase 1: Auth Register & Login
         AuthDto.RegisterRequest regReq = new AuthDto.RegisterRequest("newuser@mcmworldwide.com", "1234", "신규유저", "010-0000-0000");
         mockMvc.perform(post("/api/v1/auth/register")
@@ -35,7 +54,7 @@ class NomadApiIntegrationTests {
                         .content(objectMapper.writeValueAsString(regReq)))
                 .andExpect(status().isOk());
 
-        AuthDto.LoginRequest loginReq = new AuthDto.LoginRequest("vip@mcmworldwide.com", "1234");
+        AuthDto.LoginRequest loginReq = new AuthDto.LoginRequest("vip@mcmworldwide.com", "newpassword1234");
         MvcResult loginResult = mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginReq)))

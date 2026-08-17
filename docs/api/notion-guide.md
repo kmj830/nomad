@@ -11,31 +11,93 @@
 
 ---
 
+## 🔑 2. 테스트용 기본 계정 안내 (전체 PW: `1234`)
+
+> 노션 및 프론트엔드 연동 테스트 시 바로 사용할 수 있는 기본 계정 3종입니다.
+
+| 등급 | 로그인 이메일 | 비밀번호 | 이름 | 기본 마일리지 | 추천 시연 기능 |
+| :---: | :--- | :---: | :---: | :---: | :--- |
+| **VIP** | **`vip@mcmworldwide.com`**<br>*(메인 시연 계정 ⭐)* | **`1234`** | **김노마드** | **15,000 P** | **활성 여정(방콕행 `HST777`) 등록됨**<br>**장바구니 2종(MCM 백팩, LV 키폴) & VIP 피팅 세팅됨** |
+| **Gold** | **`gold@mcmworldwide.com`** | **`1234`** | **이여행** | **4,500 P** | 일반 우수 고객 시연 |
+| **Platinum** | **`platinum@mcmworldwide.com`** | **`1234`** | **박스타** | **9,800 P** | 플래티넘 등급 혜택 시연 |
+| **신규 가입** | `POST /api/v1/auth/register` | 자유 입력 | 자유 입력 | **1,000 P** | 웰컴 보너스 마일리지 자동 지급 |
+
+---
+
 ## 📱 PART 1. 유저 (Customer / VIP) 앱 전용 API 명세
 
 ### 🛫 Phase 1: Pre-Flight (출국 전 / 공항 대기 / 온라인)
 
-#### 1. 로그인 & 노마드 허브 접속
+#### 1. 회원가입 (신규 추가)
+* **HTTP Method**: `POST`
+* **Endpoint**: `/api/v1/auth/register`
+* **Request Body**:
+  ```json
+  {
+    "email": "user@example.com",
+    "password": "password123",
+    "name": "홍길동",
+    "phone": "010-1234-5678"
+  }
+  ```
+* **Response Key**: `memberId`, `email`, `name`, `vipTier` (`SILVER`), `nomadMiles` (`1000`)
+
+#### 2. 로그인 & 허브 접속
 * **HTTP Method**: `POST`
 * **Endpoint**: `/api/v1/auth/login`
-* **설명**: 회원 로그인 후 VIP 티어 및 보유 Nomad Miles 정보를 수신합니다.
 * **Request Body**:
   ```json
   {
     "email": "vip@mcmworldwide.com",
-    "name": "김노마드 (VIP)"
+    "password": "1234"
   }
   ```
-* **Response Key**: `memberId`, `email`, `name`, `vipTier` (`VIP`, `PLATINUM`, `GOLD`), `nomadMiles`
+* **Response Key**: `memberId`, `email`, `name`, `vipTier` (`VIP`, `PLATINUM`, `GOLD`, `SILVER`), `nomadMiles`
 
-#### 2. 실시간 항공편 운항 정보 조회 (Flight API)
+#### 3. 회원가입 휴대폰 SMS 인증번호 발송 (신규 추가)
+* **HTTP Method**: `POST`
+* **Endpoint**: `/api/v1/auth/phone/send-code`
+* **Request Body**:
+  ```json
+  {
+    "phone": "010-1234-5678"
+  }
+  ```
+* **설명**: 6자리 인증번호가 생성 및 발송됩니다. (테스트용 마스터 코드 `123456` 지원)
+
+#### 4. 회원가입 휴대폰 SMS 인증번호 검증 (신규 추가)
+* **HTTP Method**: `POST`
+* **Endpoint**: `/api/v1/auth/phone/verify-code`
+* **Request Body**:
+  ```json
+  {
+    "phone": "010-1234-5678",
+    "verificationCode": "123456"
+  }
+  ```
+* **Response Key**: `phone`, `verified` (`true` / `false`), `message`
+
+#### 5. 비밀번호 찾기 및 재설정 (신규 추가)
+* **HTTP Method**: `POST`
+* **Endpoint**: `/api/v1/auth/password/reset`
+* **Request Body**:
+  ```json
+  {
+    "email": "vip@mcmworldwide.com",
+    "phone": "010-1234-5678",
+    "newPassword": "newpassword1234"
+  }
+  ```
+* **Response Key**: `success` (`true`), `message`
+
+#### 6. 실시간 항공편 운항 정보 조회 (Flight API)
 * **HTTP Method**: `GET`
 * **Endpoint**: `/api/v1/flight/lookup`
 * **Query Params**: `flightNumber=KE651` (또는 `OZ741`, `SQ607`, `LH713`)
 * **설명**: 항공 편명 기준 항공사, 출발 터미널(T1/T2), 탑승구 게이트, 목적지 정보를 실시간 반환합니다.
 * **Response Key**: `flightNumber`, `airlineName`, `originTerminal`, `destinationCode`, `gate`, `flightStatus`
 
-#### 3. 보딩패스 Vision OCR 스캔 & 여정 등록
+#### 4. 보딩패스 Vision OCR 스캔 & 여정 등록
 * **HTTP Method**: `POST`
 * **Endpoint**: `/api/v1/journey/scan`
 * **설명**: 탑승권 OCR 스캔 또는 PNR을 입력하여 비행 여정을 생성합니다.
@@ -43,18 +105,18 @@
   ```json
   {
     "memberId": 1,
-    "pnr": "MCM999",
-    "rawOcrText": "BOARDING PASS PNR MCM999",
+    "pnr": "HST777",
+    "rawOcrText": "BOARDING PASS PNR HST777",
     "origin": "ICN",
     "destination": "BKK"
   }
   ```
 * **Response Key**: `journeyId`, `pnr`, `origin`, `destination`, `departureDateTime`
 
-#### 4. SCR-102 AI 라이브 카드 위젯 (카운트다운 & 게이트 & 라운지)
+#### 5. SCR-102 AI 라이브 카드 위젯 (카운트다운 & 게이트 & 라운지)
 * **HTTP Method**: `GET`
 * **Endpoint**: `/api/v1/journey/live-card/{journeyId}`
-* **설명**: 탑승까지 남은 시간(분), 게이트 번호, 공항 MCM VIP 라운지 대기 현황을 반환합니다.
+* **설명**: 탑승까지 남은 시간(분), 게이트 번호, 공항 Herstory VIP 라운지 대기 현황을 반환합니다.
 
 #### 5. SCR-203/301 목적지 기후 분석 & OpenAI GPT-4o 맞춤 Curation
 * **HTTP Method**: `GET`

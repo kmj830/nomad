@@ -27,4 +27,22 @@ public class AuthController {
     public ResponseEntity<AuthDto.LoginResponse> login(@RequestBody AuthDto.LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
+
+    @Operation(summary = "회원가입 휴대폰 SMS 인증번호 발송", description = "입력한 휴대폰 번호로 6자리 SMS 인증번호를 발송합니다. (테스트용 마스터 코드 123456 지원)")
+    @PostMapping({"/phone/send-code", "/phone/send"})
+    public ResponseEntity<AuthDto.SendVerificationCodeResponse> sendVerificationCode(@RequestBody AuthDto.SendVerificationCodeRequest request) {
+        return ResponseEntity.ok(authService.sendVerificationCode(request));
+    }
+
+    @Operation(summary = "회원가입 휴대폰 SMS 인증번호 검증", description = "전송된 6자리 인증번호의 유효성을 검증합니다.")
+    @PostMapping({"/phone/verify-code", "/phone/verify"})
+    public ResponseEntity<AuthDto.VerifyCodeResponse> verifyCode(@RequestBody AuthDto.VerifyCodeRequest request) {
+        return ResponseEntity.ok(authService.verifyCode(request));
+    }
+
+    @Operation(summary = "비밀번호 찾기 및 재설정", description = "가입된 이메일 또는 휴대폰 번호를 확인하여 새로운 비밀번호로 재설정합니다.")
+    @PostMapping({"/password/reset", "/password/find"})
+    public ResponseEntity<AuthDto.PasswordResponse> resetPassword(@RequestBody AuthDto.ResetPasswordRequest request) {
+        return ResponseEntity.ok(authService.resetPassword(request));
+    }
 }

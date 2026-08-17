@@ -54,4 +54,67 @@ public class AuthDto {
         private Long nomadMiles;
         private String message;
     }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class SendVerificationCodeRequest {
+        private String phone;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class SendVerificationCodeResponse {
+        private String phone;
+        private String verificationCode;
+        private String message;
+        private Integer expiresInSeconds;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class VerifyCodeRequest {
+        private String phone;
+        private String verificationCode;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class VerifyCodeResponse {
+        private String phone;
+        private boolean verified;
+        private String message;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ResetPasswordRequest {
+        private String email;
+        private String phone;
+        private String newPassword;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class PasswordResponse {
+        private boolean success;
+        private String message;
+    }
 }

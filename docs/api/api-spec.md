@@ -142,7 +142,10 @@
 | :-: | :--- | :-: | :--- | :--- |
 | **1** | Auth | `POST` | `/api/v1/auth/register` | 신규 회원가입 & 웰컴 마일리지 지급 |
 | **2** | Auth | `POST` | `/api/v1/auth/login` | 앱 로그인 (이메일, 비밀번호) |
-| **3** | Journey | `POST` | `/api/v1/journey/scan` | 보딩패스 Vision OCR 스캔 & 여정 등록 |
+| **3** | Auth | `POST` | `/api/v1/auth/phone/send-code` | 회원가입 휴대폰 SMS 인증번호 발송 |
+| **4** | Auth | `POST` | `/api/v1/auth/phone/verify-code` | 휴대폰 SMS 인증번호 검증 |
+| **5** | Auth | `POST` | `/api/v1/auth/password/reset` | 비밀번호 찾기 및 재설정 |
+| **6** | Journey | `POST` | `/api/v1/journey/scan` | 보딩패스 Vision OCR 스캔 & 여정 등록 |
 | **4** | Journey | `GET` | `/api/v1/journey/{journeyId}` | 여정 기본 상세 단건 조회 |
 | **5** | Journey | `GET` | `/api/v1/journey/analysis/{journeyId}` | 목적지 기후 분석 & 맞춤 MCM 상품 Curation |
 | **4** | Journey | `GET` | `/api/v1/journey/live-card/{journeyId}` | SCR-102 실시간 AI 라이브 카드 위젯 |
