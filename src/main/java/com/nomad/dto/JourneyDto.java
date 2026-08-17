@@ -66,5 +66,23 @@ public class JourneyDto {
         private String loungeWaitTime;
         private String liveGuideMessage;
     }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class JourneyResponse {
+        private Long journeyId;
+        private Long memberId;
+        private String memberName;
+        private String pnr;
+        private String origin;
+        private String destination;
+        private LocalDateTime departureDateTime;
+        private FlightStatus flightStatus;
+        private String destinationWeather;
+        private String recommendationReason;
+    }
 }
 

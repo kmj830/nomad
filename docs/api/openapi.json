@@ -130,6 +130,59 @@
         }
       }
     },
+    "/api/v1/journey/{journeyId}": {
+      "get": {
+        "tags": ["2. Journey API (여정 & 큐레이션)"],
+        "summary": "여정 기본 상세 단건 조회",
+        "description": "여정 ID를 통해 PNR, 출발/도착 공항, 출발 일시, 운항 상태 및 기후 분석 정보를 조회합니다.",
+        "operationId": "getJourney",
+        "parameters": [
+          {
+            "name": "journeyId",
+            "in": "path",
+            "required": true,
+            "description": "조회할 여정 ID",
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JourneyResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "여정을 찾을 수 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 내부 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/journey/scan": {
       "post": {
         "tags": ["2. Journey API (여정 & 큐레이션)"],
@@ -860,6 +913,21 @@
           "departureDateTime": { "type": "string", "format": "date-time" },
           "flightStatus": { "$ref": "#/components/schemas/FlightStatus" },
           "message": { "type": "string", "example": "보딩패스 OCR 스캔이 성공적으로 완료되었습니다." }
+        }
+      },
+      "JourneyResponse": {
+        "type": "object",
+        "properties": {
+          "journeyId": { "type": "integer", "format": "int64", "example": 1 },
+          "memberId": { "type": "integer", "format": "int64", "example": 1 },
+          "memberName": { "type": "string", "example": "김노마드 (VIP)" },
+          "pnr": { "type": "string", "example": "MCM999" },
+          "origin": { "type": "string", "example": "ICN" },
+          "destination": { "type": "string", "example": "BKK" },
+          "departureDateTime": { "type": "string", "format": "date-time" },
+          "flightStatus": { "$ref": "#/components/schemas/FlightStatus" },
+          "destinationWeather": { "type": "string", "example": "열대성 스콜 (기온 32°C, 습도 85%)" },
+          "recommendationReason": { "type": "string", "example": "목적지 비/습도 기후에 적합한 MCM 방수 비세토스 컬렉션 맞춤 제안" }
         }
       },
       "Product": {

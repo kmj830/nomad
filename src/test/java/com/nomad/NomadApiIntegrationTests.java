@@ -58,6 +58,13 @@ class NomadApiIntegrationTests {
         assertThat(scanRes.getJourneyId()).isNotNull();
         Long journeyId = scanRes.getJourneyId();
 
+        // Phase 1: Journey Single Fetch Check (both /journey and /journeys)
+        mockMvc.perform(get("/api/v1/journey/" + journeyId))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/v1/journeys/" + journeyId))
+                .andExpect(status().isOk());
+
         // Phase 1: AI Live Card Widget Check
         mockMvc.perform(get("/api/v1/journey/live-card/" + journeyId))
                 .andExpect(status().isOk());

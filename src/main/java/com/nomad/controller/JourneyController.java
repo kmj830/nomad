@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "2. Journey API (여정 & 큐레이션)", description = "보딩패스 Vision OCR PNR 스캔 및 목적지 날씨/기후 분석 큐레이션 API")
 @RestController
-@RequestMapping("/api/v1/journey")
+@RequestMapping({"/api/v1/journey", "/api/v1/journeys"})
 @RequiredArgsConstructor
 public class JourneyController {
 
@@ -21,6 +21,12 @@ public class JourneyController {
     @PostMapping("/scan")
     public ResponseEntity<JourneyDto.ScanResponse> scanBoardingPass(@RequestBody JourneyDto.ScanRequest request) {
         return ResponseEntity.ok(journeyService.scanBoardingPass(request));
+    }
+
+    @Operation(summary = "여정 기본 상세 단건 조회", description = "여정 ID를 통해 PNR, 출/도착지, 출발 일시, 운항 상태 및 기후 분석 정보를 조회합니다.")
+    @GetMapping("/{journeyId}")
+    public ResponseEntity<JourneyDto.JourneyResponse> getJourney(@PathVariable Long journeyId) {
+        return ResponseEntity.ok(journeyService.getJourney(journeyId));
     }
 
     @Operation(summary = "목적지 기후 및 여행 분석 데이터 조회", description = "목적지 날씨 및 기후 정보를 분석하여 맞춤형 MCM 상품을 추천합니다.")

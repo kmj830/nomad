@@ -132,6 +132,24 @@ public class JourneyService {
                 .build();
     }
 
+    public JourneyDto.JourneyResponse getJourney(Long journeyId) {
+        Journey journey = journeyRepository.findById(journeyId)
+                .orElseThrow(() -> new IllegalArgumentException("여정을 찾을 수 없습니다. ID: " + journeyId));
+
+        return JourneyDto.JourneyResponse.builder()
+                .journeyId(journey.getId())
+                .memberId(journey.getMember().getId())
+                .memberName(journey.getMember().getName())
+                .pnr(journey.getPnr())
+                .origin(journey.getOrigin())
+                .destination(journey.getDestination())
+                .departureDateTime(journey.getDepartureDateTime())
+                .flightStatus(journey.getFlightStatus())
+                .destinationWeather(journey.getDestinationWeather())
+                .recommendationReason(journey.getRecommendationReason())
+                .build();
+    }
+
     private String extractPnrFromOcr(String rawText) {
         if (rawText != null && rawText.length() >= 6) {
             return rawText.substring(0, 6).toUpperCase();

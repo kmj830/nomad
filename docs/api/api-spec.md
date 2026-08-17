@@ -142,8 +142,9 @@
 | :-: | :--- | :-: | :--- | :--- |
 | **1** | Auth | `POST` | `/api/v1/auth/register` | 신규 회원가입 & 웰컴 마일리지 지급 |
 | **2** | Auth | `POST` | `/api/v1/auth/login` | 앱 로그인 (이메일, 비밀번호) |
-| **2** | Journey | `POST` | `/api/v1/journey/scan` | 보딩패스 Vision OCR 스캔 & 여정 등록 |
-| **3** | Journey | `GET` | `/api/v1/journey/analysis/{journeyId}` | 목적지 기후 분석 & 맞춤 MCM 상품 Curation |
+| **3** | Journey | `POST` | `/api/v1/journey/scan` | 보딩패스 Vision OCR 스캔 & 여정 등록 |
+| **4** | Journey | `GET` | `/api/v1/journey/{journeyId}` | 여정 기본 상세 단건 조회 |
+| **5** | Journey | `GET` | `/api/v1/journey/analysis/{journeyId}` | 목적지 기후 분석 & 맞춤 MCM 상품 Curation |
 | **4** | Journey | `GET` | `/api/v1/journey/live-card/{journeyId}` | SCR-102 실시간 AI 라이브 카드 위젯 |
 | **5** | Journey | `GET` | `/api/v1/journey/apple-wallet-pass/{journeyId}` | SCR-201 Apple Wallet 패스 메타데이터 조회 |
 | **6** | Journey | `GET` | `/api/v1/journey/apple-wallet-pass/download/{journeyId}` | Apple Wallet (.pkpass) 바이너리 다운로드 |
@@ -299,7 +300,47 @@
   "destination": "BKK",
   "departureDateTime": "2026-08-15T21:30:00",
   "flightStatus": "SCHEDULED",
-  "message": "보딩패스 OCR 스캔이 성공적으로 완료되었습니다."
+  "message": "보딩패스 OCR 스캔 완료! PNR [MCM999] 여정이 등록되었습니다."
+}
+```
+
+---
+
+#### `GET /api/v1/journey/{journeyId}`
+- **설명**: 여정 ID를 통해 PNR, 출발/도착 공항, 출발 일시, 운항 상태 및 기후 분석 정보를 조회합니다. (호환성을 위해 `/api/v1/journeys/{journeyId}` 지원)
+- **Content-Type**: `application/json`
+
+##### Request Path Parameter
+| 파라미터명 | 타입 | 필수 | 설명 |
+| :--- | :--- | :---: | :--- |
+| `journeyId` | `Long` | Y | 조회할 여정 식별자 ID |
+
+##### Response Body (`200 OK` - `JourneyDto.JourneyResponse`)
+| 필드명 | 타입 | 설명 |
+| :--- | :--- | :--- |
+| `journeyId` | `Long` | 여정 ID |
+| `memberId` | `Long` | 여정 소유 회원 ID |
+| `memberName` | `String` | 회원 이름 |
+| `pnr` | `String` | 6자리 PNR 코드 |
+| `origin` | `String` | 출발 공항 |
+| `destination` | `String` | 도착 공항 |
+| `departureDateTime` | `LocalDateTime` | 출발 예정 일시 |
+| `flightStatus` | `String (Enum)` | 운항 상태 (`SCHEDULED`, `BOARDING`, `COMPLETED`, `CANCELLED`) |
+| `destinationWeather` | `String` | 목적지 날씨 요약 |
+| `recommendationReason` | `String` | 맞춤 큐레이션 추천 사유 |
+
+```json
+{
+  "journeyId": 1,
+  "memberId": 1,
+  "memberName": "김노마드 (VIP)",
+  "pnr": "MCM999",
+  "origin": "ICN",
+  "destination": "BKK",
+  "departureDateTime": "2026-08-20T14:30:00",
+  "flightStatus": "SCHEDULED",
+  "destinationWeather": "열대성 스콜 (기온 32°C, 습도 85%)",
+  "recommendationReason": "목적지 비/습도 기후에 적합한 MCM 방수 비세토스 컬렉션 맞춤 제안"
 }
 ```
 
@@ -1046,6 +1087,20 @@ public class LiveCardResponse {
     private String loungeLocation;
     private String loungeWaitTime;
     private String liveGuideMessage;
+}
+
+// 여정 기본 상세 단건 응답
+public class JourneyResponse {
+    private Long journeyId;
+    private Long memberId;
+    private String memberName;
+    private String pnr;
+    private String origin;
+    private String destination;
+    private LocalDateTime departureDateTime;
+    private FlightStatus flightStatus;
+    private String destinationWeather;
+    private String recommendationReason;
 }
 ```
 
