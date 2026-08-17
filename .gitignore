@@ -40,7 +40,20 @@ out/
 .agents/
 AGENTS.md
 GEMINI.md
-requirements/
-docs/
 .DS_Store
+mcp_config.json
+
+### Local Private Docs (Front Handoff & Internal Specs) ###
+docs/frontend-handoff/
+docs/specs/
+requirements/
+
+### Security & Secrets (Never commit) ###
+.env
+.env.*
+*.p12
+*.pem
+*serviceAccount*.json
+firebase-adminsdk*.json
+
 
