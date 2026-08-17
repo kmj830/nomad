@@ -126,9 +126,9 @@ public class JourneyService {
                 .remainingMinutesToDeparture(remainingMinutes)
                 .gate("Gate 24 (T1)")
                 .flightStatus(journey.getFlightStatus())
-                .loungeLocation("MCM VIP 노마드 라운지 (탑승동 D구역)")
+                .loungeLocation("Herstory VIP Lounge (탑승동 D구역)")
                 .loungeWaitTime("대기 시간 5분 미만 (원활)")
-                .liveGuideMessage("탑승까지 약 " + remainingMinutes + "분 남아있습니다. 면세점 MCM 부티크에서 사전 신청하신 VIP 피팅을 받아보세요!")
+                .liveGuideMessage("탑승까지 약 " + remainingMinutes + "분 남아있습니다. 공항 면세 부티크에서 사전 신청하신 ChoiceFit VIP 피팅을 받아보세요!")
                 .build();
     }
 

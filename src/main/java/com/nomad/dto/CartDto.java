@@ -35,6 +35,7 @@ public class CartDto {
         private Long cartItemId;
         private Long productId;
         private String productName;
+        private String brand;
         private String category;
         private BigDecimal price;
         private Integer quantity;

@@ -30,6 +30,9 @@ class CareServiceTest {
     @Mock
     private com.nomad.domain.member.MemberRepository memberRepository;
 
+    @Mock
+    private GoogleMapsService googleMapsService;
+
     @InjectMocks
     private CareService careService;
 
@@ -40,11 +43,16 @@ class CareServiceTest {
 
         when(journeyRepository.findTopByMemberIdOrderByDepartureDateTimeDesc(1L)).thenReturn(Optional.of(journey));
         when(orderRepository.findByMemberIdOrderByCreatedAtDesc(1L)).thenReturn(List.of(Order.builder().id(10L).build()));
+        when(googleMapsService.findSpotsWithMaps(org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.anyString()))
+                .thenReturn(List.of(
+                        CareDto.VisetosSpot.builder().spotName("CHANEL Siam Paragon").brand("CHANEL").build(),
+                        CareDto.VisetosSpot.builder().spotName("LV Gaysorn Amarin").brand("LOUIS VUITTON").build()
+                ));
 
         CareDto.CareResponse response = careService.getVisetosSpots(1L);
 
         assertThat(response.getDestination()).isEqualTo("BKK (방콕 수완나품)");
-        assertThat(response.getPushNotificationMessage()).contains("MCM 제품을 구매해주셔서 감사합니다");
+        assertThat(response.getPushNotificationMessage()).contains("구매해주셔서 감사합니다");
         assertThat(response.getVisetosSpots()).hasSize(2);
     }
 

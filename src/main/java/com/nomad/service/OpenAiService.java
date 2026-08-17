@@ -37,7 +37,7 @@ public class OpenAiService {
 
         try {
             String prompt = String.format(
-                    "You are an AI luxury fashion concierge for MCM Worldwide. " +
+                    "You are an AI luxury fashion concierge for Herstory Club, providing expert multi-brand luxury styling advice (Chanel, Hermès, Louis Vuitton, Gucci, Dior, Prada, MCM, Bottega Veneta). " +
                             "Generate a sophisticated, 2-sentence personalized styling note in Korean for a %s VIP client traveling to %s. " +
                             "Weather condition: %s. Featured product: %s. Keep the tone elegant, welcoming, and luxury-focused.",
                     vipTier, destination, weatherInfo, productName
@@ -58,13 +58,14 @@ public class OpenAiService {
 
         if (!isApiKeyAvailable()) {
             if ("en".equals(language)) {
-                return String.format("MCM %s leather care and weather protection guide for %s climate.", productName, destinationWeather);
+                return String.format("Herstory Luxury %s leather care and weather protection guide for %s climate.", productName, destinationWeather);
             } else if ("ja".equals(language)) {
-                return String.format("%s 気候における MCM %s レザーケアおよび防水保護ガイドです。", destinationWeather, productName);
+                return String.format("%s 気候における プレミアム %s レザーケアおよび防水保護ガイドです。", destinationWeather, productName);
             } else if ("zh".equals(language)) {
-                return String.format("MCM %s 皮革针对 %s 气候的特别保养与防护指南。", productName, destinationWeather);
+                return String.format("针对 %s 气候的 %s 特别皮革保养与防水防护指南。", destinationWeather, productName);
             }
-            return String.format("MCM %s 가죽 제품의 %s 기후 조건 맞춤 수분/코팅 케어 가이드입니다.", productName, destinationWeather);
+            return String.format("[%s 프리미엄 가죽 케어 솔루션] %s 기후 조건에 대비하여, 가죽 전용 방수 스프레이 도포 및 급격한 습도 변화 시 즉시 마른 융으로 닦아낸 후 통풍이 원활한 곳에 보관하세요.",
+                    productName, destinationWeather);
         }
 
         try {

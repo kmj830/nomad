@@ -86,6 +86,7 @@ public class CartService {
                         .cartItemId(item.getId())
                         .productId(item.getProduct().getId())
                         .productName(item.getProduct().getName())
+                        .brand(item.getProduct().getBrand())
                         .category(item.getProduct().getCategory().name())
                         .price(item.getProduct().getPrice())
                         .quantity(item.getQuantity())

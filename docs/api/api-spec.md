@@ -156,9 +156,9 @@
 | **12** | Store | `GET` | `/api/v1/store/re-entry-options/{memberId}` | 미구매 고객 재방문(Re-entry) 분기 조회 |
 | **13** | Store | `GET` | `/api/v1/store/notifications/stream` | SCR-402 매장 직원 태블릿 실시간 SSE 스트림 |
 | **14** | Order | `POST` | `/api/v1/order/checkout` | 면세 Fast Checkout 결제 & 마일리지 적립 |
-| **15** | Care | `GET` | `/api/v1/care/visetos-spots` | 현지 비세토스 스팟 & 케어 가이드 조회 |
-| **16** | Care | `GET` | `/api/v1/care/google-maps` | SCR-502 Google Maps 실시간 MCM 매장 탐색 |
-| **17** | Care | `GET` | `/api/v1/care/ai-care-tip` | SCR-501 OpenAI GPT-4o 다국어 가죽 케어 팁 |
+| **15** | Care | `GET` | `/api/v1/care/visetos-spots` | 목적지 현지 전 브랜드 럭셔리 스팟 & 케어 가이드 조회 |
+| **16** | Care | `GET` | `/api/v1/care/google-maps` | SCR-502 Google Maps 실시간 멀티 브랜드 매장 탐색 |
+| **17** | Care | `GET` | `/api/v1/care/ai-care-tip` | SCR-501 OpenAI GPT-4o 다국어 명품 가죽 케어 팁 |
 | **18** | Care | `POST` | `/api/v1/care/push-test` | FCM 디바이스 푸시 알림 발송 테스트 |
 | **19** | Care | `POST` | `/api/v1/care/stamp-checkin` | SCR-502 시티 패스포트 스탬프 획득 & 적립 |
 | **20** | Flight | `GET` | `/api/v1/flight/lookup` | 편명 기준 실시간 항공편 운항 정보 조회 |

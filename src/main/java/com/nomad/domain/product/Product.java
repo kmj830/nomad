@@ -20,6 +20,10 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private String brand = "HERSTORY";
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProductCategory category;

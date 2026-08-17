@@ -12,8 +12,9 @@ public class CareDto {
     @Builder
     public static class VisetosSpot {
         private String spotName;
+        private String brand;
         private String address;
-        private String locationType; // e.g. MCM Flagship, Duty Free Care Desk
+        private String locationType; // e.g. Luxury Flagship, Duty Free Boutique, Airport Care Desk
         private Double latitude;
         private Double longitude;
         private String careServiceAvailable;

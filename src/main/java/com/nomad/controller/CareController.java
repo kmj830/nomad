@@ -19,16 +19,22 @@ public class CareController {
     private final com.nomad.service.FcmService fcmService;
     private final com.nomad.service.OpenAiService openAiService;
 
-    @Operation(summary = "현지 비세토스 스팟 탐색 및 가죽 케어 메시지 조회", description = "목적지의 현지 MCM 플래그십 스토어 및 Care Desk 정보를 조회하고 맞춤형 케어 가이드를 반환합니다.")
+    @Operation(summary = "현지 글로벌 럭셔리 매장 스팟 탐색 및 가죽 케어 메시지 조회", description = "목적지의 현지 전 브랜드(샤넬, LV, 구찌, MCM, 에르메스 등) 플래그십 스토어 및 Care Desk 정보를 조회합니다.")
     @GetMapping("/visetos-spots")
-    public ResponseEntity<CareDto.CareResponse> getVisetosSpots(@RequestParam Long memberId) {
-        return ResponseEntity.ok(careService.getVisetosSpots(memberId));
+    public ResponseEntity<CareDto.CareResponse> getVisetosSpots(
+            @RequestParam Long memberId,
+            @RequestParam(required = false, defaultValue = "ALL") String brand
+    ) {
+        return ResponseEntity.ok(careService.getVisetosSpots(memberId, brand));
     }
 
-    @Operation(summary = "SCR-502 Google Maps API 실시간 MCM 매장 탐색", description = "Google Maps API를 활용해 현지 MCM 부티크 위치 좌표 및 구글 지도 길안내 링크를 반환합니다.")
+    @Operation(summary = "SCR-502 Google Maps API 실시간 글로벌 럭셔리 매장 탐색", description = "Google Maps API를 활용해 현지 명품 부티크 위치 좌표 및 구글 지도 길안내 링크를 반환합니다.")
     @GetMapping("/google-maps")
-    public ResponseEntity<java.util.List<CareDto.VisetosSpot>> getGoogleMapsSpots(@RequestParam(defaultValue = "Bangkok") String destination) {
-        return ResponseEntity.ok(googleMapsService.findMcmSpotsWithMaps(destination));
+    public ResponseEntity<java.util.List<CareDto.VisetosSpot>> getGoogleMapsSpots(
+            @RequestParam(defaultValue = "Bangkok") String destination,
+            @RequestParam(required = false, defaultValue = "ALL") String brand
+    ) {
+        return ResponseEntity.ok(googleMapsService.findSpotsWithMaps(destination, brand));
     }
 
     @Operation(summary = "SCR-501 OpenAI 기반 가죽 케어 AI 가이드 생성 (다국어 지원: ko, en, ja, zh)", description = "OpenAI GPT-4o를 활용해 구입 제품, 현지 기후 조건 및 다국어(ko, en, ja, zh) 맞춤형 가죽 관리 팁을 생성합니다.")

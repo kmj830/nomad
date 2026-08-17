@@ -18,7 +18,8 @@ class GoogleMapsServiceTest {
         List<CareDto.VisetosSpot> spots = googleMapsService.findMcmSpotsWithMaps("Bangkok");
 
         assertThat(spots).isNotEmpty();
-        assertThat(spots.get(0).getSpotName()).contains("MCM");
+        assertThat(spots.get(0).getSpotName()).isNotEmpty();
+        assertThat(spots.get(0).getBrand()).isNotNull();
         assertThat(spots.get(0).getLatitude()).isNotNull();
         assertThat(spots.get(0).getLongitude()).isNotNull();
     }
