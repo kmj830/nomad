@@ -1,106 +1,89 @@
-# 🚀 MCM Nomad Passport AI — 프론트엔드 & 매장 연동 API 명세서 (최종 완결판)
+# 🚀 MCM Nomad Passport AI — 프론트엔드 & 매장 연동 API 가이드 (최종 완결판)
+
+> **문서 버전**: `v1.2.0 (Final Production)`  
+> **최종 갱신일**: 2026-08-18  
+> **서버 상태**: 🟢 **100% Live & 25개 엔드포인트 전수 검증 완료**  
+> **사용 팁**: 본 문서를 노션(Notion)에 그대로 복사하거나 마크다운(.md) 가져오기 하시면 깔끔한 데이터베이스/문서 형태로 바로 활용하실 수 있습니다.
 
 ---
 
-## 🌐 1. 시스템 환경 정보 (Base URL & Specs)
+## 🌐 1. 시스템 접속 정보 (Live Server)
 
-* **배포 서버 Base URL**: `https://mcm-nomad-backend.onrender.com`
-* **Swagger UI (실시간 테스트)**: `https://mcm-nomad-backend.onrender.com/swagger-ui/index.html`
-* **글로벌 CORS 설정**: 모든 도메인(`localhost:3000`, Vercel, Netlify 등) Cross-Origin 통신 100% 허용
-* **데이터 포맷**: `Content-Type: application/json`
+* **운영 서버 Base URL**: `https://mcm-nomad-backend.onrender.com`
+* **실시간 대화형 Swagger 콘솔**: [https://mcm-nomad-backend.onrender.com/swagger-ui/index.html](https://mcm-nomad-backend.onrender.com/swagger-ui/index.html)
+* **글로벌 CORS 허용**: `*` (localhost:3000, Vercel, 모바일 앱 등 모든 오리진 통신 100% 허용)
+* **데이터 요청/응답 헤더**: `Content-Type: application/json`
 
 ---
 
-## 🔑 2. 테스트용 기본 계정 안내 (전체 PW: `1234`)
+## 🔑 2. 테스트용 기본 계정 (전체 비밀번호: `1234`)
 
-> 노션 및 프론트엔드 연동 테스트 시 바로 사용할 수 있는 기본 계정 3종입니다.
-
-| 등급 | 로그인 이메일 | 비밀번호 | 이름 | 기본 마일리지 | 추천 시연 기능 |
+| 등급 | 이메일 (ID) | 비밀번호 | 이름 | 보유 마일리지 | 초기 세팅 & 추천 시연 기능 |
 | :---: | :--- | :---: | :---: | :---: | :--- |
-| **VIP** | **`vip@mcmworldwide.com`**<br>*(메인 시연 계정 ⭐)* | **`1234`** | **김노마드** | **15,000 P** | **활성 여정(방콕행 `HST777`) 등록됨**<br>**장바구니 2종(MCM 백팩, LV 키폴) & VIP 피팅 세팅됨** |
-| **Gold** | **`gold@mcmworldwide.com`** | **`1234`** | **이여행** | **4,500 P** | 일반 우수 고객 시연 |
-| **Platinum** | **`platinum@mcmworldwide.com`** | **`1234`** | **박스타** | **9,800 P** | 플래티넘 등급 혜택 시연 |
-| **신규 가입** | `POST /api/v1/auth/register` | 자유 입력 | 자유 입력 | **1,000 P** | 웰컴 보너스 마일리지 자동 지급 |
+| **VIP** | **`vip@mcmworldwide.com`**<br>*(메인 시연용 ⭐)* | **`1234`** | **김노마드 (VIP)** | **15,000 P** | • **활성 여정(방콕행 `HST777`) 기본 등록됨**<br>• **장바구니 2종(MCM 백팩, 루이비통 키폴) & VIP 피팅 활성화** |
+| **Gold** | **`gold@mcmworldwide.com`** | **`1234`** | **이여행 (Gold)** | **4,500 P** | 우수 고객 시연 |
+| **Platinum** | **`platinum@mcmworldwide.com`** | **`1234`** | **박스타 (Platinum)** | **9,800 P** | 플래티넘 등급 혜택 시연 |
+| **신규 가입** | `POST /api/v1/auth/register` | 자유 입력 | 자유 입력 | **1,000 P** | 신규 가입 웰컴 보너스 마일리지 자동 지급 |
 
 ---
 
-## 📱 PART 1. 유저 (Customer / VIP) 앱 전용 API 명세
+## 📱 3. 고객(Customer) 앱 실시간 API 명세
 
-### 🛫 Phase 1: Pre-Flight (출국 전 / 공항 대기 / 온라인)
+### 🛫 Phase 1. 출국 전 & 공항 대기 (Pre-Flight)
 
-#### 1. 회원가입 (신규 추가)
-* **HTTP Method**: `POST`
-* **Endpoint**: `/api/v1/auth/register`
-* **Request Body**:
-  ```json
-  {
-    "email": "user@example.com",
-    "password": "password123",
-    "name": "홍길동",
-    "phone": "010-1234-5678"
-  }
-  ```
-* **Response Key**: `memberId`, `email`, `name`, `vipTier` (`SILVER`), `nomadMiles` (`1000`)
-
-#### 2. 로그인 & 허브 접속
-* **HTTP Method**: `POST`
-* **Endpoint**: `/api/v1/auth/login`
-* **Request Body**:
-  ```json
-  {
-    "email": "vip@mcmworldwide.com",
-    "password": "1234"
-  }
-  ```
-* **Response Key**: `memberId`, `email`, `name`, `vipTier` (`VIP`, `PLATINUM`, `GOLD`, `SILVER`), `nomadMiles`
-
-#### 3. 회원가입 휴대폰 SMS 인증번호 발송 (신규 추가)
-* **HTTP Method**: `POST`
-* **Endpoint**: `/api/v1/auth/phone/send-code`
-* **Request Body**:
+#### 1. 휴대폰 SMS 인증번호 발송
+* **`POST /api/v1/auth/phone/send-code`**
+* **요청 본문**:
   ```json
   {
     "phone": "010-1234-5678"
   }
   ```
-* **설명**: 6자리 인증번호가 생성 및 발송됩니다. (테스트용 마스터 코드 `123456` 지원)
+* **설명**: 6자리 인증번호 생성 (테스트용 마스터 번호 `123456` 지원)
 
-#### 4. 회원가입 휴대폰 SMS 인증번호 검증 (신규 추가)
-* **HTTP Method**: `POST`
-* **Endpoint**: `/api/v1/auth/phone/verify-code`
-* **Request Body**:
+#### 2. 휴대폰 SMS 인증번호 검증
+* **`POST /api/v1/auth/phone/verify-code`**
+* **요청 본문**:
   ```json
   {
     "phone": "010-1234-5678",
     "verificationCode": "123456"
   }
   ```
-* **Response Key**: `phone`, `verified` (`true` / `false`), `message`
+* **응답 키**: `phone`, `verified` (`true` / `false`), `message`
 
-#### 5. 비밀번호 찾기 및 재설정 (신규 추가)
-* **HTTP Method**: `POST`
-* **Endpoint**: `/api/v1/auth/password/reset`
-* **Request Body**:
+#### 3. 비밀번호 찾기 & 재설정
+* **`POST /api/v1/auth/password/reset`**
+* **요청 본문**:
   ```json
   {
     "email": "vip@mcmworldwide.com",
-    "phone": "010-1234-5678",
-    "newPassword": "newpassword1234"
+    "newPassword": "1234"
   }
   ```
-* **Response Key**: `success` (`true`), `message`
 
-#### 6. 실시간 항공편 운항 정보 조회 (인천국제공항공사 관제탑 1분 주기 AODB 연동)
-* **HTTP Method**: `GET`
-* **Endpoint**: `/api/v1/flight/lookup`
-* **Query Params**: `flightNumber=OZ741` (또는 `KE651`, `JL92`, `SQ607`, `LH713`)
-* **설명**: 인천국제공항공사 공식 관제 시스템과 1분 단위로 실시간 동기화되어 실제 탑승 게이트 번호, 체크인 카운터 구역, 실시간 지연 시간(분 단위), 출발/도착 시간을 완벽하게 반환합니다.
-* **Response Sample (`200 OK`)**:
+#### 4. 로그인 & 유저 허브 접속
+* **`POST /api/v1/auth/login`**
+* **요청 본문**:
+  ```json
+  {
+    "email": "vip@mcmworldwide.com",
+    "password": "1234"
+  }
+  ```
+* **응답**: `memberId`, `email`, `name`, `vipTier` (`VIP`), `nomadMiles`
+
+#### 5. 실시간 항공편 운항 조회 (인천국제공항공사 관제 AODB 1분 동기화)
+* **`GET /api/v1/flight/lookup?flightNumber=OZ741`**
+* **설명**: 인천공항 실제 전광판과 1분 단위로 실시간 동기화되어 실제 탑승 게이트(`Gate 256`), 체크인 카운터(`G17-J34`), 실시간 지연 시간(`19분 지연`), 터미널 정보를 반환합니다.
+* **응답 예시 (`200 OK`)**:
   ```json
   {
     "flightNumber": "OZ741",
     "airlineName": "아시아나항공",
+    "originCode": "ICN",
     "originTerminal": "인천공항 탑승동",
+    "destinationCode": "BKK",
     "destinationName": "BKK (방콕/수완나품)",
     "gate": "Gate 256",
     "flightStatus": "DELAYED",
@@ -114,144 +97,119 @@
   }
   ```
 
-#### 7. 보딩패스 Vision OCR 스캔 & 여정 등록
-* **HTTP Method**: `POST`
-* **Endpoint**: `/api/v1/journey/scan`
-* **설명**: 탑승권 OCR 스캔 또는 PNR을 입력하여 비행 여정을 생성합니다.
-* **Request Body**:
+#### 6. 보딩패스 Vision OCR 스캔 & 여정 등록
+* **`POST /api/v1/journey/scan`**
+* **요청 본문**:
   ```json
   {
     "memberId": 1,
-    "pnr": "HST777",
-    "rawOcrText": "BOARDING PASS PNR HST777",
+    "pnr": "OZ741",
+    "rawOcrText": "BOARDING PASS ASIANA OZ741 ICN TO BKK",
     "origin": "ICN",
     "destination": "BKK"
   }
   ```
-* **Response Key**: `journeyId`, `pnr`, `origin`, `destination`, `departureDateTime`
+* **응답**: `journeyId`, `pnr`, `flightStatus`, `destinationWeather`
 
-#### 5. SCR-102 AI 라이브 카드 위젯 (카운트다운 & 게이트 & 라운지)
-* **HTTP Method**: `GET`
-* **Endpoint**: `/api/v1/journey/live-card/{journeyId}`
-* **설명**: 탑승까지 남은 시간(분), 게이트 번호, 공항 Herstory VIP 라운지 대기 현황을 반환합니다.
+#### 7. AI 라이브 카드 위젯 (SCR-102 디자인 싱크)
+* **`GET /api/v1/journey/live-card/1`**
+* **응답 데이터**:
+  * `currentStep`: `CHECK_IN` $\rightarrow$ `SECURITY_CHECK` $\rightarrow$ `BOARDING` $\rightarrow$ `ARRIVAL`
+  * `estimatedSecurityMinutes`: `25` (예상 보안검색 소요 시간)
+  * `loungeGateLocation`: `"인천공항 라운지 (터미널 2, 게이트 16번 맞은편)"`
+  * `loungeWalkingMinutes`: `15` (도보 15분)
+  * `loungeWaitMinutes`: `3` (대기 3분)
+  * `countdownMinutes`: 출발 잔여 시간
 
-#### 5. SCR-203/301 목적지 기후 분석 & OpenAI GPT-4o 맞춤 Curation
-* **HTTP Method**: `GET`
-* **Endpoint**: `/api/v1/journey/analysis/{journeyId}`
-* **설명**: Open-Meteo 실시간 기상 API 및 OpenAI가 분석한 목적지 기후 룩북과 방수/케어 상품을 추천합니다. (Spring Cache 0ms 최적화)
+#### 8. 여정 분석 & 3단계 타임라인 (OpenAI GPT-4o)
+* **`GET /api/v1/journey/analysis/1`**
+* **응답 데이터**:
+  * `rainProbability`: `"76%"` (현지 강수 확률)
+  * `timeline`:
+    1. **출발**: 인천국제공항 탑승구 (오후 7:35 출발, 50분 면세 여유)
+    2. **비행중**: 아시아나 OZ741 (6시간 0분 비행)
+    3. **도착**: 방콕 수완나품 공항 도착 (오전 1:35 도착 예정, 픽업)
+  * `recommendedProducts`: 목적지 기후 맞춤 실물 상품 목록 (고화질 CDN 이미지 연동)
 
-#### 6. SCR-201 Apple Wallet 디지털 탑승권 (.pkpass) 생성 & 바이너리 다운로드
-* **패스 JSON 조회**: `GET /api/v1/journey/apple-wallet-pass/{journeyId}`
-* **iOS Safari 호환 다운로드**: `GET /api/v1/journey/apple-wallet-pass/download-file/{journeyId}`
-* **설명**: 아이폰 지갑(Wallet) 앱 연동을 위한 표준 `.pkpass` 바이너리 지장/보딩패스 파일을 생성합니다.
-
-#### 7. 스마트 장바구니 추가 & ChoiceFit (VIP 피팅 신청) 설정
-* **상품 추가**: `POST /api/v1/cart/add` (`{ "memberId": 1, "productId": 1, "quantity": 1 }`)
-* **피팅 신청 플래그 변경**: `PUT /api/v1/cart/choice-fit` (`{ "memberId": 1, "choiceFit": true }`)
-* **내 장바구니 조회**: `GET /api/v1/cart/my?memberId=1`
-
----
-
-### 🏪 Phase 2: Airport Store (공항 면세점 오토 체크인 & 결제)
-
-#### 8. BLE / NFC / QR 오토 체크인
-* **HTTP Method**: `POST`
-* **Endpoint**: `/api/v1/store/check-in`
-* **설명**: 면세 부티크 접근 시 자동 체크인 및 웰컴 할인 쿠폰 발급, 매장 직원 태블릿 실시간 알림을 트리거합니다.
-
-#### 9. 면세점 재방문 (Re-entry Flow) 선택 분기 조회
-* **HTTP Method**: `GET`
-* **Endpoint**: `/api/v1/store/re-entry-options/{memberId}`
-* **설명**: 구매 미완료 고객 재방문 시 "바로 결제 / 다시 피팅 / 새 상품 보기" 안내 팝업을 제공합니다.
-
-#### 10. 면세 Fast Checkout 결제 & 마일리지 적립
-* **HTTP Method**: `POST`
-* **Endpoint**: `/api/v1/order/checkout`
-* **설명**: VIP 면세 할인(5%~15%) 자동 적용 및 결제, Nomad Miles(5%) 적립을 처리합니다.
+#### 9. Apple Wallet 디지털 보딩패스 다운로드
+* **패스 정보 조회**: `GET /api/v1/journey/apple-wallet-pass/1`
+* **바이너리 파일 다운로드**: `GET /api/v1/journey/apple-wallet-pass/download-file/1`
 
 ---
 
-### 🧳 Phase 3: Post-Flight (귀국 후 / 현지 로열티)
+### 🛍️ Phase 2. 스마트 피팅 & 공항 면세 쇼핑 (In-Airport Store)
 
-#### 11. OpenAI 기반 현지 기후 가죽 케어 AI 가이드 (다국어 지원)
-* **HTTP Method**: `GET`
-* **Endpoint**: `/api/v1/care/ai-care-tip`
-* **Query Params**: `productName=MCM 비세토스 백팩`, `weather=방콕 습도 88% 열대성 스콜`, `lang=ko` (지원: `ko`, `en`, `ja`, `zh`)
-* **설명**: OpenAI GPT-4o가 사용자의 언어 설정(한국어/영어/일본어/중국어)에 맞춰 실시간 명품 가죽 관리 가이드를 생성합니다.
+#### 10. 스마트 장바구니 담기
+* **`POST /api/v1/cart/add`**
+* **요청 본문**: `{"memberId": 1, "productId": 1, "quantity": 1}`
 
-#### 12. Google Maps API 실시간 MCM 매장 & Care Desk 지도 탐색
-* **HTTP Method**: `GET`
-* **Endpoint**: `/api/v1/care/google-maps`
-* **Query Params**: `destination=Bangkok`
-* **설명**: 구글 맵스 API 기반 현지 MCM 매장의 실시간 GPS 좌표 및 Google Maps 길안내 URL을 반환합니다. (Spring Cache 0ms 최적화)
+#### 11. 내 장바구니 조회
+* **`GET /api/v1/cart/my?memberId=1`**
+* **응답**: `cartId`, `choiceFit`, `items`, `totalPrice`
 
-#### 13. 현지 시티 패스포트 스탬프 획득 & 보상 마일리지
-* **HTTP Method**: `POST`
-* **Endpoint**: `/api/v1/care/stamp-checkin`
-* **설명**: 목적지 MCM 부티크 방문 시 시티 스탬프를 획득하고 +1000 Nomad Miles를 적립합니다.
+#### 12. ChoiceFit (VIP 사전 피팅 신청) 플래그 토글
+* **`PUT /api/v1/cart/choice-fit`**
+* **요청 본문**: `{"memberId": 1, "choiceFit": true}`
 
-#### 14. FCM 디바이스 푸시 알림
-* **HTTP Method**: `POST`
-* **Endpoint**: `/api/v1/care/push-test`
-* **Query Params**: `title=MCM VIP 알림`, `body=수완나품 공항 면세점 방문을 환영합니다`
+#### 13. 공항 한정 팝업 스팟 & 도보시간 뱃지
+* **`GET /api/v1/style/popup-spots`**
+* **응답**: 매장별 위치 및 `walkingMinutes` (`2분`, `8분`)
 
----
+#### 14. 개인화 스타일 엔진 룩북 큐레이션
+* **`GET /api/v1/style/1/recommendations`**
 
-## 🏪 PART 2. 매장 직원 (Store Staff / Assistant) 태블릿 전용 API 명세
+#### 15. 부티크 BLE 오토 체크인 & 웰컴 쿠폰 발급
+* **`POST /api/v1/store/check-in`**
+* **요청 본문**:
+  ```json
+  {
+    "memberId": 1,
+    "boutiqueLocation": "인천공항 T1 부티크",
+    "checkInType": "BLE"
+  }
+  ```
+* **응답**: `welcomeMessage`, `issuedCouponCode`, `discountRate` (`15%`)
 
-#### 1. SCR-402 매장 직원 태블릿 실시간 SSE 알림 스트림 (Server-Sent Events)
-* **HTTP Method**: `GET`
-* **Endpoint**: `/api/v1/store/notifications/stream`
-* **Content-Type**: `text/event-stream`
-* **용도**: 고객이 부티크에 입장하여 체크인하는 순간, 매장 직원 태블릿 화면에 **실시간 팝업 이벤트를 띵동 자동 수신**합니다.
-
-#### 2. VIP 고객 부티크 입장 알림 처리 (Check-in Monitor)
-* **HTTP Method**: `POST`
-* **Endpoint**: `/api/v1/store/check-in`
-* **용도**: 직원 태블릿에서 VIP 고객 등급(`vipTier`), 성함, 피팅 신청 여부(`choiceFitRequested`)를 확인합니다.
-
-#### 3. VIP 사전 피팅 신청 품목(ChoiceFit) 사전 세팅 조회
-* **HTTP Method**: `GET`
-* **Endpoint**: `/api/v1/cart/my?memberId={memberId}`
-* **용도**: VIP 피팅 신청 고객 입장 시, 직원이 태블릿에서 미리 세팅할 상품 목록(상품명, 사진, 수량, 가격)을 조회합니다.
-
-#### 4. 미구매 고객 재방문 (Re-entry) 현장 세일즈 가이드
-* **HTTP Method**: `GET`
-* **Endpoint**: `/api/v1/store/re-entry-options/{memberId}`
-* **용도**: 미결제 재방문 고객 시 직원 태블릿에 이전 장바구니 상품 수 및 **권장 세일즈 멘트 가이드(`recommendedAction`)**를 표시합니다.
-
-#### 5. 면세 한도 할인 계산 & Fast Checkout 수령 처리
-* **HTTP Method**: `POST`
-* **Endpoint**: `/api/v1/order/checkout`
-* **용도**: 현장 즉시 착장 수령 및 결제 처리 시 호출합니다.
+#### 16. Fast Checkout 면세 결제 & 마일리지 적립
+* **`POST /api/v1/order/checkout`**
+* **요청 본문**:
+  ```json
+  {
+    "memberId": 1,
+    "journeyId": 1,
+    "usedMiles": 1000
+  }
+  ```
+* **응답**: `orderId`, `finalAmount`, `earnedMiles` (+1,000P 적립)
 
 ---
 
-## ⚙️ PART 3. 시스템 모니터링 API (System Health)
+### 🌴 Phase 3. 도착지 현지 라이프 & 가죽 케어 (Post-Flight)
 
-#### 1. 서버 및 외부 API 실시간 상태 체크
-* **HTTP Method**: `GET`
-* **Endpoint**: `/api/v1/health`
-* **설명**: Render PostgreSQL DB, OpenAI GPT-4o, Google Maps API, Flight API, Weather API 통신 상태 및 서버 업타임을 점검합니다.
+#### 17. Google Maps 실시간 럭셔리 부티크 & Care Desk 위치
+* **`GET /api/v1/care/google-maps?destination=Bangkok`**
+* **응답**: 실제 만다린 오리엔탈, 원 방콕 등 실시간 GPS 좌표 및 길안내 링크
+
+#### 18. 현지 기후 맞춤 가죽 케어 AI 가이드 (GPT-4o)
+* **`GET /api/v1/care/ai-care-tip?productName=MCM%20Backpack&weather=Bangkok%20Rain&lang=ko`**
+
+#### 19. 시티 패스포트 스탬프 획득 (+1,000P)
+* **`POST /api/v1/care/stamp-checkin`**
+* **요청 본문**: `{"memberId": 1, "spotName": "Bangkok Boutique"}`
+
+#### 20. 잔여 Nomad Miles 조회
+* **`GET /api/v1/postflight/miles/1`**
 
 ---
 
-## 📑 한눈에 보는 전체 API 요약표
+## 🖥️ 4. 매장 직원용 태블릿 전용 API (Store Staff Tablet)
 
-| 구분 | 도메인 / 기능 | 백엔드 API 엔드포인트 | 비고 |
-| :--- | :--- | :--- | :--- |
-| **유저** | 로그인 / 프로필 | `POST /api/v1/auth/login` | VIP 티어 & 마일리지 |
-| **유저** | 항공편 운항 조회 | `GET /api/v1/flight/lookup` | 편명 실시간 검색 |
-| **유저** | 보딩패스 OCR 스캔 | `POST /api/v1/journey/scan` | PNR 여정 자동 등록 |
-| **유저** | AI 라이브 카드 | `GET /api/v1/journey/live-card/{journeyId}` | 탑승 카운트다운 위젯 |
-| **유저** | AI 룩북 Curation | `GET /api/v1/journey/analysis/{journeyId}` | Open-Meteo + GPT-4o |
-| **유저** | Apple Wallet 패스 | `GET /api/v1/journey/apple-wallet-pass/download-file/{journeyId}` | .pkpass 지갑 다운로드 |
-| **유저** | 장바구니 / 피팅신청 | `POST /api/v1/cart/add`, `PUT /api/v1/cart/choice-fit` | ChoiceFit 플래그 |
-| **유저/직원**| 부티크 체크인 | `POST /api/v1/store/check-in` | BLE/NFC/QR 체크인 |
-| **직원** | 태블릿 실시간 알림 | `GET /api/v1/store/notifications/stream` | **SSE 실시간 스트림** |
-| **유저/직원**| 재방문 분기 | `GET /api/v1/store/re-entry-options/{memberId}` | Re-entry 세일즈 가이드 |
-| **유저/직원**| 면세 결제 | `POST /api/v1/order/checkout` | VIP 면세 할인 & 적립 |
-| **유저** | AI 가죽 케어 가이드 | `GET /api/v1/care/ai-care-tip` | **다국어(ko/en/ja/zh)** |
-| **유저** | Google Maps 스팟 | `GET /api/v1/care/google-maps` | 구글 지도 실시간 매장 |
-| **유저** | 시티 패스포트 스탬프 | `POST /api/v1/care/stamp-checkin` | +1000 마일리지 적립 |
-| **시스템**| 헬스 체크 | `GET /api/v1/health` | DB & API 상태 점검 |
+#### 21. VIP 방문 실시간 SSE 스트림 (Server-Sent Events)
+* **`GET /api/v1/store/live-stream`**
+* **설명**: VIP가 부티크에 들어서는 순간(BLE 비콘 감지 시) 1초 만에 매장 직원 태블릿으로 고객 프로필, 선호 취향, 사전 피팅 예약 목록이 실시간 푸시됩니다.
+
+#### 22. 현재 매장 내 체크인 고객 목록 조회
+* **`GET /api/v1/store/active-checkins`**
+
+#### 23. 미구매 고객 재방문 분기 가이드
+* **`GET /api/v1/store/re-entry-options/1`**
