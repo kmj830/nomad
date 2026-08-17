@@ -47,7 +47,7 @@ public class HealthController {
         );
 
         HealthStatusResponse response = HealthStatusResponse.builder()
-                .status("HEALTHY")
+                .status("ok")
                 .serverUptime("OK")
                 .timestamp(LocalDateTime.now())
                 .services(serviceStatus)

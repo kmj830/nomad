@@ -144,6 +144,30 @@ class NomadApiIntegrationTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(stampReq)))
                 .andExpect(status().isOk());
+
+        // Frontend Compatibility Endpoints Verification
+        mockMvc.perform(get("/api/v1/preflight/hub"))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/api/v1/preflight/live-card"))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/api/v1/preflight/" + journeyId + "/climate"))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/api/v1/style/popup-spots"))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/api/v1/style/" + journeyId + "/recommendations"))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/api/v1/journeys/" + journeyId + "/style-engine"))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/api/v1/journeys/" + journeyId + "/cart"))
+                .andExpect(status().isOk());
+        mockMvc.perform(post("/api/v1/airport/" + journeyId + "/fitting"))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/api/v1/postflight/leather-care"))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/api/v1/postflight/visetos-map"))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/api/v1/postflight/miles/" + memberId))
+                .andExpect(status().isOk());
     }
 
 

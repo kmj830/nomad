@@ -162,7 +162,12 @@
 | **18** | Care | `POST` | `/api/v1/care/push-test` | FCM 디바이스 푸시 알림 발송 테스트 |
 | **19** | Care | `POST` | `/api/v1/care/stamp-checkin` | SCR-502 시티 패스포트 스탬프 획득 & 적립 |
 | **20** | Flight | `GET` | `/api/v1/flight/lookup` | 편명 기준 실시간 항공편 운항 정보 조회 |
-| **21** | Health | `GET` | `/api/v1/health` | 시스템 헬스 & 외부 API 연동 상태 모니터링 |
+| **21** | Health | `GET` | `/api/v1/health` | 시스템 헬스 ("status": "ok") 모니터링 |
+| **22** | Preflight | `GET` | `/api/v1/preflight/hub` | 프론트엔드 허브 종합 데이터 조회 |
+| **23** | Preflight | `GET` | `/api/v1/preflight/live-card` | 프론트엔드 AI 라이브 카드 조회 |
+| **24** | Style | `GET` | `/api/v1/style/popup-spots` | 팝업 스팟 목록 조회 |
+| **25** | Postflight| `GET` | `/api/v1/postflight/miles/{memberId}` | 회원 마일리지/등급 조회 |
+| **26** | Airport | `POST`| `/api/v1/airport/{journeyId}/fitting` | VIP 피팅 시작 토글 |
 
 ---
 

@@ -16,11 +16,76 @@ public class JourneyController {
 
     private final JourneyService journeyService;
     private final com.nomad.service.PassKitService passKitService;
+    private final com.nomad.domain.journey.JourneyRepository journeyRepository;
+    private final com.nomad.service.CartService cartService;
 
     @Operation(summary = "보딩패스 OCR 스캔 & 여정 등록", description = "탑승권 OCR 스캔을 통해 PNR을 추출하고 비행 여정을 저장합니다.")
     @PostMapping("/scan")
     public ResponseEntity<JourneyDto.ScanResponse> scanBoardingPass(@RequestBody JourneyDto.ScanRequest request) {
         return ResponseEntity.ok(journeyService.scanBoardingPass(request));
+    }
+
+    @Operation(summary = "보딩패스 생성/스캔 (Frontend 호환)", description = "여정 ID를 통해 보딩패스 스캔 완료 응답을 반환합니다.")
+    @PostMapping("/{journeyId}/boarding-pass")
+    public ResponseEntity<JourneyDto.ScanResponse> createBoardingPass(@PathVariable Long journeyId) {
+        var journey = journeyRepository.findById(journeyId)
+                .orElseThrow(() -> new IllegalArgumentException("여정을 찾을 수 없습니다. ID: " + journeyId));
+
+        return ResponseEntity.ok(JourneyDto.ScanResponse.builder()
+                .journeyId(journey.getId())
+                .pnr(journey.getPnr())
+                .origin(journey.getOrigin())
+                .destination(journey.getDestination())
+                .departureDateTime(journey.getDepartureDateTime())
+                .flightStatus(journey.getFlightStatus())
+                .message("보딩패스 발급이 성공적으로 완료되었습니다.")
+                .build());
+    }
+
+    @Operation(summary = "ChoiceFit 피팅 신청 토글 (Frontend 호환)", description = "여정 ID를 통해 해당 회원의 스마트 장바구니에 ChoiceFit VIP 피팅을 신청합니다.")
+    @PatchMapping("/{journeyId}/choice-fit")
+    public ResponseEntity<com.nomad.dto.CartDto.CartResponse> submitChoiceFit(
+            @PathVariable Long journeyId,
+            @RequestBody java.util.Map<String, Boolean> body
+    ) {
+        var journey = journeyRepository.findById(journeyId)
+                .orElseThrow(() -> new IllegalArgumentException("여정을 찾을 수 없습니다. ID: " + journeyId));
+
+        boolean choiceFit = body.getOrDefault("choiceFit", true);
+        return ResponseEntity.ok(cartService.updateChoiceFit(
+                new com.nomad.dto.CartDto.ChoiceFitRequest(journey.getMember().getId(), choiceFit)
+        ));
+    }
+
+    @Operation(summary = "스타일 엔진 추천 상품 목록 (Frontend 호환)", description = "여정 맞춤 추천 상품 리스트를 반환합니다.")
+    @GetMapping("/{journeyId}/style-engine")
+    public ResponseEntity<java.util.List<com.nomad.domain.product.Product>> getStyleEngine(@PathVariable Long journeyId) {
+        var analysis = journeyService.analyzeJourney(journeyId);
+        return ResponseEntity.ok(analysis.getRecommendedProducts());
+    }
+
+    @Operation(summary = "여정 회원 장바구니 품목 조회 (Frontend 호환)", description = "여정 소유 회원의 장바구니 품목 리스트를 반환합니다.")
+    @GetMapping("/{journeyId}/cart")
+    public ResponseEntity<com.nomad.dto.CartDto.CartResponse> getCartByJourney(@PathVariable Long journeyId) {
+        var journey = journeyRepository.findById(journeyId)
+                .orElseThrow(() -> new IllegalArgumentException("여정을 찾을 수 없습니다. ID: " + journeyId));
+
+        return ResponseEntity.ok(cartService.getMyCart(journey.getMember().getId()));
+    }
+
+    @Operation(summary = "여정 회원 장바구니 상품 담기 (Frontend 호환)", description = "여정 소유 회원의 장바구니에 상품을 추가합니다.")
+    @PostMapping("/{journeyId}/cart/items")
+    public ResponseEntity<com.nomad.dto.CartDto.CartResponse> addItemByJourney(
+            @PathVariable Long journeyId,
+            @RequestBody java.util.Map<String, Object> body
+    ) {
+        var journey = journeyRepository.findById(journeyId)
+                .orElseThrow(() -> new IllegalArgumentException("여정을 찾을 수 없습니다. ID: " + journeyId));
+
+        Long productId = Long.valueOf(body.get("productId").toString());
+        return ResponseEntity.ok(cartService.addToCart(
+                new com.nomad.dto.CartDto.AddItemRequest(journey.getMember().getId(), productId, 1)
+        ));
     }
 
     @Operation(summary = "여정 기본 상세 단건 조회", description = "여정 ID를 통해 PNR, 출/도착지, 출발 일시, 운항 상태 및 기후 분석 정보를 조회합니다.")
