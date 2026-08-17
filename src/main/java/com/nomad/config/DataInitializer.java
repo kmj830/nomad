@@ -1,8 +1,19 @@
 package com.nomad.config;
 
+import com.nomad.domain.cart.CartItem;
+import com.nomad.domain.cart.CartStatus;
+import com.nomad.domain.cart.SmartCart;
+import com.nomad.domain.cart.SmartCartRepository;
+import com.nomad.domain.journey.FlightStatus;
+import com.nomad.domain.journey.Journey;
+import com.nomad.domain.journey.JourneyRepository;
 import com.nomad.domain.member.Member;
 import com.nomad.domain.member.MemberRepository;
 import com.nomad.domain.member.VipTier;
+import com.nomad.domain.order.Order;
+import com.nomad.domain.order.OrderItem;
+import com.nomad.domain.order.OrderRepository;
+import com.nomad.domain.order.OrderStatus;
 import com.nomad.domain.product.Product;
 import com.nomad.domain.product.ProductCategory;
 import com.nomad.domain.product.ProductRepository;
@@ -11,6 +22,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -18,11 +31,18 @@ public class DataInitializer implements CommandLineRunner {
 
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
+    private final JourneyRepository journeyRepository;
+    private final SmartCartRepository smartCartRepository;
+    private final OrderRepository orderRepository;
 
     @Override
     public void run(String... args) {
+        Member vipMember = null;
+        Member goldMember = null;
+        Member platinumMember = null;
+
         if (memberRepository.count() == 0) {
-            memberRepository.save(Member.builder()
+            vipMember = memberRepository.save(Member.builder()
                     .email("vip@mcmworldwide.com")
                     .password("1234")
                     .name("김노마드 (VIP)")
@@ -31,7 +51,7 @@ public class DataInitializer implements CommandLineRunner {
                     .nomadMiles(15000L)
                     .build());
 
-            memberRepository.save(Member.builder()
+            goldMember = memberRepository.save(Member.builder()
                     .email("gold@mcmworldwide.com")
                     .password("1234")
                     .name("이여행 (Gold)")
@@ -40,7 +60,7 @@ public class DataInitializer implements CommandLineRunner {
                     .nomadMiles(4500L)
                     .build());
 
-            memberRepository.save(Member.builder()
+            platinumMember = memberRepository.save(Member.builder()
                     .email("platinum@mcmworldwide.com")
                     .password("1234")
                     .name("박스타 (Platinum)")
@@ -48,11 +68,16 @@ public class DataInitializer implements CommandLineRunner {
                     .vipTier(VipTier.PLATINUM)
                     .nomadMiles(9800L)
                     .build());
+        } else {
+            vipMember = memberRepository.findAll().stream().findFirst().orElse(null);
         }
+
+        Product pMcmBackpack = null;
+        Product pLvKeepall = null;
 
         if (productRepository.count() == 0) {
             // MCM Brand
-            productRepository.save(Product.builder()
+            pMcmBackpack = productRepository.save(Product.builder()
                     .name("MCM 스타크 비세토스 방수 백팩 32")
                     .brand("MCM")
                     .category(ProductCategory.WATERPROOF)
@@ -75,7 +100,7 @@ public class DataInitializer implements CommandLineRunner {
                     .build());
 
             // LOUIS VUITTON Brand
-            productRepository.save(Product.builder()
+            pLvKeepall = productRepository.save(Product.builder()
                     .name("루이비통 키폴 반둘리에 50 모노그램")
                     .brand("LOUIS VUITTON")
                     .category(ProductCategory.TRAVEL_BAG)
@@ -157,6 +182,58 @@ public class DataInitializer implements CommandLineRunner {
                     .description("전세계 기후 변화로부터 전 브랜드 명품 가죽(에르메스/샤넬/LV/MCM)을 보호하는 올인원 케어 킷")
                     .isVipExclusive(false)
                     .build());
+        }
+
+        // 1. Initial Journey Seed (여정 기본 데이터)
+        if (journeyRepository.count() == 0 && vipMember != null) {
+            journeyRepository.save(Journey.builder()
+                    .member(vipMember)
+                    .pnr("HST777")
+                    .origin("ICN (인천국제공항)")
+                    .destination("BKK (방콕 수완나품)")
+                    .departureDateTime(LocalDateTime.now().plusHours(3))
+                    .flightStatus(FlightStatus.SCHEDULED)
+                    .destinationWeather("열대성 스콜 (기온 32°C, 습도 85%)")
+                    .recommendationReason("방콕 고온다습 기후를 위한 방수 럭셔리 컬렉션 추천")
+                    .build());
+        }
+
+        // 2. Initial SmartCart & CartItems Seed (장바구니 & VIP 피팅 데이터)
+        if (smartCartRepository.count() == 0 && vipMember != null) {
+            SmartCart cart = smartCartRepository.save(SmartCart.builder()
+                    .member(vipMember)
+                    .choiceFit(true)
+                    .status(CartStatus.IN_CART)
+                    .build());
+
+            if (pMcmBackpack != null) {
+                cart.addItem(CartItem.builder().product(pMcmBackpack).quantity(1).build());
+            }
+            if (pLvKeepall != null) {
+                cart.addItem(CartItem.builder().product(pLvKeepall).quantity(1).build());
+            }
+            smartCartRepository.save(cart);
+        }
+
+        // 3. Initial Order Seed (이전 출국 면세 구매 내역 1건)
+        if (orderRepository.count() == 0 && vipMember != null) {
+            Order order = Order.builder()
+                    .member(vipMember)
+                    .totalAmount(new BigDecimal("1250000.00"))
+                    .dutyFreeDiscount(new BigDecimal("250000.00"))
+                    .finalAmount(new BigDecimal("1000000.00"))
+                    .earnedMiles(1000)
+                    .orderStatus(OrderStatus.PAID)
+                    .build();
+
+            if (pMcmBackpack != null) {
+                order.addOrderItem(OrderItem.builder()
+                        .product(pMcmBackpack)
+                        .price(new BigDecimal("1250000.00"))
+                        .quantity(1)
+                        .build());
+            }
+            orderRepository.save(order);
         }
     }
 }
