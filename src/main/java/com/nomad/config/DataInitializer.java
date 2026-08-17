@@ -171,6 +171,95 @@ public class DataInitializer implements CommandLineRunner {
                     .isVipExclusive(false)
                     .build());
 
+            // PROTOTYPE FEATURED AIRPORT & READY-TO-WEAR COLLECTIONS
+            productRepository.save(Product.builder()
+                    .name("미쓰나잇 위캔더 (공항 한정)")
+                    .brand("HERSTORY")
+                    .category(ProductCategory.TRAVEL_BAG)
+                    .price(new BigDecimal("1980000.00"))
+                    .stock(15)
+                    .imageUrl("https://images.herstory.ai/products/midnight_weekender.jpg")
+                    .description("시그니처 코딩 캔버스 소재로 구조적인 실루엣을 완성한 공항 한정 럭셔리 위캔더")
+                    .isVipExclusive(true)
+                    .build());
+
+            productRepository.save(Product.builder()
+                    .name("에어로 트래블 블레이저")
+                    .brand("HERSTORY")
+                    .category(ProductCategory.READY_TO_WEAR)
+                    .price(new BigDecimal("890000.00"))
+                    .stock(25)
+                    .imageUrl("https://images.herstory.ai/products/aero_blazer.jpg")
+                    .description("장시간 비행에도 구김 없는 주름 방지 프리미엄 울 혼방 테일러드 블레이저")
+                    .isVipExclusive(false)
+                    .build());
+
+            productRepository.save(Product.builder()
+                    .name("에어로 트래블 트렉 팬츠")
+                    .brand("HERSTORY")
+                    .category(ProductCategory.READY_TO_WEAR)
+                    .price(new BigDecimal("450000.00"))
+                    .stock(30)
+                    .imageUrl("https://images.herstory.ai/products/aero_pants.jpg")
+                    .description("장시간 착용해도 피로감 없는 초경량 스트레치 트렉 팬츠")
+                    .isVipExclusive(false)
+                    .build());
+
+            productRepository.save(Product.builder()
+                    .name("트래블레더 슬립 로퍼")
+                    .brand("HERSTORY")
+                    .category(ProductCategory.READY_TO_WEAR)
+                    .price(new BigDecimal("620000.00"))
+                    .stock(20)
+                    .imageUrl("https://images.herstory.ai/products/travel_loafer.jpg")
+                    .description("기내 및 도심 도보 시 최상의 편안함을 선사하는 유연한 송아지 가죽 로퍼")
+                    .isVipExclusive(false)
+                    .build());
+
+            productRepository.save(Product.builder()
+                    .name("어쿠스틱 오버이어 프리미엄 헤드폰")
+                    .brand("HERSTORY")
+                    .category(ProductCategory.ACCESSORY)
+                    .price(new BigDecimal("540000.00"))
+                    .stock(35)
+                    .imageUrl("https://images.herstory.ai/products/acoustic_headphones.jpg")
+                    .description("비행을 위한 최고급 액티브 노이즈 캔슬링과 가죽 이어패드 헤드폰")
+                    .isVipExclusive(false)
+                    .build());
+
+            productRepository.save(Product.builder()
+                    .name("공항 한정판 워터프루프 트렌치코트")
+                    .brand("MCM")
+                    .category(ProductCategory.LIMITED_EDITION)
+                    .price(new BigDecimal("1750000.00"))
+                    .stock(10)
+                    .imageUrl("https://images.mcmworldwide.com/products/trenchcoat_limited.jpg")
+                    .description("MCM 코냑 비세토스 패턴과 공항 테마 유니크 디테일의 한정판 방수 트렌치코트")
+                    .isVipExclusive(true)
+                    .build());
+
+            productRepository.save(Product.builder()
+                    .name("공항 한정판 하이탑 스니커즈")
+                    .brand("MCM")
+                    .category(ProductCategory.LIMITED_EDITION)
+                    .price(new BigDecimal("850000.00"))
+                    .stock(20)
+                    .imageUrl("https://images.mcmworldwide.com/products/sneakers_limited.jpg")
+                    .description("여행자의 편안함과 하이엔드 스트리트 감성을 결합한 공항 한정판 스니커즈")
+                    .isVipExclusive(false)
+                    .build());
+
+            productRepository.save(Product.builder()
+                    .name("공항 한정판 미니 백팩 키링")
+                    .brand("MCM")
+                    .category(ProductCategory.LIMITED_EDITION)
+                    .price(new BigDecimal("320000.00"))
+                    .stock(50)
+                    .imageUrl("https://images.mcmworldwide.com/products/keyring_backpack.jpg")
+                    .description("MCM 아이코닉 스타크 백팩을 미니멀하게 축소한 공항 한정 컬렉터스 키링")
+                    .isVipExclusive(false)
+                    .build());
+
             // LEATHER CARE SOLUTION
             productRepository.save(Product.builder()
                     .name("Herstory 프리미엄 럭셔리 레더 케어 & 방수 솔루션")

@@ -100,12 +100,43 @@ public class JourneyService {
                 topProductName
         );
 
+        String rainProb = weather.isRainy() ? "76%" : "20%";
+
+        List<JourneyDto.TimelineItem> timeline = List.of(
+                JourneyDto.TimelineItem.builder()
+                        .stepType("DEPARTURE")
+                        .title("인천국제공항 (ICN) 제2여객터미널 탑승구")
+                        .time("14:50 출발")
+                        .description("탑승 전, 2층 면세구역에서 50분 여유가 있습니다.")
+                        .tipMessage("면세점 방문 추천: 사전 신청하신 ChoiceFit VIP 피팅 룸을 이용해보세요.")
+                        .iconType("AIRPLANE_DEPARTURE")
+                        .build(),
+                JourneyDto.TimelineItem.builder()
+                        .stepType("IN_FLIGHT")
+                        .title("비행중 (" + journey.getPnr() + ")")
+                        .time("약 2시간 20분 소요")
+                        .description("목적지 상공 기류 안정, 편안한 비행 되세요.")
+                        .tipMessage("기내 좌석에서 면세 상품 추가 주문 및 도착지 가죽 케어 예약 가능")
+                        .iconType("AIRPLANE_IN_FLIGHT")
+                        .build(),
+                JourneyDto.TimelineItem.builder()
+                        .stepType("ARRIVAL")
+                        .title(journey.getDestination() + " 제1터미널")
+                        .time("17:10 도착 예정")
+                        .description("우천 대비 방수 트렌치 코트 및 픽업 상품을 확인하세요.")
+                        .tipMessage("목적지 현지 럭셔리 Care Desk 위치가 지도에 표시됩니다.")
+                        .iconType("AIRPLANE_ARRIVAL")
+                        .build()
+        );
+
         return JourneyDto.JourneyAnalysisResponse.builder()
                 .journeyId(journey.getId())
                 .destination(journey.getDestination())
                 .weatherInfo(weather.getWeatherDescription())
-                .climateSummary("실시간 글로벌 기상 API 조회 결과: " + weather.getWeatherDescription())
+                .rainProbability(rainProb)
+                .climateSummary("실시간 글로벌 기상 위성 관측 결과: " + weather.getWeatherDescription())
                 .recommendationReason(aiAdvice)
+                .timeline(timeline)
                 .recommendedProducts(recommended)
                 .build();
     }
@@ -118,16 +149,40 @@ public class JourneyService {
         LocalDateTime departure = journey.getDepartureDateTime() != null ? journey.getDepartureDateTime() : now.plusHours(3);
         long remainingMinutes = Math.max(0, Duration.between(now, departure).toMinutes());
 
+        // Dynamic step calculation based on remaining time
+        String step = "CHECK_IN";
+        String stepLabel = "체크인 진행 중";
+        int estSecurity = 25;
+
+        if (remainingMinutes <= 30) {
+            step = "BOARDING";
+            stepLabel = "탑승 중 (Gate 마감 임박)";
+        } else if (remainingMinutes <= 90) {
+            step = "SECURITY_CHECK";
+            stepLabel = "게이트 이동 중";
+        } else if (remainingMinutes <= 180) {
+            step = "SECURITY_CHECK";
+            stepLabel = "보안검색 대기 중";
+        }
+
         return JourneyDto.LiveCardResponse.builder()
                 .journeyId(journey.getId())
                 .pnr(journey.getPnr())
+                .flightNumber(journey.getPnr() != null ? journey.getPnr() : "JL92")
+                .origin(journey.getOrigin() != null ? journey.getOrigin() : "ICN")
                 .destination(journey.getDestination())
                 .departureDateTime(departure)
                 .remainingMinutesToDeparture(remainingMinutes)
-                .gate("Gate 24 (T1)")
+                .gate("G-12")
                 .flightStatus(journey.getFlightStatus())
-                .loungeLocation("Herstory VIP Lounge (탑승동 D구역)")
-                .loungeWaitTime("대기 시간 5분 미만 (원활)")
+                .currentStep(step)
+                .currentStepLabel(stepLabel)
+                .estimatedSecurityMinutes(estSecurity)
+                .loungeLocation("인천공항 라운지")
+                .loungeGateLocation("터미널 2, 게이트 16번 맞은편")
+                .loungeWalkingMinutes(15)
+                .loungeWaitMinutes(3)
+                .loungeWaitTime("라운지 대기시간 3분")
                 .liveGuideMessage("탑승까지 약 " + remainingMinutes + "분 남아있습니다. 공항 면세 부티크에서 사전 신청하신 ChoiceFit VIP 피팅을 받아보세요!")
                 .build();
     }

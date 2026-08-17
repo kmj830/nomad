@@ -17,6 +17,7 @@ public class CareDto {
         private String locationType; // e.g. Luxury Flagship, Duty Free Boutique, Airport Care Desk
         private Double latitude;
         private Double longitude;
+        private Integer walkingMinutes; // 도보 소요 시간 (분)
         private String careServiceAvailable;
     }
 
