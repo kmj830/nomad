@@ -28,6 +28,8 @@ public class FlightDto {
         private String scheduledDepartureFormatted; // e.g. "오후 7:35"
         private String scheduledArrivalFormatted;   // e.g. "오후 11:35"
         private String flightDuration;              // e.g. "6시간 0분"
+        private String checkinCounter;              // e.g. "G17-J34"
+        private String remark;                      // e.g. "출발", "지연", "탑승중", "마감"
         private int delayMinutes;
         private String dataSource;
     }
