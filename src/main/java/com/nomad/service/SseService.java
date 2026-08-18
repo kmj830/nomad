@@ -25,7 +25,7 @@ public class SseService {
         try {
             emitter.send(SseEmitter.event()
                     .name("INIT")
-                    .data("MCM Store Staff Tablet Live Stream Connected"));
+                    .data("Herstory Boutique Staff Tablet Live Stream Connected"));
         } catch (IOException e) {
             emitters.remove(emitter);
         }

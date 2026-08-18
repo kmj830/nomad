@@ -70,7 +70,7 @@ public class OpenAiService {
 
         try {
             String prompt = String.format(
-                    "Generate a 2-sentence professional MCM Visetos leather care tip %s for %s under destination weather condition: %s.",
+                    "Generate a 2-sentence professional luxury leather care tip %s for %s under destination weather condition: %s.",
                     langInstruction, productName, destinationWeather
             );
             return callOpenAiGpt(prompt, 150);
@@ -120,7 +120,7 @@ public class OpenAiService {
         Map<String, Object> body = new HashMap<>();
         body.put("model", "gpt-4o-mini");
         body.put("messages", List.of(
-                Map.of("role", "system", "content", "You are an AI luxury concierge assistant for MCM Nomad Passport AI."),
+                Map.of("role", "system", "content", "You are an AI luxury concierge assistant for Herstory Nomad AI."),
                 Map.of("role", "user", "content", userPrompt)
         ));
         body.put("max_tokens", maxTokens);
@@ -144,6 +144,6 @@ public class OpenAiService {
         if (text != null && text.length() >= 6) {
             return text.substring(0, 6).toUpperCase();
         }
-        return "MCM777";
+        return "HST777";
     }
 }

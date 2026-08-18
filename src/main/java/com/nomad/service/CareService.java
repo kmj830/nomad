@@ -57,7 +57,7 @@ public class CareService {
         int earnedMiles = 1000;
         member.addMiles(earnedMiles);
 
-        String spotName = request.getSpotName() != null ? request.getSpotName() : "MCM 시암파라곤 플래그십 스토어";
+        String spotName = request.getSpotName() != null ? request.getSpotName() : "Herstory 시암파라곤 럭셔리 부티크";
 
         return CareDto.StampResponse.builder()
                 .memberId(member.getId())

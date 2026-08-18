@@ -59,7 +59,7 @@ class JourneyServiceTest {
     @Test
     @DisplayName("보딩패스 OCR 스캔 및 여정 정상 등록")
     void scanBoardingPass_Success() {
-        Member member = Member.builder().id(1L).email("test@mcm.com").name("테스트").vipTier(VipTier.VIP).build();
+        Member member = Member.builder().id(1L).email("test@herstory.com").name("테스트").vipTier(VipTier.VIP).build();
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
         when(weatherService.fetchDestinationWeather(any())).thenReturn(WeatherService.WeatherData.builder()
                 .temperature(28.0)
@@ -70,7 +70,7 @@ class JourneyServiceTest {
         Journey savedJourney = Journey.builder()
                 .id(10L)
                 .member(member)
-                .pnr("MCM123")
+                .pnr("HST123")
                 .origin("ICN (인천국제공항)")
                 .destination("BKK (방콕 수완나품)")
                 .flightStatus(FlightStatus.SCHEDULED)
@@ -78,11 +78,11 @@ class JourneyServiceTest {
 
         when(journeyRepository.save(any(Journey.class))).thenReturn(savedJourney);
 
-        JourneyDto.ScanRequest req = new JourneyDto.ScanRequest(1L, "MCM123", "BOARDING PASS PNR MCM123", "ICN", "BKK");
+        JourneyDto.ScanRequest req = new JourneyDto.ScanRequest(1L, "HST123", "BOARDING PASS PNR HST123", "ICN", "BKK");
         JourneyDto.ScanResponse res = journeyService.scanBoardingPass(req);
 
         assertThat(res.getJourneyId()).isEqualTo(10L);
-        assertThat(res.getPnr()).isEqualTo("MCM123");
+        assertThat(res.getPnr()).isEqualTo("HST123");
         assertThat(res.getOrigin()).contains("ICN");
     }
 
@@ -91,7 +91,7 @@ class JourneyServiceTest {
     void scanBoardingPass_MemberNotFound() {
         when(memberRepository.findById(99L)).thenReturn(Optional.empty());
 
-        JourneyDto.ScanRequest req = new JourneyDto.ScanRequest(99L, "MCM123", "RAW", "ICN", "BKK");
+        JourneyDto.ScanRequest req = new JourneyDto.ScanRequest(99L, "HST123", "RAW", "ICN", "BKK");
         assertThatThrownBy(() -> journeyService.scanBoardingPass(req))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("존재하지 않는 회원입니다");
@@ -112,7 +112,7 @@ class JourneyServiceTest {
 
         Product product = Product.builder()
                 .id(1L)
-                .name("MCM Visetos 방수 백팩")
+                .name("럭셔리 방수 백팩")
                 .category(ProductCategory.WATERPROOF)
                 .price(new BigDecimal("1250000.00"))
                 .build();

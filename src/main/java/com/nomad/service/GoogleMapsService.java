@@ -82,6 +82,10 @@ public class GoogleMapsService {
         return findSpotsWithMaps(destination, "ALL");
     }
 
+    public List<CareDto.VisetosSpot> findLuxurySpotsWithMaps(String destination) {
+        return findSpotsWithMaps(destination, "ALL");
+    }
+
     private String detectBrand(String name, String fallbackBrand) {
         if (name == null) return fallbackBrand.isBlank() ? "HERSTORY LUXURY" : fallbackBrand;
         String upper = name.toUpperCase();
@@ -153,8 +157,8 @@ public class GoogleMapsService {
                             .careServiceAvailable("비세토스 가죽 스팀 케어, 워터프루프 방수 코팅")
                             .build(),
                     CareDto.VisetosSpot.builder()
-                            .spotName("MCM 타임 스토어")
-                            .brand("MCM")
+                            .spotName("Herstory 타임 부티크")
+                            .brand("HERSTORY")
                             .address("인천공항 제1여객터미널 GATE 12 인근")
                             .locationType("Airport Time Store")
                             .latitude(37.4602).longitude(126.4407)

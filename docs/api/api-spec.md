@@ -32,9 +32,9 @@
 
 | 환경 | Base URL | 설명 |
 | :--- | :--- | :--- |
-| **Production (Live)** | `https://mcm-nomad-backend.onrender.com` | Render 클라우드 배포 서버 |
-| **Swagger UI** | `https://mcm-nomad-backend.onrender.com/swagger-ui/index.html` | 대화형 API 테스트 콘솔 |
-| **OpenAPI Spec (JSON)** | `https://mcm-nomad-backend.onrender.com/v3/api-docs` | OpenAPI 3.0 JSON 스키마 |
+| **Production (Live)** | `https://herstory-backend.onrender.com` | Render 클라우드 배포 서버 |
+| **Swagger UI** | `https://herstory-backend.onrender.com/swagger-ui/index.html` | 대화형 API 테스트 콘솔 |
+| **OpenAPI Spec (JSON)** | `https://herstory-backend.onrender.com/v3/api-docs` | OpenAPI 3.0 JSON 스키마 |
 | **Local Development** | `http://localhost:8080` | 로컬 개발 서버 |
 
 ### 1.2 공통 HTTP 헤더 (Common Headers)
@@ -80,14 +80,14 @@
 | `PENDING` | 결제 대기 중 |
 | `CANCELLED` | 주문 취소됨 |
 
-### 2.5 ProductCategory (MCM 상품 카테고리)
-| Enum 값 | 설명 | 예시 품목 |
+### 2.5 ProductCategory (상품 카테고리)
+| Enum 값 | 카테고리 한글명 | 추천 기후/상황 |
 | :--- | :--- | :--- |
-| `WATERPROOF` | 방수 / 레인 프로텍션 | 비세토스 레인 판초, 방수 레인커버 백 |
-| `BACKPACK` | 백팩 / 여행 가방 | 비세토스 스타크 백팩, 노마드 에센셜 팩 |
-| `TRAVEL_BAG` | 트래블 백 / 캐리어 | 위켄더 더플백, 비세토스 캐빈 트롤리 |
-| `ACCESSORY` | 여행 액세서리 / 지갑 | 여권 케이스, 러기지 택, 카드 지갑 |
-| `LEATHER_CARE` | 가죽 케어 전용 키트 | 비세토스 가죽 클리너 & 방수 코팅 에센스 |
+| `WATERPROOF` | 워터프루프 & 방수 컬렉션 | 고습도, 열대성 스콜, 우천 |
+| `TRAVEL_BAG` | 트래블 백 & 캐리어 | 장거리 이동, 기내 수하물 |
+| `LEATHER_CARE` | 럭셔리 레더 케어 키트 | 건조/습도 변화 시 가죽 보호 |
+| `ACCESSORY` | 트래블 악세서리 & 소품 | 공항 VIP 편의, 여권 케이스 |
+| `CLOTHING` | 럭셔리 어패럴 & 트렌치 | 기내 체온 조절, 아우터 |
 
 ### 2.6 CheckInType (체크인 방식)
 | Enum 값 | 설명 |
@@ -147,7 +147,7 @@
 | **5** | Auth | `POST` | `/api/v1/auth/password/reset` | 비밀번호 찾기 및 재설정 |
 | **6** | Journey | `POST` | `/api/v1/journey/scan` | 보딩패스 Vision OCR 스캔 & 여정 등록 |
 | **4** | Journey | `GET` | `/api/v1/journey/{journeyId}` | 여정 기본 상세 단건 조회 |
-| **5** | Journey | `GET` | `/api/v1/journey/analysis/{journeyId}` | 목적지 기후 분석 & 맞춤 MCM 상품 Curation |
+| **5** | Journey | `GET` | `/api/v1/journey/analysis/{journeyId}` | 목적지 기후 분석 & 맞춤 럭셔리 상품 Curation |
 | **4** | Journey | `GET` | `/api/v1/journey/live-card/{journeyId}` | SCR-102 실시간 AI 라이브 카드 위젯 |
 | **5** | Journey | `GET` | `/api/v1/journey/apple-wallet-pass/{journeyId}` | SCR-201 Apple Wallet 패스 메타데이터 조회 |
 | **6** | Journey | `GET` | `/api/v1/journey/apple-wallet-pass/download/{journeyId}` | Apple Wallet (.pkpass) 바이너리 다운로드 |
@@ -231,12 +231,12 @@
 ##### Request Body (`AuthDto.LoginRequest`)
 | 필드명 | 타입 | 필수 | 기본값 | 설명 |
 | :--- | :--- | :--- | :--- | :--- |
-| `email` | `String` | Y | - | 회원 이메일 (예: `vip@mcmworldwide.com`) |
+| `email` | `String` | Y | - | 회원 이메일 (예: `vip@herstory.com`) |
 | `password` | `String` | Y | - | 계정 비밀번호 (예: `1234`) |
 
 ```json
 {
-  "email": "vip@mcmworldwide.com",
+  "email": "vip@herstory.com",
   "password": "1234"
 }
 ```
@@ -254,7 +254,7 @@
 ```json
 {
   "memberId": 1,
-  "email": "vip@mcmworldwide.com",
+  "email": "vip@herstory.com",
   "name": "김노마드 (VIP)",
   "vipTier": "VIP",
   "nomadMiles": 15000,
@@ -274,7 +274,7 @@
 | 필드명 | 타입 | 필수 | 기본값 | 설명 |
 | :--- | :--- | :---: | :--- | :--- |
 | `memberId` | `Long` | Y | - | 회원 ID |
-| `pnr` | `String` | N | `"MCM999"` | 예약 번호(PNR) 6자리 |
+| `pnr` | `String` | N | `"HST999"` | 예약 번호(PNR) 6자리 |
 | `rawOcrText` | `String` | N | - | 보딩패스 OCR 원문 텍스트 |
 | `origin` | `String` | N | `"ICN"` | 출발 공항 IATA 코드 |
 | `destination` | `String` | N | `"BKK"` | 도착 공항 IATA 코드 |
@@ -282,7 +282,7 @@
 ```json
 {
   "memberId": 1,
-  "pnr": "MCM999",
+  "pnr": "HST999",
   "rawOcrText": "BOARDING PASS PASSENGER: KIM/NOMAD FLIGHT: KE651 ICN BKK SEAT: 02A",
   "origin": "ICN",
   "destination": "BKK"
@@ -303,12 +303,12 @@
 ```json
 {
   "journeyId": 1,
-  "pnr": "MCM999",
+  "pnr": "HST999",
   "origin": "ICN",
   "destination": "BKK",
   "departureDateTime": "2026-08-15T21:30:00",
   "flightStatus": "SCHEDULED",
-  "message": "보딩패스 OCR 스캔 완료! PNR [MCM999] 여정이 등록되었습니다."
+  "message": "보딩패스 OCR 스캔 완료! PNR [HST999] 여정이 등록되었습니다."
 }
 ```
 
@@ -342,13 +342,13 @@
   "journeyId": 1,
   "memberId": 1,
   "memberName": "김노마드 (VIP)",
-  "pnr": "MCM999",
+  "pnr": "HST999",
   "origin": "ICN",
   "destination": "BKK",
   "departureDateTime": "2026-08-20T14:30:00",
   "flightStatus": "SCHEDULED",
   "destinationWeather": "열대성 스콜 (기온 32°C, 습도 85%)",
-  "recommendationReason": "목적지 비/습도 기후에 적합한 MCM 방수 비세토스 컬렉션 맞춤 제안"
+  "recommendationReason": "목적지 비/습도 기후에 적합한 럭셔리 방수 레더 컬렉션 맞춤 제안"
 }
 ```
 
@@ -370,7 +370,7 @@
 | `weatherInfo` | `String` | 실시간 기온, 습도, 강수량 요약 |
 | `climateSummary` | `String` | 기후 분석 요약 멘트 |
 | `recommendationReason` | `String` | AI 큐레이션 추천 사유 |
-| `recommendedProducts` | `List<Product>` | 추천 MCM 상품 객체 목록 |
+| `recommendedProducts` | `List<Product>` | 추천 럭셔리 상품 객체 목록 |
 
 ```json
 {
@@ -378,25 +378,25 @@
   "destination": "BKK (방콕 수완나품)",
   "weatherInfo": "기온 32.5°C, 습도 88%, 열대성 스콜 잦음",
   "climateSummary": "고온 다습한 열대 몬순 기후로 급작스러운 스콜과 강한 자외선이 예상됩니다.",
-  "recommendationReason": "방콕의 고습도 환경에 대비한 MCM Visetos 방수 에센셜 라인업과 쾌적한 이동을 위한 가벼운 트래블 백팩을 제안합니다.",
+  "recommendationReason": "방콕의 고습도 환경에 대비한 럭셔리 방수 에센셜 라인업과 쾌적한 이동을 위한 가벼운 트래블 백팩을 제안합니다.",
   "recommendedProducts": [
     {
       "id": 1,
-      "name": "MCM 클래식 비세토스 방수 스타크 백팩 (Medium)",
+      "name": "럭셔리 클래식 방수 스타크 백팩 (Medium)",
       "category": "BACKPACK",
       "price": 1250000.00,
       "stock": 45,
-      "imageUrl": "https://kr.mcmworldwide.com/images/backpack-01.png",
-      "description": "열대 스콜로부터 소지품을 안전하게 보호하는 방수 코팅 비세토스 캔버스 백팩",
+      "imageUrl": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80",
+      "description": "열대 스콜로부터 소지품을 안전하게 보호하는 방수 코팅 캔버스 백팩",
       "isVipExclusive": false
     },
     {
       "id": 2,
-      "name": "MCM 비세토스 러기지 여권 케이스",
+      "name": "럭셔리 레더 러기지 여권 케이스",
       "category": "ACCESSORY",
       "price": 380000.00,
       "stock": 80,
-      "imageUrl": "https://kr.mcmworldwide.com/images/passport-01.png",
+      "imageUrl": "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80",
       "description": "VIP 노마드를 위한 시그니처 가죽 여권 지갑",
       "isVipExclusive": false
     }
@@ -407,7 +407,7 @@
 ---
 
 #### `GET /api/v1/journey/live-card/{journeyId}`
-- **설명**: SCR-102 실시간 항공편 탑승 카운트다운(분), 게이트 번호, 공항 MCM VIP 라운지 대기 현황 및 안내 메시지를 반환합니다.
+- **설명**: SCR-102 실시간 항공편 탑승 카운트다운(분), 게이트 번호, 공항 VIP 라운지 대기 현황 및 안내 메시지를 반환합니다.
 
 ##### Path Parameters
 | 파라미터 | 타입 | 필수 | 설명 |
@@ -431,15 +431,15 @@
 ```json
 {
   "journeyId": 1,
-  "pnr": "MCM999",
+  "pnr": "HST999",
   "destination": "BKK",
   "departureDateTime": "2026-08-15T21:30:00",
   "remainingMinutesToDeparture": 125,
   "gate": "Gate 24 (T1)",
   "flightStatus": "SCHEDULED",
-  "loungeLocation": "인천공항 제1여객터미널 4층 MCM 노마드 VIP 라운지",
+  "loungeLocation": "인천공항 제1여객터미널 4층 Herstory VIP 라운지",
   "loungeWaitTime": "대기 없음 (즉시 입장 가능)",
-  "liveGuideMessage": "탑승까지 125분 남았습니다. 24번 게이트 인근 MCM 면세 부티크에서 예약하신 피팅 상품을 확인해보세요."
+  "liveGuideMessage": "탑승까지 125분 남았습니다. 24번 게이트 인근 Herstory 면세 부티크에서 예약하신 피팅 상품을 확인해보세요."
 }
 ```
 
@@ -496,7 +496,7 @@
       "value": "VIP HERSTORY"
     }
   },
-  "pkpassDownloadUrl": "https://mcm-nomad-backend.onrender.com/api/v1/journey/apple-wallet-pass/download/HST999.pkpass"
+  "pkpassDownloadUrl": "/api/v1/journey/apple-wallet-pass/download/HST999.pkpass"
 }
 ```
 
@@ -506,7 +506,7 @@
 - **설명**: iOS 아이폰 지갑(Wallet) 앱에 즉시 추가할 수 있는 `.pkpass` 바이너리 ZIP 스트림을 다운로드합니다.
 - **Path Parameter**: `journeyId` (`String`)
 - **Produces**: `application/vnd.apple.pkpass`
-- **Response Headers**: `Content-Disposition: attachment; filename="mcm-boarding-pass.pkpass"`
+- **Response Headers**: `Content-Disposition: attachment; filename="herstory-boarding-pass.pkpass"`
 - **Response Body**: Binary (`byte[]`)
 
 ---
@@ -515,7 +515,7 @@
 - **설명**: iOS Safari 보안 차단 없이 아이폰 파일 앱(Downloads)으로 직접 내려받을 수 있는 범용 바이너리 다운로드 엔드포인트입니다.
 - **Path Parameter**: `journeyId` (`String`)
 - **Produces**: `application/octet-stream`
-- **Response Headers**: `Content-Disposition: attachment; filename="mcm-pass-{journeyId}.pkpass"`
+- **Response Headers**: `Content-Disposition: attachment; filename="herstory-pass-{journeyId}.pkpass"`
 - **Response Body**: Binary (`byte[]`)
 
 ---
@@ -523,7 +523,7 @@
 ### 5.3 Cart API (스마트 장바구니 & ChoiceFit)
 
 #### `POST /api/v1/cart/add`
-- **설명**: 추천 MCM 상품을 스마트 장바구니에 추가합니다.
+- **설명**: 추천 럭셔리 상품을 스마트 장바구니에 추가합니다.
 - **Content-Type**: `application/json`
 
 ##### Request Body (`CartDto.AddItemRequest`)
@@ -561,11 +561,11 @@
     {
       "cartItemId": 1,
       "productId": 1,
-      "productName": "MCM 클래식 비세토스 방수 스타크 백팩 (Medium)",
+      "productName": "럭셔리 클래식 방수 스타크 백팩 (Medium)",
       "category": "BACKPACK",
       "price": 1250000.00,
       "quantity": 1,
-      "imageUrl": "https://kr.mcmworldwide.com/images/backpack-01.png"
+      "imageUrl": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80"
     }
   ],
   "totalPrice": 1250000.00
@@ -626,7 +626,7 @@
 {
   "memberId": 1,
   "checkInType": "BLE",
-  "qrCode": "MCM-VIP-GATE24"
+  "qrCode": "HST-VIP-GATE24"
 }
 ```
 
@@ -655,7 +655,7 @@
   "checkInStatus": "COMPLETED",
   "assistantNotified": true,
   "choiceFitRequested": true,
-  "welcomeCouponMessage": "✨ [VIP 전용] 인천공항 T1 MCM 부티크 15% 즉시할인 웰컴 쿠폰이 적용되었습니다.",
+  "welcomeCouponMessage": "✨ [VIP 전용] 인천공항 T1 Herstory 부티크 15% 즉시할인 웰컴 쿠폰이 적용되었습니다.",
   "purchaseStatus": "PENDING_REENTRY",
   "visitedAt": "2026-08-15T18:00:00"
 }
@@ -689,7 +689,7 @@
   "purchaseStatus": "PENDING_REENTRY",
   "hasPendingCart": true,
   "pendingCartItemCount": 1,
-  "recommendedAction": "이전 담아두신 'MCM 클래식 비세토스 방수 스타크 백팩' 피팅 룸이 준비되어 있습니다.",
+  "recommendedAction": "이전 담아두신 '럭셔리 클래식 방수 스타크 백팩' 피팅 룸이 준비되어 있습니다.",
   "availableOptions": [
     "바로 면세 결제 진행",
     "피팅룸에서 다시 착용해보기",
@@ -759,7 +759,7 @@ data: {"type":"VIP_CHECKIN","memberId":1,"memberName":"김노마드 (VIP)","vipT
   "items": [
     {
       "productId": 1,
-      "productName": "MCM 클래식 비세토스 방수 스타크 백팩 (Medium)",
+      "productName": "럭셔리 클래식 방수 스타크 백팩 (Medium)",
       "quantity": 1,
       "price": 1250000.00
     }
@@ -770,10 +770,10 @@ data: {"type":"VIP_CHECKIN","memberId":1,"memberName":"김노마드 (VIP)","vipT
 
 ---
 
-### 5.6 Care API (현지 비세토스 스팟 & AI 가죽 케어)
+### 5.6 Care API (현지 부티크 스팟 & AI 가죽 케어)
 
 #### `GET /api/v1/care/visetos-spots`
-- **설명**: 회원의 현재 여정 목적지에 위치한 현지 MCM 플래그십 스토어 및 Care Desk 정보와 가죽 관리 푸시 가이드를 반환합니다.
+- **설명**: 회원의 현재 여정 목적지에 위치한 현지 럭셔리 플래그십 스토어 및 Care Desk 정보와 가죽 관리 푸시 가이드를 반환합니다.
 
 ##### Query Parameters
 | 파라미터 | 타입 | 필수 | 설명 |
@@ -785,23 +785,23 @@ data: {"type":"VIP_CHECKIN","memberId":1,"memberName":"김노마드 (VIP)","vipT
 | :--- | :--- | :--- |
 | `destination` | `String` | 목적지 도시/공항 명칭 |
 | `pushNotificationMessage` | `String` | 현지 도착 푸시 알림 가이드 문구 |
-| `visetosSpots` | `List<VisetosSpot>` | 현지 MCM 부티크 및 Care Desk 스팟 목록 |
+| `visetosSpots` | `List<VisetosSpot>` | 현지 럭셔리 부티크 및 Care Desk 스팟 목록 |
 
 ```json
 {
   "destination": "Bangkok",
-  "pushNotificationMessage": " 방콕 수완나품에 도착하셨습니다! 습도 88% 열대 기후에서는 비세토스 가죽 표면의 습기를 부드러운 천으로 닦아주세요.",
+  "pushNotificationMessage": "방콕 수완나품에 도착하셨습니다! 습도 88% 열대 기후에서는 럭셔리 가죽 표면의 습기를 부드러운 천으로 닦아주세요.",
   "visetosSpots": [
     {
-      "spotName": "MCM Siam Paragon Flagship Boutique",
+      "spotName": "Herstory Siam Paragon Flagship Boutique",
       "address": "991 Rama I Rd, Pathum Wan, Bangkok 10330",
-      "locationType": "MCM Flagship & VIP Lounge",
+      "locationType": "Herstory Flagship & VIP Lounge",
       "latitude": 13.7466,
       "longitude": 100.5349,
       "careServiceAvailable": "무상 가죽 방수 코팅 & 클리닝 케어 서비스 제공"
     },
     {
-      "spotName": "MCM EmQuartier Boutique & Care Desk",
+      "spotName": "Herstory EmQuartier Boutique & Care Desk",
       "address": "693 Sukhumvit Rd, Khlong Tan Nuea, Bangkok 10110",
       "locationType": "Duty Free Care Desk",
       "latitude": 13.7312,
@@ -815,7 +815,7 @@ data: {"type":"VIP_CHECKIN","memberId":1,"memberName":"김노마드 (VIP)","vipT
 ---
 
 #### `GET /api/v1/care/google-maps`
-- **설명**: SCR-502 Google Maps Places API 기반으로 목적지 도시의 현지 MCM 부티크 위치, 좌표 및 길안내 링크를 반환합니다. (API 키 미설정 시 지능형 스마트 폴백 작동 및 캐싱 지원)
+- **설명**: SCR-502 Google Maps Places API 기반으로 목적지 도시의 현지 럭셔리 부티크 위치, 좌표 및 길안내 링크를 반환합니다. (API 키 미설정 시 지능형 스마트 폴백 작동 및 캐싱 지원)
 
 ##### Query Parameters
 | 파라미터 | 타입 | 필수 | 기본값 | 설명 |
@@ -826,17 +826,17 @@ data: {"type":"VIP_CHECKIN","memberId":1,"memberName":"김노마드 (VIP)","vipT
 ```json
 [
   {
-    "spotName": "MCM Siam Paragon Flagship",
+    "spotName": "Herstory Siam Paragon Flagship",
     "address": "991 Rama I Rd, Pathum Wan, Bangkok 10330",
-    "locationType": "MCM Boutique",
+    "locationType": "Luxury Boutique",
     "latitude": 13.7466,
     "longitude": 100.5349,
     "careServiceAvailable": "VIP Leather Care Desk & Complimentary Refreshment"
   },
   {
-    "spotName": "MCM ICONSIAM Luxury Wing",
+    "spotName": "Herstory ICONSIAM Luxury Wing",
     "address": "299 Charoen Nakhon Rd, Khlong San, Bangkok 10600",
-    "locationType": "MCM Boutique",
+    "locationType": "Luxury Boutique",
     "latitude": 13.7267,
     "longitude": 100.5108,
     "careServiceAvailable": "Passport City Stamp & Waterproof Spray Service"
@@ -852,7 +852,7 @@ data: {"type":"VIP_CHECKIN","memberId":1,"memberName":"김노마드 (VIP)","vipT
 ##### Query Parameters
 | 파라미터 | 타입 | 필수 | 기본값 | 설명 |
 | :--- | :--- | :---: | :--- | :--- |
-| `productName` | `String` | N | `"MCM Visetos 백팩"` | 소지 제품명 |
+| `productName` | `String` | N | `"럭셔리 레더 백팩"` | 소지 제품명 |
 | `weather` | `String` | N | `"습도 88% 열대성 스콜"` | 현지 날씨/기후 조건 |
 | `lang` | `String` | N | `"ko"` | 지원 언어 코드 (`ko`, `en`, `ja`, `zh`) |
 
@@ -860,7 +860,7 @@ data: {"type":"VIP_CHECKIN","memberId":1,"memberName":"김노마드 (VIP)","vipT
 - **한국어 (`lang=ko`) 응답 예시**:
 ```text
 [Herstory Leather Care Guide]
-방콕의 고온다습한 기후(습도 88%)에서는 MCM Visetos 코팅 캔버스의 방수 기능이 탁월하게 작동합니다. 갑작스러운 스콜에 노출되었을 경우 즉시 마른 극세사 천으로 물기를 톡톡 두드리듯 닦아내시고 직사광선을 피해 통풍이 잘되는 그늘에서 건조해 주세요. Siam Paragon 플래그십 매장에서 무상 가죽 보호 코팅 서비스를 받으실 수 있습니다.
+방콕의 고온다습한 기후(습도 88%)에서는 럭셔리 코팅 캔버스의 방수 기능이 탁월하게 작동합니다. 갑작스러운 스콜에 노출되었을 경우 즉시 마른 극세사 천으로 물기를 톡톡 두드리듯 닦아내시고 직사광선을 피해 통풍이 잘되는 그늘에서 건조해 주세요. Siam Paragon 플래그십 매장에서 무상 가죽 보호 코팅 서비스를 받으실 수 있습니다.
 ```
 
 ---
@@ -871,7 +871,7 @@ data: {"type":"VIP_CHECKIN","memberId":1,"memberName":"김노마드 (VIP)","vipT
 ##### Query Parameters
 | 파라미터 | 타입 | 필수 | 설명 |
 | :--- | :--- | :---: | :--- |
-| `title` | `String` | Y | 알림 제목 (예: `MCM VIP 알림`) |
+| `title` | `String` | Y | 알림 제목 (예: `Herstory VIP 알림`) |
 | `body` | `String` | Y | 알림 본문 (예: `수완나품 공항 면세점 방문을 환영합니다`) |
 
 ##### Response Body (`200 OK` - `FcmService.PushResponse`)
@@ -886,8 +886,8 @@ data: {"type":"VIP_CHECKIN","memberId":1,"memberName":"김노마드 (VIP)","vipT
 ```json
 {
   "success": true,
-  "messageId": "projects/mcm-nomad-ai/messages/fcm-1771057800000",
-  "title": "MCM VIP 알림",
+  "messageId": "projects/herstory-nomad-ai/messages/fcm-1771057800000",
+  "title": "Herstory VIP 알림",
   "body": "수완나품 공항 면세점 방문을 환영합니다",
   "statusMessage": "FCM HTTP v1 푸시 메시지가 정상 발송되었습니다."
 }
@@ -896,19 +896,19 @@ data: {"type":"VIP_CHECKIN","memberId":1,"memberName":"김노마드 (VIP)","vipT
 ---
 
 #### `POST /api/v1/care/stamp-checkin`
-- **설명**: SCR-502 여행 목적지 도시의 MCM 부티크 방문 시 디지털 패스포트 시티 스탬프를 획득하고 보너스 마일리지(+1,000 Miles)를 즉시 적립합니다.
+- **설명**: SCR-502 여행 목적지 도시의 럭셔리 부티크 방문 시 디지털 패스포트 시티 스탬프를 획득하고 보너스 마일리지(+1,000 Miles)를 즉시 적립합니다.
 - **Content-Type**: `application/json`
 
 ##### Request Body (`CareDto.StampRequest`)
 | 필드명 | 타입 | 필수 | 설명 |
 | :--- | :--- | :---: | :--- |
 | `memberId` | `Long` | Y | 회원 ID |
-| `spotName` | `String` | Y | 방문한 MCM 매장명 (예: `"MCM Siam Paragon"`) |
+| `spotName` | `String` | Y | 방문한 매장명 (예: `"Herstory Siam Paragon"`) |
 
 ```json
 {
   "memberId": 1,
-  "spotName": "MCM Siam Paragon Flagship"
+  "spotName": "Herstory Siam Paragon Flagship"
 }
 ```
 
@@ -925,7 +925,7 @@ data: {"type":"VIP_CHECKIN","memberId":1,"memberName":"김노마드 (VIP)","vipT
 ```json
 {
   "memberId": 1,
-  "spotName": "MCM Siam Paragon Flagship",
+  "spotName": "Herstory Siam Paragon Flagship",
   "cityName": "Bangkok",
   "earnedMiles": 1000,
   "totalMiles": 69525,
@@ -1230,7 +1230,7 @@ public class OrderResponse {
 
 ### 6.6 `CareDto`
 ```java
-// 현지 MCM 스팟 정보
+// 현지 럭셔리 부티크 스팟 정보
 public class VisetosSpot {
     private String spotName;
     private String address;

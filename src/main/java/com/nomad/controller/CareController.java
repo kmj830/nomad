@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "6. Care API (현지 비세토스 스팟 & 케어)", description = "목적지 현지 MCM 스팟(플래그십/Care Desk) 탐색 및 비세토스 가죽 케어 푸시 메시지 API")
+@Tag(name = "6. Care API (현지 부티크 스팟 & 케어)", description = "목적지 현지 럭셔리 스팟(플래그십/Care Desk) 탐색 및 가죽 케어 푸시 메시지 API")
 @RestController
 @RequestMapping("/api/v1/care")
 @RequiredArgsConstructor
@@ -39,7 +39,7 @@ public class CareController {
 
     @Operation(summary = "SCR-501 OpenAI 기반 가죽 케어 AI 가이드 생성 (다국어 지원: ko, en, ja, zh)", description = "OpenAI GPT-4o를 활용해 구입 제품, 현지 기후 조건 및 다국어(ko, en, ja, zh) 맞춤형 가죽 관리 팁을 생성합니다.")
     @GetMapping("/ai-care-tip")
-    public ResponseEntity<String> getAiCareTip(@RequestParam(defaultValue = "MCM Visetos 백팩") String productName,
+    public ResponseEntity<String> getAiCareTip(@RequestParam(defaultValue = "럭셔리 레더 백팩") String productName,
                                                 @RequestParam(defaultValue = "습도 88% 열대성 스콜") String weather,
                                                 @RequestParam(defaultValue = "ko") String lang) {
         return ResponseEntity.ok(openAiService.generateLeatherCareTip(productName, weather, lang));
@@ -51,7 +51,7 @@ public class CareController {
         return ResponseEntity.ok(fcmService.sendPushNotification("SAMPLE_TOKEN", title, body));
     }
 
-    @Operation(summary = "SCR-502 현지 시티 패스포트 스탬프 획득 & 보상 적립", description = "목적지 도시 MCM 부티크 방문 시 패스포트 스탬프를 획득하고 보너스 Herstory Miles를 적립합니다.")
+    @Operation(summary = "SCR-502 현지 시티 패스포트 스탬프 획득 & 보상 적립", description = "목적지 도시 럭셔리 부티크 방문 시 패스포트 스탬프를 획득하고 보너스 Herstory Miles를 적립합니다.")
     @PostMapping("/stamp-checkin")
     public ResponseEntity<CareDto.StampResponse> checkInCityStamp(@RequestBody CareDto.StampRequest request) {
         return ResponseEntity.ok(careService.checkInCityStamp(request));

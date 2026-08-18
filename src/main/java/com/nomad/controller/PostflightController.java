@@ -41,10 +41,10 @@ public class PostflightController {
         private String aiCareTip;
     }
 
-    @Operation(summary = "목적지 맞춤 가죽 케어 가이드 조회", description = "OpenAI GPT-4o 기반 목적지 날씨 맞춤 비세토스 가죽 관리 가이드를 반환합니다.")
+    @Operation(summary = "목적지 맞춤 가죽 케어 가이드 조회", description = "OpenAI GPT-4o 기반 목적지 날씨 맞춤 럭셔리 가죽 관리 가이드를 반환합니다.")
     @GetMapping("/leather-care")
     public ResponseEntity<AiCareTipResponse> getLeatherCareGuide(
-            @RequestParam(defaultValue = "MCM 비세토스 트래블 백팩") String productName,
+            @RequestParam(defaultValue = "럭셔리 레더 트래블 백팩") String productName,
             @RequestParam(defaultValue = "열대성 고온다습 스콜 (기온 32°C, 습도 85%)") String weather,
             @RequestParam(defaultValue = "ko") String lang
     ) {
@@ -57,7 +57,7 @@ public class PostflightController {
                 .build());
     }
 
-    @Operation(summary = "현지 비세토스 스팟 맵 정보 조회", description = "목적지 현지 플래그십 및 공항 Care Desk 위치 목록을 반환합니다.")
+    @Operation(summary = "현지 럭셔리 스팟 맵 정보 조회", description = "목적지 현지 플래그십 및 공항 Care Desk 위치 목록을 반환합니다.")
     @GetMapping("/visetos-map")
     public ResponseEntity<CareDto.CareResponse> getVisetosSpots(@RequestParam(required = false) Long memberId) {
         Long targetMemberId = memberId != null ? memberId : 1L;

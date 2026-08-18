@@ -42,9 +42,9 @@ public class StoreService {
 
         String welcomeMessage = null;
         if (choiceFitRequested) {
-            welcomeMessage = "VIP 피팅 고객입니다! 담당 MCM 매장 어시스턴트 태블릿에 피팅 신청 상품 목록이 전송되었습니다.";
+            welcomeMessage = "VIP 피팅 고객입니다! 담당 매장 어시스턴트 태블릿에 피팅 신청 상품 목록이 전송되었습니다.";
         } else {
-            welcomeMessage = "MCM 공항 면세점 방문을 환영합니다! [웰컴 VIP 10% 면세 특별 할인 쿠폰]이 발급되었습니다.";
+            welcomeMessage = "Herstory 부티크 방문을 환영합니다! [웰컴 VIP 10% 면세 특별 할인 쿠폰]이 발급되었습니다.";
         }
 
         StoreVisit visit = StoreVisit.builder()
@@ -93,7 +93,7 @@ public class StoreService {
         if (hasPendingCart) {
             recommendedAction = "이전에 담아두신 상품 " + pendingCount + "건이 장바구니에 보관되어 있습니다. 바로 결제하시겠습니까?";
         } else {
-            recommendedAction = "MCM 매장에 재방문하신 것을 환영합니다! 신상품 큐레이션을 둘러보세요.";
+            recommendedAction = "Herstory 부티크에 재방문하신 것을 환영합니다! 신상품 큐레이션을 둘러보세요.";
         }
 
         java.util.List<String> options = java.util.List.of("바로 결제 (DIRECT_CHECKOUT)", "다시 피팅 (RE_FITTING)", "새 상품 보기 (BROWSE_NEW_PRODUCTS)");

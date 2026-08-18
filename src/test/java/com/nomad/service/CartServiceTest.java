@@ -41,8 +41,8 @@ class CartServiceTest {
     @Test
     @DisplayName("장바구니에 상품 추가 성공")
     void addToCart_Success() {
-        Member member = Member.builder().id(1L).email("vip@mcm.com").name("VIP고객").vipTier(VipTier.VIP).build();
-        Product product = Product.builder().id(100L).name("MCM 백팩").category(ProductCategory.WATERPROOF).price(new BigDecimal("100000.00")).build();
+        Member member = Member.builder().id(1L).email("vip@herstory.com").name("VIP고객").vipTier(VipTier.VIP).build();
+        Product product = Product.builder().id(100L).name("럭셔리 백팩").category(ProductCategory.WATERPROOF).price(new BigDecimal("100000.00")).build();
 
         SmartCart cart = SmartCart.builder().id(5L).member(member).choiceFit(false).status(CartStatus.IN_CART).items(new ArrayList<>()).build();
 

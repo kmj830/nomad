@@ -57,8 +57,8 @@ class OrderServiceTest {
     @Test
     @DisplayName("면세 결제 처리 및 VIP 15% 할인, 마일리지 적립 적용")
     void checkout_Success() {
-        Member member = Member.builder().id(1L).email("vip@mcm.com").name("VIP").vipTier(VipTier.VIP).nomadMiles(0L).build();
-        Product product = Product.builder().id(10L).name("MCM 백팩").price(new BigDecimal("1000000.00")).category(ProductCategory.WATERPROOF).build();
+        Member member = Member.builder().id(1L).email("vip@herstory.com").name("VIP").vipTier(VipTier.VIP).nomadMiles(0L).build();
+        Product product = Product.builder().id(10L).name("럭셔리 백팩").price(new BigDecimal("1000000.00")).category(ProductCategory.WATERPROOF).build();
 
         SmartCart cart = SmartCart.builder().id(2L).member(member).status(CartStatus.IN_CART).items(new ArrayList<>()).build();
         CartItem cartItem = CartItem.builder().id(100L).product(product).quantity(1).build();

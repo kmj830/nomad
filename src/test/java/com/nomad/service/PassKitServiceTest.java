@@ -12,10 +12,10 @@ class PassKitServiceTest {
     @Test
     @DisplayName("Apple Wallet PassKit 패스 생성 데이터 검증")
     void generateNomadPassportPass_Success() {
-        PassKitService.AppleWalletPassResponse pass = passKitService.generateNomadPassportPass(1L, "MCM999", "BKK");
+        PassKitService.AppleWalletPassResponse pass = passKitService.generateNomadPassportPass(1L, "HST999", "BKK");
 
         assertThat(pass.getPassTypeIdentifier()).isEqualTo("pass.com.herstory.passport");
-        assertThat(pass.getSerialNumber()).contains("MCM999");
+        assertThat(pass.getSerialNumber()).contains("HST999");
         assertThat(pass.getPkpassDownloadUrl()).contains(".pkpass");
     }
 }

@@ -64,7 +64,7 @@ class CareServiceTest {
 
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
 
-        CareDto.StampRequest req = new CareDto.StampRequest(1L, "MCM 방콕 시암파라곤");
+        CareDto.StampRequest req = new CareDto.StampRequest(1L, "Herstory 방콕 시암파라곤");
         CareDto.StampResponse res = careService.checkInCityStamp(req);
 
         assertThat(res.getMemberId()).isEqualTo(1L);

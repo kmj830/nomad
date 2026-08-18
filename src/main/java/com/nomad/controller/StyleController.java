@@ -24,7 +24,7 @@ public class StyleController {
     private final CareService careService;
     private final JourneyService journeyService;
 
-    @Operation(summary = "공항 및 목적지 팝업 스팟 목록 조회", description = "MCM 플래그십 스토어, 공항 면세 부티크 및 Care Desk 스팟 목록을 반환합니다.")
+    @Operation(summary = "공항 및 목적지 팝업 스팟 목록 조회", description = "럭셔리 플래그십 스토어, 공항 면세 부티크 및 Care Desk 스팟 목록을 반환합니다.")
     @GetMapping({"/popup-spots", "/popup-spot"})
     public ResponseEntity<CareDto.CareResponse> getPopupSpots(@RequestParam(required = false) Long memberId) {
         Long targetMemberId = memberId != null ? memberId : 1L;

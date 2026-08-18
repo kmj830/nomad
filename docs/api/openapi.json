@@ -2,16 +2,16 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Herstory AI - Backend REST API Specification",
-    "description": "Herstory AI 백엔드 시스템 OpenAPI 3.0 명세서입니다.\n- Auth API: 로그인 & VIP 허브\n- Journey API: OCR 스캔, 기후 분석, Live Card 위젯, Apple Wallet .pkpass\n- Cart API: 스마트 장바구니 & ChoiceFit 피팅 신청\n- Store API: 면세점 체크인 & 매장 직원 태블릿 SSE 실시간 알림\n- Order API: 면세 결제 & Herstory Miles 적립\n- Care API: 현지 MCM 스팟, Google Maps, OpenAI 가죽 케어, 시티 스탬프, FCM\n- Flight API: 항공편 실시간 운항 정보 조회\n- Health API: 시스템 헬스 모니터링",
+    "description": "Herstory AI 백엔드 시스템 OpenAPI 3.0 명세서입니다.\n- Auth API: 로그인 & VIP 허브\n- Journey API: OCR 스캔, 기후 분석, Live Card 위젯, Apple Wallet .pkpass\n- Cart API: 스마트 장바구니 & ChoiceFit 피팅 신청\n- Store API: 면세점 체크인 & 매장 직원 태블릿 SSE 실시간 알림\n- Order API: 면세 결제 & Herstory Miles 적립\n- Care API: 현지 럭셔리 부티크 스팟, Google Maps, OpenAI 가죽 케어, 시티 스탬프, FCM\n- Flight API: 항공편 실시간 운항 정보 조회\n- Health API: 시스템 헬스 모니터링",
     "version": "v1.0.0",
     "contact": {
       "name": "Herstory Tech Team",
-      "email": "tech@herstory.ai"
+      "email": "tech@herstory.com"
     }
   },
   "servers": [
     {
-      "url": "https://mcm-nomad-backend.onrender.com",
+      "url": "https://herstory-backend.onrender.com",
       "description": "Render Production Server (Live)"
     },
     {
@@ -25,7 +25,7 @@
     { "name": "3. Cart API (스마트 장바구니 & ChoiceFit)", "description": "스마트 장바구니 상품 담기 및 VIP 피팅 신청(ChoiceFit) 분기 설정 API" },
     { "name": "4. Store API (공항 면세점 체크인 & 태블릿 연동)", "description": "BLE/NFC/QR 체크인 및 매장 직원 어시스턴트 태블릿 알림 연동 API" },
     { "name": "5. Order API (면세 결제 & 마일리지)", "description": "선속 결제, VIP 티어별 면세 한도 할인 적용 및 Herstory Miles 마일리지 적립 API" },
-    { "name": "6. Care API (현지 비세토스 스팟 & 케어)", "description": "목적지 현지 MCM 스팟 탐색 및 비세토스 가죽 케어 푸시 메시지 API" },
+    { "name": "6. Care API (현지 부티크 스팟 & 케어)", "description": "목적지 현지 럭셔리 스팟 탐색 및 가죽 케어 푸시 메시지 API" },
     { "name": "7. Flight API (실시간 항공편 & 운항 정보)", "description": "편명(IATA Code) 기준 실시간 항공편 운항 상태, 터미널, 탑승구(Gate) 조회 API" },
     { "name": "8. System Health API (서버 및 외부 API 모니터링)", "description": "Render PostgreSQL DB, OpenAI GPT-4o, Google Maps, Flight API 실시간 상태 모니터링 API" }
   ],
@@ -227,7 +227,7 @@
       "get": {
         "tags": ["2. Journey API (여정 & 큐레이션)"],
         "summary": "목적지 기후 및 여행 분석 데이터 조회",
-        "description": "목적지 날씨 및 기후 정보를 분석하여 맞춤형 MCM 상품을 추천합니다.",
+        "description": "목적지 날씨 및 기후 정보를 분석하여 맞춤형 럭셔리 상품을 추천합니다.",
         "operationId": "analyzeJourney",
         "parameters": [
           {
@@ -603,9 +603,9 @@
     },
     "/api/v1/care/visetos-spots": {
       "get": {
-        "tags": ["6. Care API (현지 비세토스 스팟 & 케어)"],
-        "summary": "현지 비세토스 스팟 탐색 및 가죽 케어 메시지 조회",
-        "description": "목적지의 현지 MCM 플래그십 스토어 및 Care Desk 정보를 조회하고 맞춤형 케어 가이드를 반환합니다.",
+        "tags": ["6. Care API (현지 부티크 스팟 & 케어)"],
+        "summary": "현지 글로벌 럭셔리 매장 스팟 탐색 및 가죽 케어 메시지 조회",
+        "description": "목적지의 현지 럭셔리 플래그십 스토어 및 Care Desk 정보를 조회하고 맞춤형 케어 가이드를 반환합니다.",
         "operationId": "getVisetosSpots",
         "parameters": [
           {
@@ -631,9 +631,9 @@
     },
     "/api/v1/care/google-maps": {
       "get": {
-        "tags": ["6. Care API (현지 비세토스 스팟 & 케어)"],
-        "summary": "SCR-502 Google Maps API 실시간 MCM 매장 탐색",
-        "description": "Google Maps API를 활용해 현지 MCM 부티크 위치 좌표 및 구글 지도 길안내 링크를 반환합니다.",
+        "tags": ["6. Care API (현지 부티크 스팟 & 케어)"],
+        "summary": "SCR-502 Google Maps API 실시간 럭셔리 매장 탐색",
+        "description": "Google Maps API를 활용해 현지 명품 부티크 위치 좌표 및 구글 지도 길안내 링크를 반환합니다.",
         "operationId": "getGoogleMapsSpots",
         "parameters": [
           {
@@ -660,7 +660,7 @@
     },
     "/api/v1/care/ai-care-tip": {
       "get": {
-        "tags": ["6. Care API (현지 비세토스 스팟 & 케어)"],
+        "tags": ["6. Care API (현지 부티크 스팟 & 케어)"],
         "summary": "SCR-501 OpenAI 기반 가죽 케어 AI 가이드 생성 (다국어 지원: ko, en, ja, zh)",
         "description": "OpenAI GPT-4o를 활용해 구입 제품, 현지 기후 조건 및 다국어(ko, en, ja, zh) 맞춤형 가죽 관리 팁을 생성합니다.",
         "operationId": "getAiCareTip",
@@ -669,7 +669,7 @@
             "name": "productName",
             "in": "query",
             "required": false,
-            "schema": { "type": "string", "default": "MCM Visetos 백팩" }
+            "schema": { "type": "string", "default": "럭셔리 레더 백팩" }
           },
           {
             "name": "weather",
@@ -698,7 +698,7 @@
     },
     "/api/v1/care/push-test": {
       "post": {
-        "tags": ["6. Care API (현지 비세토스 스팟 & 케어)"],
+        "tags": ["6. Care API (현지 부티크 스팟 & 케어)"],
         "summary": "FCM 디바이스 푸시 알림 테스트",
         "description": "Firebase Cloud Messaging(FCM) 푸시 알림 발송 테스트를 진행합니다.",
         "operationId": "testPushNotification",
@@ -732,9 +732,9 @@
     },
     "/api/v1/care/stamp-checkin": {
       "post": {
-        "tags": ["6. Care API (현지 비세토스 스팟 & 케어)"],
+        "tags": ["6. Care API (현지 부티크 스팟 & 케어)"],
         "summary": "SCR-502 현지 시티 패스포트 스탬프 획득 & 보상 적립",
-        "description": "목적지 도시 MCM 부티크 방문 시 패스포트 스탬프를 획득하고 보너스 Herstory Miles를 적립합니다.",
+        "description": "목적지 도시 럭셔리 부티크 방문 시 패스포트 스탬프를 획득하고 보너스 Herstory Miles를 적립합니다.",
         "operationId": "checkInCityStamp",
         "requestBody": {
           "required": true,
@@ -877,7 +877,7 @@
         "type": "object",
         "required": ["email", "password"],
         "properties": {
-          "email": { "type": "string", "example": "vip@mcmworldwide.com" },
+          "email": { "type": "string", "example": "vip@herstory.com" },
           "password": { "type": "string", "example": "1234" }
         }
       },
@@ -885,7 +885,7 @@
         "type": "object",
         "properties": {
           "memberId": { "type": "integer", "format": "int64", "example": 1 },
-          "email": { "type": "string", "example": "vip@mcmworldwide.com" },
+          "email": { "type": "string", "example": "vip@herstory.com" },
           "name": { "type": "string", "example": "김노마드 (VIP)" },
           "vipTier": { "$ref": "#/components/schemas/VipTier" },
           "nomadMiles": { "type": "integer", "format": "int64", "example": 15000 },
@@ -897,7 +897,7 @@
         "required": ["memberId"],
         "properties": {
           "memberId": { "type": "integer", "format": "int64", "example": 1 },
-          "pnr": { "type": "string", "example": "MCM999" },
+          "pnr": { "type": "string", "example": "HST999" },
           "rawOcrText": { "type": "string", "example": "BOARDING PASS PASSENGER: KIM/NOMAD FLIGHT: KE651 ICN BKK" },
           "origin": { "type": "string", "example": "ICN" },
           "destination": { "type": "string", "example": "BKK" }
@@ -907,7 +907,7 @@
         "type": "object",
         "properties": {
           "journeyId": { "type": "integer", "format": "int64", "example": 1 },
-          "pnr": { "type": "string", "example": "MCM999" },
+          "pnr": { "type": "string", "example": "HST999" },
           "origin": { "type": "string", "example": "ICN" },
           "destination": { "type": "string", "example": "BKK" },
           "departureDateTime": { "type": "string", "format": "date-time" },
@@ -921,24 +921,24 @@
           "journeyId": { "type": "integer", "format": "int64", "example": 1 },
           "memberId": { "type": "integer", "format": "int64", "example": 1 },
           "memberName": { "type": "string", "example": "김노마드 (VIP)" },
-          "pnr": { "type": "string", "example": "MCM999" },
+          "pnr": { "type": "string", "example": "HST999" },
           "origin": { "type": "string", "example": "ICN" },
           "destination": { "type": "string", "example": "BKK" },
           "departureDateTime": { "type": "string", "format": "date-time" },
           "flightStatus": { "$ref": "#/components/schemas/FlightStatus" },
           "destinationWeather": { "type": "string", "example": "열대성 스콜 (기온 32°C, 습도 85%)" },
-          "recommendationReason": { "type": "string", "example": "목적지 비/습도 기후에 적합한 MCM 방수 비세토스 컬렉션 맞춤 제안" }
+          "recommendationReason": { "type": "string", "example": "목적지 비/습도 기후에 적합한 럭셔리 방수 레더 컬렉션 맞춤 제안" }
         }
       },
       "Product": {
         "type": "object",
         "properties": {
           "id": { "type": "integer", "format": "int64", "example": 1 },
-          "name": { "type": "string", "example": "MCM 클래식 비세토스 방수 스타크 백팩" },
+          "name": { "type": "string", "example": "럭셔리 클래식 방수 스타크 백팩" },
           "category": { "$ref": "#/components/schemas/ProductCategory" },
           "price": { "type": "number", "example": 1250000.00 },
           "stock": { "type": "integer", "example": 45 },
-          "imageUrl": { "type": "string", "example": "https://kr.mcmworldwide.com/images/backpack-01.png" },
+          "imageUrl": { "type": "string", "example": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80" },
           "description": { "type": "string", "example": "열대 스콜 방수 코팅 캔버스 백팩" },
           "isVipExclusive": { "type": "boolean", "example": false }
         }
@@ -961,13 +961,13 @@
         "type": "object",
         "properties": {
           "journeyId": { "type": "integer", "format": "int64", "example": 1 },
-          "pnr": { "type": "string", "example": "MCM999" },
+          "pnr": { "type": "string", "example": "HST999" },
           "destination": { "type": "string", "example": "BKK" },
           "departureDateTime": { "type": "string", "format": "date-time" },
           "remainingMinutesToDeparture": { "type": "integer", "format": "int64", "example": 125 },
           "gate": { "type": "string", "example": "Gate 24 (T1)" },
           "flightStatus": { "$ref": "#/components/schemas/FlightStatus" },
-          "loungeLocation": { "type": "string", "example": "인천공항 제1여객터미널 4층 MCM 라운지" },
+          "loungeLocation": { "type": "string", "example": "인천공항 제1여객터미널 4층 Herstory 라운지" },
           "loungeWaitTime": { "type": "string", "example": "대기 없음" },
           "liveGuideMessage": { "type": "string", "example": "탑승까지 125분 남았습니다." }
         }
@@ -982,7 +982,7 @@
           "description": { "type": "string", "example": "Herstory VIP Pass" },
           "logoText": { "type": "string", "example": "HERSTORY AI" },
           "boardingPassDetails": { "type": "object" },
-          "pkpassDownloadUrl": { "type": "string", "example": "https://mcm-nomad-backend.onrender.com/api/v1/journey/apple-wallet-pass/download/HST999.pkpass" }
+          "pkpassDownloadUrl": { "type": "string", "example": "/api/v1/journey/apple-wallet-pass/download/HST999.pkpass" }
         }
       },
       "AddItemRequest": {
@@ -1007,11 +1007,11 @@
         "properties": {
           "cartItemId": { "type": "integer", "format": "int64", "example": 1 },
           "productId": { "type": "integer", "format": "int64", "example": 1 },
-          "productName": { "type": "string", "example": "MCM 클래식 비세토스 방수 스타크 백팩" },
+          "productName": { "type": "string", "example": "럭셔리 클래식 방수 스타크 백팩" },
           "category": { "type": "string", "example": "BACKPACK" },
           "price": { "type": "number", "example": 1250000.00 },
           "quantity": { "type": "integer", "example": 1 },
-          "imageUrl": { "type": "string", "example": "https://kr.mcmworldwide.com/images/backpack-01.png" }
+          "imageUrl": { "type": "string", "example": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80" }
         }
       },
       "CartResponse": {
@@ -1034,7 +1034,7 @@
         "properties": {
           "memberId": { "type": "integer", "format": "int64", "example": 1 },
           "checkInType": { "$ref": "#/components/schemas/CheckInType", "default": "BLE" },
-          "qrCode": { "type": "string", "example": "MCM-VIP-GATE24" }
+          "qrCode": { "type": "string", "example": "HST-VIP-GATE24" }
         }
       },
       "CheckInResponse": {
@@ -1080,7 +1080,7 @@
         "type": "object",
         "properties": {
           "productId": { "type": "integer", "format": "int64", "example": 1 },
-          "productName": { "type": "string", "example": "MCM 클래식 비세토스 방수 스타크 백팩" },
+          "productName": { "type": "string", "example": "럭셔리 클래식 방수 스타크 백팩" },
           "quantity": { "type": "integer", "example": 1 },
           "price": { "type": "number", "example": 1250000.00 }
         }
@@ -1106,9 +1106,9 @@
       "VisetosSpot": {
         "type": "object",
         "properties": {
-          "spotName": { "type": "string", "example": "MCM Siam Paragon Flagship" },
+          "spotName": { "type": "string", "example": "Herstory Siam Paragon Flagship" },
           "address": { "type": "string", "example": "991 Rama I Rd, Bangkok" },
-          "locationType": { "type": "string", "example": "MCM Flagship & VIP Lounge" },
+          "locationType": { "type": "string", "example": "Herstory Flagship & VIP Lounge" },
           "latitude": { "type": "number", "example": 13.7466 },
           "longitude": { "type": "number", "example": 100.5349 },
           "careServiceAvailable": { "type": "string", "example": "가죽 방수 코팅 케어 제공" }
@@ -1130,14 +1130,14 @@
         "required": ["memberId", "spotName"],
         "properties": {
           "memberId": { "type": "integer", "format": "int64", "example": 1 },
-          "spotName": { "type": "string", "example": "MCM Siam Paragon" }
+          "spotName": { "type": "string", "example": "Herstory Siam Paragon" }
         }
       },
       "StampResponse": {
         "type": "object",
         "properties": {
           "memberId": { "type": "integer", "format": "int64", "example": 1 },
-          "spotName": { "type": "string", "example": "MCM Siam Paragon Flagship" },
+          "spotName": { "type": "string", "example": "Herstory Siam Paragon Flagship" },
           "cityName": { "type": "string", "example": "Bangkok" },
           "earnedMiles": { "type": "integer", "example": 1000 },
           "totalMiles": { "type": "integer", "format": "int64", "example": 69525 },
@@ -1148,8 +1148,8 @@
         "type": "object",
         "properties": {
           "success": { "type": "boolean", "example": true },
-          "messageId": { "type": "string", "example": "projects/mcm-nomad-ai/messages/fcm-12345" },
-          "title": { "type": "string", "example": "MCM VIP 알림" },
+          "messageId": { "type": "string", "example": "projects/herstory-nomad-ai/messages/fcm-12345" },
+          "title": { "type": "string", "example": "Herstory VIP 알림" },
           "body": { "type": "string", "example": "매장 방문을 환영합니다" },
           "statusMessage": { "type": "string", "example": "FCM 푸시 메시지 발송 완료" }
         }

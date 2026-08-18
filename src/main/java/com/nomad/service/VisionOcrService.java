@@ -39,12 +39,12 @@ public class VisionOcrService {
     }
 
     private String extractPnrRegex(String text) {
-        if (text == null || text.isBlank()) return "MCM999";
+        if (text == null || text.isBlank()) return "HST999";
         Pattern pattern = Pattern.compile("[A-Z0-9]{6}");
         Matcher matcher = pattern.matcher(text.toUpperCase());
         if (matcher.find()) {
             return matcher.group();
         }
-        return "MCM999";
+        return "HST999";
     }
 }

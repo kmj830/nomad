@@ -45,7 +45,7 @@ public class PassKitService {
                 .description("Herstory VIP Flight Boarding & Fitting Pass")
                 .logoText("HERSTORY AI")
                 .boardingPassDetails(details)
-                .pkpassDownloadUrl("https://mcm-nomad-backend.onrender.com/api/v1/journey/apple-wallet-pass/download/" + (pnr != null ? pnr : "HST999") + ".pkpass")
+                .pkpassDownloadUrl("/api/v1/journey/apple-wallet-pass/download/" + (pnr != null ? pnr : "HST999") + ".pkpass")
                 .build();
     }
 

@@ -57,7 +57,7 @@ public class PreflightController {
                 .vipTier(member != null ? member.getVipTier().name() : "VIP")
                 .nomadMiles(member != null ? member.getNomadMiles() : 15000L)
                 .activeJourneyId(latestJourney != null ? latestJourney.getId() : 1L)
-                .activePnr(latestJourney != null ? latestJourney.getPnr() : "MCM999")
+                .activePnr(latestJourney != null ? latestJourney.getPnr() : "HST999")
                 .destination(latestJourney != null ? latestJourney.getDestination() : "BKK (방콕 수완나품)")
                 .weatherInfo(latestJourney != null ? latestJourney.getDestinationWeather() : "열대성 스콜 (기온 32°C, 습도 85%)")
                 .statusMessage("Herstory VIP Hub에 오신 것을 환영합니다.")

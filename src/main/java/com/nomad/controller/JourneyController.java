@@ -94,7 +94,7 @@ public class JourneyController {
         return ResponseEntity.ok(journeyService.getJourney(journeyId));
     }
 
-    @Operation(summary = "목적지 기후 및 여행 분석 데이터 조회", description = "목적지 날씨 및 기후 정보를 분석하여 맞춤형 MCM 상품을 추천합니다.")
+    @Operation(summary = "목적지 기후 및 여행 분석 데이터 조회", description = "목적지 날씨 및 기후 정보를 분석하여 맞춤형 럭셔리 상품을 추천합니다.")
     @GetMapping("/analysis/{journeyId}")
     public ResponseEntity<JourneyDto.JourneyAnalysisResponse> analyzeJourney(@PathVariable Long journeyId) {
         return ResponseEntity.ok(journeyService.analyzeJourney(journeyId));
@@ -109,7 +109,7 @@ public class JourneyController {
     @Operation(summary = "SCR-201 Apple Wallet 디지털 패스(.pkpass) 생성", description = "비행 탑승권 및 VIP 여정 보딩패스를 Apple Wallet PKPass 형태로 생성합니다.")
     @GetMapping("/apple-wallet-pass/{journeyId}")
     public ResponseEntity<com.nomad.service.PassKitService.AppleWalletPassResponse> getAppleWalletPass(@PathVariable Long journeyId) {
-        return ResponseEntity.ok(passKitService.generateNomadPassportPass(journeyId, "MCM999", "BKK (방콕 수완나품)"));
+        return ResponseEntity.ok(passKitService.generateNomadPassportPass(journeyId, "HST999", "BKK (방콕 수완나품)"));
     }
 
     @Operation(summary = "Apple Wallet (.pkpass) 바이너리 파일 다운로드", description = "iOS 아이폰 디바이스 지갑(Wallet) 앱에 직접 추가할 수 있는 .pkpass 패스 파일을 다운로드합니다.")
@@ -117,7 +117,7 @@ public class JourneyController {
     public ResponseEntity<byte[]> downloadAppleWalletPass(@PathVariable String journeyId) {
         byte[] pkpassBytes = passKitService.generatePkpassZipBytes(1L, journeyId, "BKK");
         return ResponseEntity.ok()
-                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"mcm-boarding-pass.pkpass\"")
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"herstory-boarding-pass.pkpass\"")
                 .body(pkpassBytes);
     }
 
@@ -126,7 +126,7 @@ public class JourneyController {
     public ResponseEntity<byte[]> downloadAppleWalletPassFile(@PathVariable String journeyId) {
         byte[] pkpassBytes = passKitService.generatePkpassZipBytes(1L, journeyId, "BKK");
         return ResponseEntity.ok()
-                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"mcm-pass-" + journeyId + ".pkpass\"")
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"herstory-pass-" + journeyId + ".pkpass\"")
                 .body(pkpassBytes);
     }
 }

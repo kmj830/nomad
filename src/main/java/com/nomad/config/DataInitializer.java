@@ -45,7 +45,7 @@ public class DataInitializer implements CommandLineRunner {
 
         if (memberRepository.count() == 0) {
             vipMember = memberRepository.save(Member.builder()
-                    .email("vip@mcmworldwide.com")
+                    .email("vip@herstory.com")
                     .password("1234")
                     .name("김노마드 (VIP)")
                     .phone("010-1234-5678")
@@ -54,7 +54,7 @@ public class DataInitializer implements CommandLineRunner {
                     .build());
 
             goldMember = memberRepository.save(Member.builder()
-                    .email("gold@mcmworldwide.com")
+                    .email("gold@herstory.com")
                     .password("1234")
                     .name("이여행 (Gold)")
                     .phone("010-9876-5432")
@@ -63,7 +63,7 @@ public class DataInitializer implements CommandLineRunner {
                     .build());
 
             platinumMember = memberRepository.save(Member.builder()
-                    .email("platinum@mcmworldwide.com")
+                    .email("platinum@herstory.com")
                     .password("1234")
                     .name("박스타 (Platinum)")
                     .phone("010-5555-7777")

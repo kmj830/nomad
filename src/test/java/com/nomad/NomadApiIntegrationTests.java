@@ -26,7 +26,7 @@ class NomadApiIntegrationTests {
     private ObjectMapper objectMapper;
 
     @Test
-    @DisplayName("전체 MCM Nomad Passport AI 핵심 비즈니스 흐름 통합 테스트")
+    @DisplayName("전체 Herstory AI 핵심 비즈니스 흐름 통합 테스트")
     void fullNomadWorkflowTest() throws Exception {
         // Phase 1: Auth SMS Verification & Password Reset
         AuthDto.SendVerificationCodeRequest sendCodeReq = new AuthDto.SendVerificationCodeRequest("010-1234-5678");
@@ -41,20 +41,20 @@ class NomadApiIntegrationTests {
                         .content(objectMapper.writeValueAsString(verifyReq)))
                 .andExpect(status().isOk());
 
-        AuthDto.ResetPasswordRequest resetReq = new AuthDto.ResetPasswordRequest("vip@mcmworldwide.com", "010-1234-5678", "newpassword1234");
+        AuthDto.ResetPasswordRequest resetReq = new AuthDto.ResetPasswordRequest("vip@herstory.com", "010-1234-5678", "newpassword1234");
         mockMvc.perform(post("/api/v1/auth/password/reset")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(resetReq)))
                 .andExpect(status().isOk());
 
         // Phase 1: Auth Register & Login
-        AuthDto.RegisterRequest regReq = new AuthDto.RegisterRequest("newuser@mcmworldwide.com", "1234", "신규유저", "010-0000-0000");
+        AuthDto.RegisterRequest regReq = new AuthDto.RegisterRequest("newuser@herstory.com", "1234", "신규유저", "010-0000-0000");
         mockMvc.perform(post("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(regReq)))
                 .andExpect(status().isOk());
 
-        AuthDto.LoginRequest loginReq = new AuthDto.LoginRequest("vip@mcmworldwide.com", "newpassword1234");
+        AuthDto.LoginRequest loginReq = new AuthDto.LoginRequest("vip@herstory.com", "newpassword1234");
         MvcResult loginResult = mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginReq)))
@@ -66,7 +66,7 @@ class NomadApiIntegrationTests {
         Long memberId = loginRes.getMemberId();
 
         // Phase 1: Boarding Pass OCR Scan
-        JourneyDto.ScanRequest scanReq = new JourneyDto.ScanRequest(memberId, "MCM999", "BOARDING PASS PNR MCM999", "ICN", "BKK");
+        JourneyDto.ScanRequest scanReq = new JourneyDto.ScanRequest(memberId, "HST999", "BOARDING PASS PNR HST999", "ICN", "BKK");
         MvcResult scanResult = mockMvc.perform(post("/api/v1/journey/scan")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(scanReq)))
@@ -146,7 +146,7 @@ class NomadApiIntegrationTests {
         // Phase 3: FCM Push Test
         mockMvc.perform(post("/api/v1/care/push-test")
                         .param("title", "테스트 푸시")
-                        .param("body", "MCM 가죽 케어 가이드"))
+                        .param("body", "럭셔리 가죽 케어 가이드"))
                 .andExpect(status().isOk());
 
         // Phase 1: Real-time Flight Lookup Test
@@ -158,7 +158,7 @@ class NomadApiIntegrationTests {
                 .andExpect(status().isOk());
 
         // Phase 3: City Passport Stamp Check-in & Bonus Miles
-        CareDto.StampRequest stampReq = new CareDto.StampRequest(memberId, "MCM 방콕 시암파라곤");
+        CareDto.StampRequest stampReq = new CareDto.StampRequest(memberId, "Herstory 방콕 시암파라곤");
         mockMvc.perform(post("/api/v1/care/stamp-checkin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(stampReq)))

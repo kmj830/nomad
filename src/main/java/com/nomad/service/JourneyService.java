@@ -57,8 +57,8 @@ public class JourneyService {
                 .flightStatus(FlightStatus.SCHEDULED)
                 .destinationWeather(weatherData.getWeatherDescription())
                 .recommendationReason(weatherData.isRainy()
-                        ? "목적지 비/습도 기후에 적합한 MCM 방수 비세토스 컬렉션 맞춤 제안"
-                        : "목적지 여정 전용 MCM 경량 라이트웨이트 더플백 컬렉션 제안")
+                        ? "목적지 비/습도 기후에 적합한 럭셔리 방수 레더 컬렉션 맞춤 제안"
+                        : "목적지 여정 전용 럭셔리 경량 라이트웨이트 더플백 컬렉션 제안")
                 .build();
 
         Journey saved = journeyRepository.save(journey);
@@ -94,7 +94,7 @@ public class JourneyService {
             recommended = allProducts;
         }
 
-        String topProductName = recommended.isEmpty() ? "MCM 비세토스 백팩" : recommended.get(0).getName();
+        String topProductName = recommended.isEmpty() ? "럭셔리 레더 백팩" : recommended.get(0).getName();
         String aiAdvice = openAiService.generatePersonalizedStylingAdvice(
                 journey.getDestination(),
                 weather.getWeatherDescription(),
@@ -214,7 +214,7 @@ public class JourneyService {
         if (rawText != null && rawText.length() >= 6) {
             return rawText.substring(0, 6).toUpperCase();
         }
-        return "MCM888";
+        return "HST888";
     }
 }
 

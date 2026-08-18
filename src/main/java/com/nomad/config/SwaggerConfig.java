@@ -20,7 +20,7 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI nomadOpenAPI() {
         Server renderServer = new Server();
-        renderServer.setUrl("https://mcm-nomad-backend.onrender.com" + contextPath);
+        renderServer.setUrl("https://nomad-backend.onrender.com" + contextPath);
         renderServer.setDescription("Render Production Server (Live)");
 
         Server relativeServer = new Server();
@@ -41,10 +41,10 @@ public class SwaggerConfig {
                                 "- **Cart API**: 스마트 장바구니 & VIP 피팅(ChoiceFit) 분기 설정\n" +
                                 "- **Store API**: 면세점 BLE/NFC/QR 오토 체크인 & 매장 직원 태블릿 알림\n" +
                                 "- **Order API**: 선속 결제, VIP 면세 한도 할인 적용, Herstory Miles 적립\n" +
-                                "- **Care API**: 현지 MCM 비세토스 스팟 및 가죽 케어 푸시 가이드")
+                                "- **Care API**: 현지 럭셔리 부티크 스팟 및 가죽 케어 푸시 가이드")
                         .version("v1.0.0")
-                        .contact(new Contact().name("Herstory Tech Team").email("tech@herstory.ai"))
-                        .license(new License().name("Herstory License").url("https://herstory.ai")))
+                        .contact(new Contact().name("Herstory Tech Team").email("tech@herstory.com"))
+                        .license(new License().name("Herstory License").url("https://herstory.com")))
                 .servers(List.of(renderServer, relativeServer, localServer));
     }
 }

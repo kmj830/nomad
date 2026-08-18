@@ -33,13 +33,13 @@ public class FcmService {
     }
 
     public PushResponse sendPushNotification(String deviceToken, String title, String body) {
-        String token = deviceToken != null ? deviceToken : "SAMPLE_MCM_DEVICE_TOKEN_VIP";
+        String token = deviceToken != null ? deviceToken : "SAMPLE_HERSTORY_DEVICE_TOKEN_VIP";
 
         if (isApiKeyAvailable()) {
             // FCM HTTP v1 REST API call structure simulation
             return PushResponse.builder()
                     .success(true)
-                    .messageId("projects/mcm-nomad-ai/messages/fcm-" + System.currentTimeMillis())
+                    .messageId("projects/herstory-nomad-ai/messages/fcm-" + System.currentTimeMillis())
                     .title(title)
                     .body(body)
                     .statusMessage("FCM HTTP v1 푸시 메시지가 정상 발송되었습니다.")
