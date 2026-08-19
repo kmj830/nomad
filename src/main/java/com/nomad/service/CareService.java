@@ -22,6 +22,7 @@ public class CareService {
     private final MemberRepository memberRepository;
     private final GoogleMapsService googleMapsService;
     private final com.nomad.domain.product.ProductRepository productRepository;
+    private final com.nomad.domain.mileage.MileageHistoryRepository mileageHistoryRepository;
 
     public CareDto.CareResponse getVisetosSpots(Long memberId) {
         return getVisetosSpots(memberId, "ALL");
@@ -67,6 +68,15 @@ public class CareService {
         member.addMiles(earnedMiles);
 
         String spotName = request.getSpotName() != null ? request.getSpotName() : "Herstory 시암파라곤 럭셔리 부티크";
+
+        mileageHistoryRepository.save(com.nomad.domain.mileage.MileageHistory.builder()
+                .member(member)
+                .title("시티 스탬프 획득 (" + spotName + ")")
+                .amount((long) earnedMiles)
+                .type(com.nomad.domain.mileage.MileageType.EARNED_STAMP)
+                .balanceAfter(member.getNomadMiles())
+                .description("도시 부티크 방문 스탬프 리워드")
+                .build());
 
         return CareDto.StampResponse.builder()
                 .memberId(member.getId())

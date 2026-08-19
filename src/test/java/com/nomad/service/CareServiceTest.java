@@ -36,6 +36,9 @@ class CareServiceTest {
     @Mock
     private com.nomad.domain.product.ProductRepository productRepository;
 
+    @Mock
+    private com.nomad.domain.mileage.MileageHistoryRepository mileageHistoryRepository;
+
     @InjectMocks
     private CareService careService;
 

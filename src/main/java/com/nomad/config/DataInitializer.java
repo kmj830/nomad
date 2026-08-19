@@ -35,6 +35,7 @@ public class DataInitializer implements CommandLineRunner {
     private final JourneyRepository journeyRepository;
     private final SmartCartRepository smartCartRepository;
     private final OrderRepository orderRepository;
+    private final com.nomad.domain.mileage.MileageHistoryRepository mileageHistoryRepository;
 
     @Override
     @Transactional
@@ -204,5 +205,39 @@ public class DataInitializer implements CommandLineRunner {
                 smartCartRepository.save(cart);
             }
         }
+
+        // 5. Initial Mileage History Seed (프로토타입 디자인 100% 매칭)
+        if (mileageHistoryRepository.count() == 0 && vipMember != null) {
+            mileageHistoryRepository.save(com.nomad.domain.mileage.MileageHistory.builder()
+                    .member(vipMember)
+                    .title("인천국제공항 제1여객터미널 부티크")
+                    .amount(4200L)
+                    .type(com.nomad.domain.mileage.MileageType.EARNED_PURCHASE)
+                    .balanceAfter(15000L)
+                    .description("면세점 구매 · 10월 14일")
+                    .createdAt(LocalDateTime.now().minusDays(2))
+                    .build());
+
+            mileageHistoryRepository.save(com.nomad.domain.mileage.MileageHistory.builder()
+                    .member(vipMember)
+                    .title("항공편 등록 ICN → HND")
+                    .amount(1500L)
+                    .type(com.nomad.domain.mileage.MileageType.EARNED_FLIGHT)
+                    .balanceAfter(10800L)
+                    .description("HND에서 ICN · 10월 13일")
+                    .createdAt(LocalDateTime.now().minusDays(3))
+                    .build());
+
+            mileageHistoryRepository.save(com.nomad.domain.mileage.MileageHistory.builder()
+                    .member(vipMember)
+                    .title("라운지 이용권 교환")
+                    .amount(-3000L)
+                    .type(com.nomad.domain.mileage.MileageType.USED_BENEFIT)
+                    .balanceAfter(9300L)
+                    .description("인천공항 T1 마티나 라운지 · 10월 9일")
+                    .createdAt(LocalDateTime.now().minusDays(7))
+                    .build());
+        }
     }
 }
+

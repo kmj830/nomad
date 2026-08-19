@@ -51,6 +51,9 @@ class OrderServiceTest {
     @Mock
     private StoreVisitRepository storeVisitRepository;
 
+    @Mock
+    private com.nomad.domain.mileage.MileageHistoryRepository mileageHistoryRepository;
+
     @InjectMocks
     private OrderService orderService;
 

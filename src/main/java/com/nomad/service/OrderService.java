@@ -29,6 +29,7 @@ public class OrderService {
     private final SmartCartRepository smartCartRepository;
     private final JourneyRepository journeyRepository;
     private final StoreVisitRepository storeVisitRepository;
+    private final com.nomad.domain.mileage.MileageHistoryRepository mileageHistoryRepository;
 
     @Transactional
     public OrderDto.OrderResponse checkout(OrderDto.CheckoutRequest request) {
@@ -66,6 +67,17 @@ public class OrderService {
         // Earn Nomad Miles (5% of final amount)
         int earnedMiles = finalAmount.multiply(BigDecimal.valueOf(0.05)).intValue();
         member.addMiles(earnedMiles);
+
+        if (earnedMiles > 0) {
+            mileageHistoryRepository.save(com.nomad.domain.mileage.MileageHistory.builder()
+                    .member(member)
+                    .title("인천 T1 부티크 면세 구매 적립")
+                    .amount((long) earnedMiles)
+                    .type(com.nomad.domain.mileage.MileageType.EARNED_PURCHASE)
+                    .balanceAfter(member.getNomadMiles())
+                    .description("면세 패스트 체크아웃 결제 완료 적립 (5%)")
+                    .build());
+        }
 
         Order order = Order.builder()
                 .member(member)

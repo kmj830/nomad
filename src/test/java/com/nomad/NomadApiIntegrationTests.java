@@ -239,6 +239,48 @@ class NomadApiIntegrationTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(3));
     }
+
+    @Test
+    @DisplayName("마일리지 잔액/상세내역/사용/양도/혜택교환 전체 비즈니스 흐름 통합 테스트")
+    void mileageWorkflowTest() throws Exception {
+        // 1. 마일리지 잔액 및 소멸 예정 정보 조회
+        mockMvc.perform(get("/api/v1/miles/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.memberId").value(1))
+                .andExpect(jsonPath("$.totalMiles").exists())
+                .andExpect(jsonPath("$.expiringMiles").exists());
+
+        // 2. 마일리지 상세 내역 조회 (초기 시드 데이터 확인)
+        mockMvc.perform(get("/api/v1/miles/history/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.items").isArray())
+                .andExpect(jsonPath("$.items.length()").value(3));
+
+        // 3. 마일리지 직접 사용
+        MileageDto.UseMilesRequest useReq = new MileageDto.UseMilesRequest(1L, 1000L, "프리미엄 의전 서비스", "패스트트랙");
+        mockMvc.perform(post("/api/v1/miles/use")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(useReq)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.usedMiles").value(1000));
+
+        // 4. 타 회원 양도 (1L -> 2L)
+        MileageDto.TransferRequest transferReq = new MileageDto.TransferRequest(1L, "gold@herstory.com", null, 1500L);
+        mockMvc.perform(post("/api/v1/miles/transfer")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(transferReq)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.transferredMiles").value(1500));
+
+        // 5. VIP 혜택 교환 (라운지 이용권)
+        MileageDto.RedeemBenefitRequest redeemReq = new MileageDto.RedeemBenefitRequest(1L, "LOUNGE_PASS", 3000L);
+        mockMvc.perform(post("/api/v1/miles/redeem")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(redeemReq)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.couponCode").exists());
+    }
 }
+
 
 
