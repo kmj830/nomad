@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>HER-STORY | 매장 직원 어시스턴트 태블릿</title>
+  
+  <!-- Pretendard Font -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#F0F9FF',
+              100: '#E0F2FE',
+              200: '#BAE6FD',
+              400: '#38BDF8',
+              500: '#0EA5E9',
+              600: '#0284C7',
+              700: '#0369A1',
+              900: '#0C4A6E',
+            },
+            dark: {
+              card: '#181C24',
+              bg: '#0F172A',
+            }
+          },
+          keyframes: {
+            'popup-in': {
+              '0%': { opacity: '0', transform: 'translateY(-14px) scale(0.96)' },
+              '100%': { opacity: '1', transform: 'translateY(0) scale(1)' }
+            },
+            'pulse-glow': {
+              '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+              '50%': { opacity: '0.6', transform: 'scale(1.15)' }
+            }
+          },
+          animation: {
+            'popup-in': 'popup-in 0.28s cubic-bezier(0.16, 1, 0.3, 1)',
+            'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Pretendard', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      background-color: #F8FAFC;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col bg-slate-50 selection:bg-sky-100 selection:text-sky-900">
+
+  <!-- TOP APP BAR (프로토타입 상단 바와 100% 일치) -->
+  <header class="sticky top-0 z-40 bg-white border-b border-slate-100 shadow-sm px-6 py-3.5">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      
+      <!-- Brand Logo (HER-STORY) & Staff Badge -->
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
+          <img src="/logo/logo-wordmark.png" alt="HER-STORY" class="h-8 w-auto object-contain" onerror="this.style.display='none'; document.getElementById('text-logo').style.display='flex';" />
+          <div id="text-logo" class="hidden flex-col">
+            <span class="text-xl font-bold tracking-tight text-sky-600 font-sans">HER-STORY</span>
+            <span class="text-[9px] text-slate-400 tracking-widest uppercase">Travel • Discover • Share</span>
+          </div>
+          <span class="ml-1 text-[11px] font-bold px-2.5 py-1 rounded-full bg-sky-500 text-white shadow-sm">STAFF TABLET</span>
+        </div>
+        <div class="hidden md:block h-4 w-px bg-slate-200"></div>
+        <span class="hidden md:inline-block text-xs text-slate-400 font-medium">인천공항 T1 면세 부티크 현장 관제</span>
+      </div>
+
+      <!-- Action & Live Status Badges -->
+      <div class="flex items-center gap-2.5">
+        <!-- Live SSE Status Indicator -->
+        <div id="connectionBadge" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 text-xs font-medium text-slate-600 transition-all">
+          <span id="statusDot" class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+          <span id="statusText">연결 대기 중</span>
+        </div>
+
+        <!-- Sound Toggle Button -->
+        <button id="soundToggleBtn" onclick="toggleSound()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-200 text-xs font-medium bg-white hover:bg-slate-50 text-slate-700 transition shadow-sm">
+          <span id="soundIcon">🔊</span>
+          <span id="soundLabel">알림음 ON</span>
+        </button>
+
+        <!-- Quick Demo Check-in Dropdown (현장 시연 및 테스트용) -->
+        <div class="relative group">
+          <button class="flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-sky-500 hover:bg-sky-600 text-white text-xs font-bold shadow-sm transition">
+            <span>⚡ 시연용 체크인</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </button>
+          <div class="absolute right-0 mt-1.5 w-52 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 hidden group-hover:block z-50 animate-popup-in">
+            <button onclick="triggerDemoCheckIn(1, '김노마드', 'VIP', true)" class="w-full text-left px-4 py-2.5 text-xs hover:bg-sky-50 text-slate-800 flex items-center justify-between">
+              <div>
+                <strong class="block text-slate-900">김노마드 (VIP)</strong>
+                <span class="text-[10px] text-sky-600">피팅 의상 비치 신청</span>
+              </div>
+              <span class="text-[10px] bg-sky-500 text-white font-bold px-1.5 py-0.5 rounded">ChoiceFit</span>
+            </button>
+            <button onclick="triggerDemoCheckIn(2, '이여행', 'GOLD', false)" class="w-full text-left px-4 py-2.5 text-xs hover:bg-sky-50 text-slate-800">
+              <strong class="block text-slate-900">이여행 (GOLD)</strong>
+              <span class="text-[10px] text-slate-400">웰컴 10% 쿠폰 발급</span>
+            </button>
+            <button onclick="triggerDemoCheckIn(3, '박스타', 'PLATINUM', false)" class="w-full text-left px-4 py-2.5 text-xs hover:bg-sky-50 text-slate-800">
+              <strong class="block text-slate-900">박스타 (PLATINUM)</strong>
+              <span class="text-[10px] text-slate-400">재방문 장바구니 보관</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN DASHBOARD -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- LEFT / MAIN FEED (8 cols): Real-time VIP Arrival & Check-in Cards -->
+    <section class="lg:col-span-8 flex flex-col gap-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+            <span>VIP 실시간 체크인 피드</span>
+            <span id="feedCounter" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-700">0</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">매장 근접 감지(BLE/NFC) 및 QR 스캔 고객이 실시간으로 동기화됩니다.</p>
+        </div>
+
+        <button onclick="clearFeed()" class="text-xs text-slate-400 hover:text-slate-600 transition">
+          목록 비우기
+        </button>
+      </div>
+
+      <!-- Feed List Container -->
+      <div id="checkInFeed" class="flex flex-col gap-3 min-h-[420px]">
+        <!-- Empty State -->
+        <div id="emptyFeedState" class="flex flex-col items-center justify-center p-14 bg-white rounded-3xl border border-dashed border-slate-200 text-center my-auto">
+          <div class="w-16 h-16 rounded-full bg-sky-50 text-sky-500 flex items-center justify-center text-3xl mb-3 shadow-inner">
+            🔔
+          </div>
+          <h3 class="text-base font-bold text-slate-800">고객 체크인을 대기 중입니다</h3>
+          <p class="text-xs text-slate-400 max-w-xs mt-1">고객이 부티크 매장에 도착하면 실시간 알림음과 함께 피팅 신청 의상 정보가 표시됩니다.</p>
+          <button onclick="triggerDemoCheckIn(1, '김노마드', 'VIP', true)" class="mt-4 px-4 py-2 rounded-full bg-sky-500 hover:bg-sky-600 text-white text-xs font-bold shadow-md transition">
+            테스트 체크인 발생시키기
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT COLUMN (4 cols): Smart Fitting Room Status & Quick Member Lookup -->
+    <aside class="lg:col-span-4 flex flex-col gap-6">
+      
+      <!-- Smart Fitting Room Status (프로토타입 스마트 피팅룸 위젯) -->
+      <div class="bg-white rounded-3xl border border-slate-100 p-5 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+            <span>🚪 스마트 피팅룸 현황</span>
+          </h3>
+          <span class="text-[10px] font-bold bg-sky-50 text-sky-600 px-2 py-0.5 rounded-full">3 Rooms</span>
+        </div>
+        
+        <div class="space-y-2.5">
+          <!-- Room 01 -->
+          <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-100">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs font-bold">01</div>
+              <div>
+                <p class="text-xs font-bold text-slate-800">Room 01</p>
+                <p class="text-[10px] text-slate-400">피팅 완료 (정리 중)</p>
+              </div>
+            </div>
+            <span class="text-[11px] font-medium text-slate-400">대기</span>
+          </div>
+
+          <!-- Room 02 -->
+          <div class="flex items-center justify-between p-3 rounded-2xl bg-emerald-50/60 border border-emerald-100">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold">02</div>
+              <div>
+                <p class="text-xs font-bold text-emerald-950">Room 02</p>
+                <p class="text-[10px] text-emerald-700">이용 가능 (비어있음)</p>
+              </div>
+            </div>
+            <span class="text-[11px] font-bold text-emerald-600">준비됨</span>
+          </div>
+
+          <!-- Room 03 (Active Fitting Preset Room) -->
+          <div class="flex items-center justify-between p-3 rounded-2xl bg-sky-50 border border-sky-200">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-full bg-sky-500 text-white flex items-center justify-center text-xs font-bold">03</div>
+              <div>
+                <p class="text-xs font-bold text-sky-950">Room 03</p>
+                <p id="room3Status" class="text-[10px] text-sky-600">VIP 의상 비치 대기 중</p>
+              </div>
+            </div>
+            <span id="room3Badge" class="text-[11px] font-bold bg-sky-500 text-white px-2 py-0.5 rounded-full">세팅 필요</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Member Lookup (ChoiceFit) -->
+      <div class="bg-white rounded-3xl border border-slate-100 p-5 shadow-sm">
+        <h3 class="text-sm font-bold text-slate-900 mb-1 flex items-center gap-1.5">
+          <span>🔍 VIP 피팅 의상 직접 조회</span>
+        </h3>
+        <p class="text-xs text-slate-400 mb-3.5">회원 번호(Member ID)를 입력하여 사전 신청된 스마트 피팅 의상을 조회합니다.</p>
+        
+        <form onsubmit="handleManualSearch(event)" class="flex gap-2">
+          <input 
+            type="number" 
+            id="searchMemberId" 
+            placeholder="Member ID (예: 1)" 
+            value="1" 
+            required 
+            class="flex-1 h-11 px-3.5 text-sm rounded-2xl border border-slate-200 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 outline-none font-mono"
+          />
+          <button type="submit" class="h-11 px-5 rounded-2xl bg-sky-500 hover:bg-sky-600 text-white text-xs font-bold shadow-md transition">
+            조회
+          </button>
+        </form>
+      </div>
+
+      <!-- Duty-Free & SOP Assistant Card (프로토타입 무드) -->
+      <div class="bg-gradient-to-br from-sky-50 to-blue-50/50 rounded-3xl border border-sky-100 p-5">
+        <h4 class="text-xs font-bold text-sky-950 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+          <span>✈️ 부티크 스태프 VIP 응대 가이드</span>
+        </h4>
+        <ul class="space-y-2 text-xs text-slate-600">
+          <li class="flex items-start gap-2">
+            <span class="text-sky-500 font-bold">•</span>
+            <span><strong>스마트 피팅 (ChoiceFit)</strong>: 고객 체크인 즉시 [피팅 상품 준비]를 눌러 <strong>Room 03</strong>에 의상을 사전 비치합니다.</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-sky-500 font-bold">•</span>
+            <span><strong>재방문 고객 (Re-entry)</strong>: 앱에 담아둔 보관 상품을 안내하고 즉시 Fast Checkout 결제를 도와드립니다.</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-sky-500 font-bold">•</span>
+            <span><strong>면세 한도 & 혜택</strong>: 웰컴 10% 쿠폰 및 노마드 마일리지가 현장에서 즉시 자동 차감됩니다.</span>
+          </li>
+        </ul>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- TOP-RIGHT POPUP TOAST (Animated on Arrival) -->
+  <div id="popupToastContainer" class="fixed top-20 right-6 z-50 flex flex-col gap-3 pointer-events-none">
+    <!-- Dynamic Toast injected here -->
+  </div>
+
+  <!-- SMART FITTING ROOM MODAL (프로토타입 스마트 피팅룸.png 디자인과 100% 동일한 비주얼) -->
+  <div id="choiceFitModal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[92vh] animate-popup-in">
+      
+      <!-- Modal Top Hero Section (프로토타입 블루 카드) -->
+      <div class="p-6 bg-sky-50 flex flex-col items-center text-center relative border-b border-sky-100/70">
+        <button onclick="closeChoiceFitModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-slate-500 flex items-center justify-center text-sm shadow-sm transition">
+          ✕
+        </button>
+        
+        <!-- Hanger Blue Circle Icon -->
+        <div class="w-16 h-16 rounded-2xl bg-sky-500 text-white flex items-center justify-center shadow-lg shadow-sky-500/30 mb-3">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4a3 3 0 00-3 3c0 1.3.8 2.4 2 2.8V11L4 16v3h16v-3l-7-5V9.8c1.2-.4 2-1.5 2-2.8a3 3 0 00-3-3z"/>
+          </svg>
+        </div>
+
+        <h3 class="text-lg font-bold text-slate-900">Room 03 · 의상 비치 준비</h3>
+        <p class="text-xs text-sky-700 mt-1 max-w-xs">
+          고객이 신청하신 피팅 의상을 피팅룸 3번에 비치합니다. 준비가 완료되면 [세팅 완료]를 눌러주세요.
+        </p>
+
+        <!-- Customer & Staff Info Bar -->
+        <div class="mt-4 w-full bg-white rounded-2xl p-3 flex items-center justify-between border border-sky-100 shadow-sm">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs font-bold">
+              VIP
+            </div>
+            <div class="text-left">
+              <p id="modalCustomerName" class="text-xs font-bold text-slate-900">김노마드 (VIP)</p>
+              <p class="text-[10px] text-slate-400 font-mono" id="modalMemberId">Member #1</p>
+            </div>
+          </div>
+          <span class="text-[11px] font-bold text-sky-600 bg-sky-50 px-2.5 py-1 rounded-full">
+            ChoiceFit 신청됨
+          </span>
+        </div>
+      </div>
+
+      <!-- Modal Body: Pending Items List -->
+      <div id="modalContent" class="p-6 overflow-y-auto custom-scrollbar flex-1 flex flex-col gap-3">
+        <!-- Content dynamically injected -->
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-4 bg-white border-t border-slate-100 flex items-center justify-between">
+        <div>
+          <span class="text-[11px] text-slate-400 block font-medium">피팅 상품 합계</span>
+          <span id="modalTotalPrice" class="text-base font-bold font-mono text-slate-900">₩0</span>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="closeChoiceFitModal()" class="px-4 py-2.5 rounded-full border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition">
+            닫기
+          </button>
+          <button id="modalCompleteBtn" onclick="markFittingReady()" class="px-5 py-2.5 rounded-full bg-sky-500 hover:bg-sky-600 text-white text-xs font-bold shadow-md shadow-sky-500/20 transition flex items-center gap-1.5">
+            <span>✓ 의상 비치 완료</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT CONTROLLER -->
+  <script>
+    let isConnected = false;
+    let soundEnabled = true;
+    let sseSource = null;
+    let alerts = [];
+    let activeModalMemberId = null;
+
+    function formatKRW(val) {
+      if (!val && val !== 0) return '₩0';
+      return new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW', maximumFractionDigits: 0 }).format(val);
+    }
+
+    // VIP Tier Badge (스카이 & 럭셔리 블루 계열)
+    function getTierBadgeHtml(tier) {
+      const t = (tier || 'VIP').toUpperCase();
+      if (t === 'DIAMOND') {
+        return `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-900 text-sky-300">💎 DIAMOND</span>`;
+      } else if (t === 'PLATINUM') {
+        return `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-100 text-sky-800 border border-sky-300">✨ PLATINUM</span>`;
+      } else if (t === 'GOLD') {
+        return `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300">👑 GOLD</span>`;
+      }
+      return `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-500 text-white">⭐ VIP</span>`;
+    }
+
+    // Web Audio Synthesizer (Chime)
+    function playDingDong() {
+      if (!soundEnabled) return;
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+
+        // 1st Tone (E5 - 659.25Hz)
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(659.25, ctx.currentTime);
+        gain1.gain.setValueAtTime(0, ctx.currentTime);
+        gain1.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.05);
+        gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.9);
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.start(ctx.currentTime);
+        osc1.stop(ctx.currentTime + 0.9);
+
+        // 2nd Tone (B4 - 493.88Hz)
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(493.88, ctx.currentTime + 0.25);
+        gain2.gain.setValueAtTime(0, ctx.currentTime + 0.25);
+        gain2.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.3);
+        gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.start(ctx.currentTime + 0.25);
+        osc2.stop(ctx.currentTime + 1.2);
+      } catch (e) {
+        console.warn('AudioContext failed:', e);
+      }
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const icon = document.getElementById('soundIcon');
+      const label = document.getElementById('soundLabel');
+      if (soundEnabled) {
+        icon.textContent = '🔊';
+        label.textContent = '알림음 ON';
+        playDingDong();
+      } else {
+        icon.textContent = '🔇';
+        label.textContent = '알림음 OFF';
+      }
+    }
+
+    // SSE Connection
+    function initSSE() {
+      const statusDot = document.getElementById('statusDot');
+      const statusText = document.getElementById('statusText');
+      const connectionBadge = document.getElementById('connectionBadge');
+
+      if (sseSource) {
+        sseSource.close();
+      }
+
+      const streamUrl = '/api/v1/store/notifications/stream';
+      sseSource = new EventSource(streamUrl);
+
+      sseSource.addEventListener('INIT', function(e) {
+        isConnected = true;
+        statusDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse-glow';
+        statusText.textContent = '실시간 스트림 연결됨';
+        connectionBadge.className = 'flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 text-xs font-medium text-emerald-700';
+      });
+
+      sseSource.addEventListener('VIP_CHECKIN_EVENT', function(e) {
+        try {
+          const data = JSON.parse(e.data);
+          handleIncomingCheckIn(data);
+        } catch (err) {
+          console.error('Failed to parse SSE checkin event:', err);
+        }
+      });
+
+      sseSource.onerror = function() {
+        isConnected = false;
+        statusDot.className = 'w-2.5 h-2.5 rounded-full bg-rose-500';
+        statusText.textContent = '재연결 시도 중...';
+        connectionBadge.className = 'flex items-center gap-2 px-3 py-1.5 rounded-full bg-rose-50 text-xs font-medium text-rose-700';
+      };
+    }
+
+    function handleIncomingCheckIn(checkIn) {
+      alerts.unshift(checkIn);
+      renderFeed();
+      showToastPopup(checkIn);
+      playDingDong();
+
+      if (checkIn.choiceFitRequested) {
+        document.getElementById('room3Status').textContent = `${checkIn.memberName} 고객 의상 세팅 요청`;
+        document.getElementById('room3Badge').className = 'text-[11px] font-bold bg-amber-500 text-white px-2 py-0.5 rounded-full animate-bounce';
+        document.getElementById('room3Badge').textContent = '세팅 요청!';
+      }
+    }
+
+    // Toast Popup in Top-Right
+    function showToastPopup(checkIn) {
+      const container = document.getElementById('popupToastContainer');
+      const toastId = 'toast-' + Date.now();
+      const toast = document.createElement('div');
+      toast.id = toastId;
+      toast.className = 'pointer-events-auto w-80 sm:w-92 bg-white rounded-3xl shadow-2xl border border-sky-100 p-4.5 animate-popup-in flex flex-col gap-2.5';
+      
+      toast.innerHTML = `
+        <div class="flex items-start justify-between">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-full bg-sky-100 text-sky-600 flex items-center justify-center text-base font-bold">
+              🔔
+            </div>
+            <div>
+              <span class="text-xs font-bold text-slate-900 tracking-tight">고객 매장 도착 (근접 감지)</span>
+              <p class="text-[10px] text-slate-400 font-mono">${new Date(checkIn.visitedAt || Date.now()).toLocaleTimeString('ko-KR')}</p>
+            </div>
+          </div>
+          <button onclick="dismissToast('${toastId}')" class="text-slate-400 hover:text-slate-600 text-xs p-1">✕</button>
+        </div>
+        <div class="flex items-center justify-between pt-1">
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-bold text-slate-900">${checkIn.memberName}</span>
+            ${getTierBadgeHtml(checkIn.vipTier)}
+          </div>
+          <span class="text-[10px] bg-sky-50 text-sky-700 px-2 py-0.5 rounded-full font-mono font-medium">${checkIn.checkInType || 'BLE'} 활성</span>
+        </div>
+        <p class="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-2xl">${checkIn.welcomeCouponMessage || 'Herstory 부티크에 방문하셨습니다.'}</p>
+        ${checkIn.choiceFitRequested ? `
+          <button onclick="dismissToast('${toastId}'); openChoiceFitModal(${checkIn.memberId}, '${checkIn.memberName}', '${checkIn.vipTier}');" class="w-full mt-1 py-2.5 rounded-full bg-sky-500 hover:bg-sky-600 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-md shadow-sky-500/20 transition">
+            <span>👗 Room 03 피팅 의상 준비하기</span>
+          </button>
+        ` : ''}
+      `;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        dismissToast(toastId);
+      }, 6000);
+    }
+
+    function dismissToast(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(-10px)';
+        el.style.transition = 'all 0.25s ease';
+        setTimeout(() => el.remove(), 250);
+      }
+    }
+
+    // Feed Rendering
+    async function renderFeed() {
+      const feed = document.getElementById('checkInFeed');
+      const counter = document.getElementById('feedCounter');
+      counter.textContent = alerts.length;
+
+      if (alerts.length === 0) {
+        feed.innerHTML = `
+          <div id="emptyFeedState" class="flex flex-col items-center justify-center p-14 bg-white rounded-3xl border border-dashed border-slate-200 text-center my-auto">
+            <div class="w-16 h-16 rounded-full bg-sky-50 text-sky-500 flex items-center justify-center text-3xl mb-3 shadow-inner">🔔</div>
+            <h3 class="text-base font-bold text-slate-800">고객 체크인을 대기 중입니다</h3>
+            <p class="text-xs text-slate-400 max-w-xs mt-1">고객이 부티크 매장에 도착하면 실시간 알림음과 함께 피팅 신청 의상 정보가 표시됩니다.</p>
+            <button onclick="triggerDemoCheckIn(1, '김노마드', 'VIP', true)" class="mt-4 px-4 py-2 rounded-full bg-sky-500 hover:bg-sky-600 text-white text-xs font-bold shadow-md transition">
+              테스트 체크인 발생시키기
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      feed.innerHTML = '';
+
+      for (const item of alerts) {
+        const card = document.createElement('div');
+        card.className = 'bg-white rounded-3xl border border-slate-100 p-5 shadow-sm hover:border-sky-200 transition flex flex-col gap-3';
+        
+        const timeStr = new Date(item.visitedAt || Date.now()).toLocaleTimeString('ko-KR');
+
+        let reEntryHtml = '';
+        if (item.purchaseStatus === 'PENDING_REENTRY') {
+          try {
+            const reEntryRes = await fetch(`/api/v1/store/re-entry-options/${item.memberId}`);
+            if (reEntryRes.ok) {
+              const reData = await reEntryRes.json();
+              if (reData.hasPendingCart) {
+                reEntryHtml = `
+                  <div class="mt-1 flex flex-col gap-1 rounded-2xl bg-amber-50/70 border border-amber-200/60 p-3.5">
+                    <div class="flex items-center justify-between text-xs font-bold text-amber-900">
+                      <span>🛍️ 보관된 스마트 장바구니 (${reData.pendingCartItemCount}개)</span>
+                      <span class="text-[10px] bg-amber-200/80 text-amber-900 px-2 py-0.5 rounded-full font-bold">재방문 감지</span>
+                    </div>
+                    <p class="text-xs text-slate-700 mt-0.5">${reData.recommendedAction}</p>
+                  </div>
+                `;
+              }
+            }
+          } catch(e) {}
+        }
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-base font-bold text-slate-900">${item.memberName}</span>
+              ${getTierBadgeHtml(item.vipTier)}
+              ${item.choiceFitRequested ? `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-sky-500 text-white">👗 ChoiceFit</span>` : ''}
+              ${item.isFittingReady ? `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">✓ 의상 비치 완료</span>` : ''}
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] font-mono text-slate-400">${timeStr}</span>
+              <span class="text-[10px] font-mono bg-sky-50 text-sky-700 px-2 py-0.5 rounded-full">${item.checkInType || 'BLE'}</span>
+            </div>
+          </div>
+
+          <p class="text-xs text-slate-600">${item.welcomeCouponMessage || 'Herstory 부티크 방문을 환영합니다.'}</p>
+          
+          ${reEntryHtml}
+
+          <div class="flex items-center justify-between pt-1 border-t border-slate-50">
+            <span class="text-[11px] text-slate-400">체크인 상태: <strong class="text-slate-600">${item.checkInStatus || 'COMPLETED'}</strong></span>
+            <div class="flex gap-2">
+              ${item.choiceFitRequested ? `
+                <button onclick="openChoiceFitModal(${item.memberId}, '${item.memberName}', '${item.vipTier}')" class="px-4 py-2 rounded-full bg-sky-500 hover:bg-sky-600 text-white text-xs font-bold transition flex items-center gap-1 shadow-md shadow-sky-500/20">
+                  <span>👗 Room 03 피팅 의상 준비</span>
+                </button>
+              ` : `
+                <button onclick="openChoiceFitModal(${item.memberId}, '${item.memberName}', '${item.vipTier}')" class="px-4 py-2 rounded-full border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-medium transition">
+                  장바구니 확인
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+
+        feed.appendChild(card);
+      }
+    }
+
+    function clearFeed() {
+      alerts = [];
+      renderFeed();
+    }
+
+    async function triggerDemoCheckIn(memberId, name, vipTier, choiceFit) {
+      try {
+        const res = await fetch('/api/v1/store/check-in', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            memberId: memberId,
+            qrCode: 'QR_HST_' + memberId,
+            checkInType: 'BLE'
+          })
+        });
+        if (!res.ok) {
+          handleIncomingCheckIn({
+            visitId: Date.now(),
+            memberId: memberId,
+            memberName: name,
+            vipTier: vipTier,
+            checkInType: 'BLE',
+            checkInStatus: 'COMPLETED',
+            choiceFitRequested: choiceFit,
+            welcomeCouponMessage: choiceFit 
+              ? 'VIP 피팅 고객입니다! 담당 매장 어시스턴트 태블릿에 피팅 신청 상품 목록이 전송되었습니다.'
+              : 'Herstory 부티크 방문을 환영합니다! [웰컴 VIP 10% 면세 특별 할인 쿠폰]이 발급되었습니다.',
+            purchaseStatus: 'PENDING_REENTRY',
+            visitedAt: new Date().toISOString()
+          });
+        }
+      } catch (err) {
+        console.error('Demo checkin error:', err);
+      }
+    }
+
+    // Modal Operations (프로토타입 스마트 피팅룸 스타일)
+    async function openChoiceFitModal(memberId, memberName, vipTier) {
+      activeModalMemberId = memberId;
+      const modal = document.getElementById('choiceFitModal');
+      const customerName = document.getElementById('modalCustomerName');
+      const memberIdEl = document.getElementById('modalMemberId');
+      const content = document.getElementById('modalContent');
+      const totalPrice = document.getElementById('modalTotalPrice');
+
+      customerName.textContent = `${memberName || '고객'} (${vipTier || 'VIP'})`;
+      memberIdEl.textContent = `Member #${memberId}`;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+
+      content.innerHTML = `
+        <div class="flex flex-col items-center justify-center p-8 text-slate-400">
+          <svg class="animate-spin h-6 w-6 text-sky-500 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+          <span class="text-xs">피팅 신청 상품 목록을 동기화 중...</span>
+        </div>
+      `;
+
+      try {
+        const res = await fetch(`/api/v1/cart/my?memberId=${memberId}`);
+        if (!res.ok) throw new Error('장바구니 조회 실패');
+        const cart = await res.json();
+
+        totalPrice.textContent = formatKRW(cart.totalPrice);
+
+        if (!cart.items || cart.items.length === 0) {
+          content.innerHTML = `
+            <div class="p-8 text-center text-slate-400">
+              <p class="text-sm font-medium">담긴 피팅 상품이 없습니다.</p>
+            </div>
+          `;
+          return;
+        }
+
+        let itemsHtml = `
+          <div class="flex items-center justify-between pb-1">
+            <h4 class="text-xs font-bold text-slate-900">담당 대기목록 (${cart.items.length}개 상품)</h4>
+            <span class="text-[10px] text-sky-600 font-bold">Room 03 비치 대상</span>
+          </div>
+          <div class="divide-y divide-slate-100 flex flex-col">
+        `;
+
+        for (const item of cart.items) {
+          itemsHtml += `
+            <div class="flex items-center gap-3.5 py-3">
+              <img 
+                src="${item.imageUrl || 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=400&q=80'}" 
+                alt="${item.productName}" 
+                class="w-14 h-14 object-cover rounded-2xl bg-slate-100 border border-slate-100 shrink-0 shadow-sm"
+                onerror="this.src='https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=400&q=80'"
+              />
+              <div class="flex-1 min-w-0">
+                <span class="text-[10px] font-bold text-sky-700 uppercase">${item.brand || 'HERSTORY'}</span>
+                <h5 class="text-xs font-bold text-slate-900 truncate">${item.productName}</h5>
+                <span class="text-[11px] text-slate-400">${item.category || '레디투웨어 · 미디엄'}</span>
+              </div>
+              <div class="text-right shrink-0">
+                <span class="text-xs font-bold font-mono text-slate-900 block">${formatKRW(item.price)}</span>
+                <span class="text-[10px] text-slate-400 font-mono">x${item.quantity}</span>
+              </div>
+            </div>
+          `;
+        }
+        itemsHtml += '</div>';
+
+        content.innerHTML = itemsHtml;
+
+      } catch (err) {
+        content.innerHTML = `
+          <div class="p-6 text-center text-rose-600 text-xs">
+            데이터 로드 실패: ${err.message}
+          </div>
+        `;
+      }
+    }
+
+    function closeChoiceFitModal() {
+      const modal = document.getElementById('choiceFitModal');
+      modal.classList.remove('flex');
+      modal.classList.add('hidden');
+    }
+
+    function markFittingReady() {
+      if (activeModalMemberId) {
+        const item = alerts.find(a => a.memberId === activeModalMemberId);
+        if (item) {
+          item.isFittingReady = true;
+          renderFeed();
+        }
+        document.getElementById('room3Status').textContent = `피팅 의상 세팅 완료 (고객 입장 대기)`;
+        document.getElementById('room3Badge').className = 'text-[11px] font-bold bg-emerald-500 text-white px-2 py-0.5 rounded-full';
+        document.getElementById('room3Badge').textContent = '준비 완료';
+      }
+      closeChoiceFitModal();
+    }
+
+    function handleManualSearch(e) {
+      e.preventDefault();
+      const input = document.getElementById('searchMemberId');
+      const id = parseInt(input.value, 10);
+      if (id) {
+        openChoiceFitModal(id, `회원 #${id}`, 'VIP');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initSSE();
+      const params = new URLSearchParams(window.location.search);
+      const mId = params.get('memberId');
+      if (mId) {
+        openChoiceFitModal(parseInt(mId, 10), `회원 #${mId}`, 'VIP');
+      }
+    });
+  </script>
+</body>
+</html>
