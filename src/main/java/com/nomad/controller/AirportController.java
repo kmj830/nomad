@@ -20,6 +20,7 @@ public class AirportController {
 
     private final JourneyRepository journeyRepository;
     private final CartService cartService;
+    private final com.nomad.domain.product.ProductRepository productRepository;
 
     @Getter
     @Builder
@@ -44,5 +45,17 @@ public class AirportController {
                 .choiceFit(true)
                 .message("ChoiceFit VIP 피팅 서비스가 성공적으로 신청되었습니다.")
                 .build());
+    }
+
+    @Operation(summary = "공항 스팟 추천 한정 상품 3종 조회 (Airport 호환)", description = "공항 스팟 페이지에서 노출할 LIMITED_EDITION 한정판 추천 아이템 3종을 배열로 반환합니다.")
+    @GetMapping({"/popup-items", "/spots/items", "/items"})
+    public ResponseEntity<java.util.List<com.nomad.domain.product.Product>> getAirportPopupItems() {
+        java.util.List<com.nomad.domain.product.Product> limited = productRepository.findByCategory(com.nomad.domain.product.ProductCategory.LIMITED_EDITION);
+        if (limited.isEmpty()) {
+            limited = productRepository.findAll().stream().limit(3).toList();
+        } else if (limited.size() > 3) {
+            limited = limited.subList(0, 3);
+        }
+        return ResponseEntity.ok(limited);
     }
 }

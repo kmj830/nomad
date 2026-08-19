@@ -140,6 +140,42 @@ public class DataInitializer implements CommandLineRunner {
                     .build());
         }
 
+        // 2-1. Ensure 3 Limited Edition Airport Popup Products exist
+        if (productRepository.findByCategory(ProductCategory.LIMITED_EDITION).size() < 3) {
+            productRepository.save(Product.builder()
+                    .name("MCM 스타크 비세토스 에어포트 리미티드 백팩")
+                    .brand("MCM")
+                    .category(ProductCategory.LIMITED_EDITION)
+                    .price(new BigDecimal("1350000.00"))
+                    .stock(15)
+                    .imageUrl("https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80")
+                    .description("인천국제공항 T1 한정 팝업 익스클루시브 비세토스 레더 백팩")
+                    .isVipExclusive(true)
+                    .build());
+
+            productRepository.save(Product.builder()
+                    .name("샤넬 클래식 플랩백 에어포트 에디션")
+                    .brand("CHANEL")
+                    .category(ProductCategory.LIMITED_EDITION)
+                    .price(new BigDecimal("14500000.00"))
+                    .stock(5)
+                    .imageUrl("https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=800&q=80")
+                    .description("공항 면세 부티크 전용 익스클루시브 캐비어 스킨 플랩백")
+                    .isVipExclusive(true)
+                    .build());
+
+            productRepository.save(Product.builder()
+                    .name("루이비통 호라이즌 55 모노그램 캐리어")
+                    .brand("LOUIS VUITTON")
+                    .category(ProductCategory.LIMITED_EDITION)
+                    .price(new BigDecimal("4200000.00"))
+                    .stock(8)
+                    .imageUrl("https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=800&q=80")
+                    .description("공항 VIP 라운지 팝업 익스클루시브 초경량 럭셔리 롤링 러기지")
+                    .isVipExclusive(true)
+                    .build());
+        }
+
         // 3. Initial Journey Seed (여정 기본 데이터)
         if (journeyRepository.count() == 0 && vipMember != null) {
             journeyRepository.save(Journey.builder()

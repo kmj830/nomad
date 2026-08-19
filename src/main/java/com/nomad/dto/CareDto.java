@@ -30,6 +30,7 @@ public class CareDto {
         private String destination;
         private String pushNotificationMessage;
         private List<VisetosSpot> visetosSpots;
+        private List<com.nomad.domain.product.Product> recommendedItems;
     }
 
     @Getter

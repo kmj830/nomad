@@ -21,6 +21,7 @@ public class CareService {
     private final OrderRepository orderRepository;
     private final MemberRepository memberRepository;
     private final GoogleMapsService googleMapsService;
+    private final com.nomad.domain.product.ProductRepository productRepository;
 
     public CareDto.CareResponse getVisetosSpots(Long memberId) {
         return getVisetosSpots(memberId, "ALL");
@@ -42,10 +43,18 @@ public class CareService {
 
         List<CareDto.VisetosSpot> spots = googleMapsService.findSpotsWithMaps(destination, brand);
 
+        List<com.nomad.domain.product.Product> limited = productRepository.findByCategory(com.nomad.domain.product.ProductCategory.LIMITED_EDITION);
+        if (limited.isEmpty()) {
+            limited = productRepository.findAll().stream().limit(3).toList();
+        } else if (limited.size() > 3) {
+            limited = limited.subList(0, 3);
+        }
+
         return CareDto.CareResponse.builder()
                 .destination(destination)
                 .pushNotificationMessage(pushMessage)
                 .visetosSpots(spots)
+                .recommendedItems(limited)
                 .build();
     }
 

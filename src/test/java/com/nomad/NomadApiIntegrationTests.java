@@ -223,6 +223,21 @@ class NomadApiIntegrationTests {
         mockMvc.perform(get("/api/v1/journey/" + tempJourneyId))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    @DisplayName("공항 팝업 스팟 추천 상품 3종 목록 (배열) API 정상 동작 검증")
+    void popupItemsTest() throws Exception {
+        mockMvc.perform(get("/api/v1/style/popup-items"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(3))
+                .andExpect(jsonPath("$[0].name").exists())
+                .andExpect(jsonPath("$[0].imageUrl").exists())
+                .andExpect(jsonPath("$[0].category").value("LIMITED_EDITION"));
+
+        mockMvc.perform(get("/api/v1/airport/popup-items"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(3));
+    }
 }
 
 

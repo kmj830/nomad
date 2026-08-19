@@ -38,4 +38,16 @@ public class StyleController {
         JourneyDto.JourneyAnalysisResponse analysis = journeyService.analyzeJourney(targetJourneyId);
         return ResponseEntity.ok(analysis.getRecommendedProducts());
     }
+
+    @Operation(summary = "공항 팝업 스팟 추천 상품 3종 목록 (배열)", description = "공항 팝업 스팟 화면에서 추천할 LIMITED_EDITION 한정판 상품 3종 리스트를 배열로 반환합니다.")
+    @GetMapping({"/popup-items", "/popup-products", "/popup-spots/items", "/popup-spots/products", "/airport-items"})
+    public ResponseEntity<List<Product>> getPopupItems() {
+        List<Product> limited = productRepository.findByCategory(com.nomad.domain.product.ProductCategory.LIMITED_EDITION);
+        if (limited.isEmpty()) {
+            limited = productRepository.findAll().stream().limit(3).toList();
+        } else if (limited.size() > 3) {
+            limited = limited.subList(0, 3);
+        }
+        return ResponseEntity.ok(limited);
+    }
 }
