@@ -33,6 +33,9 @@ class CareServiceTest {
     @Mock
     private GoogleMapsService googleMapsService;
 
+    @Mock
+    private com.nomad.domain.product.ProductRepository productRepository;
+
     @InjectMocks
     private CareService careService;
 
