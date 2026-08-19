@@ -210,6 +210,20 @@ public class JourneyService {
                 .build();
     }
 
+    @Transactional
+    public JourneyDto.DeleteResponse deleteJourney(Long journeyId) {
+        Journey journey = journeyRepository.findById(journeyId)
+                .orElseThrow(() -> new IllegalArgumentException("여정을 찾을 수 없습니다. ID: " + journeyId));
+
+        journeyRepository.delete(journey);
+
+        return JourneyDto.DeleteResponse.builder()
+                .journeyId(journeyId)
+                .success(true)
+                .message("여정(PNR: " + journey.getPnr() + ")이 성공적으로 취소/삭제되었습니다.")
+                .build();
+    }
+
     private String extractPnrFromOcr(String rawText) {
         if (rawText != null && rawText.length() >= 6) {
             return rawText.substring(0, 6).toUpperCase();

@@ -129,6 +129,18 @@ public class JourneyController {
                 .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"herstory-pass-" + journeyId + ".pkpass\"")
                 .body(pkpassBytes);
     }
+
+    @Operation(summary = "여정 등록 취소 / 삭제", description = "여정 ID를 통해 등록된 비행 여정을 삭제(취소)합니다.")
+    @DeleteMapping("/{journeyId}")
+    public ResponseEntity<JourneyDto.DeleteResponse> deleteJourney(@PathVariable Long journeyId) {
+        return ResponseEntity.ok(journeyService.deleteJourney(journeyId));
+    }
+
+    @Operation(summary = "여정 등록 취소 (POST 호환)", description = "여정 ID를 통해 등록된 비행 여정을 취소/삭제합니다.")
+    @PostMapping("/{journeyId}/cancel")
+    public ResponseEntity<JourneyDto.DeleteResponse> cancelJourney(@PathVariable Long journeyId) {
+        return ResponseEntity.ok(journeyService.deleteJourney(journeyId));
+    }
 }
 
 

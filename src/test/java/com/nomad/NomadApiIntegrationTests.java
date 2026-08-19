@@ -201,6 +201,28 @@ class NomadApiIntegrationTests {
                         .content(objectMapper.writeValueAsString(invalidReq)))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    @DisplayName("여정 등록 취소 및 삭제 API (DELETE / POST cancel) 정상 동작 검증")
+    void deleteJourneyTest() throws Exception {
+        JourneyDto.ScanRequest scanReq = new JourneyDto.ScanRequest(1L, "HST777", "BOARDING PASS PNR HST777", "ICN", "NRT");
+        MvcResult scanResult = mockMvc.perform(post("/api/v1/journey/scan")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(scanReq)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        JourneyDto.ScanResponse scanRes = objectMapper.readValue(scanResult.getResponse().getContentAsString(), JourneyDto.ScanResponse.class);
+        Long tempJourneyId = scanRes.getJourneyId();
+
+        // DELETE 여정 취소
+        mockMvc.perform(delete("/api/v1/journey/" + tempJourneyId))
+                .andExpect(status().isOk());
+
+        // 삭제 후 조회 시 400 Bad Request 확인
+        mockMvc.perform(get("/api/v1/journey/" + tempJourneyId))
+                .andExpect(status().isBadRequest());
+    }
 }
 
 

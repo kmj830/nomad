@@ -520,6 +520,21 @@
 
 ---
 
+#### `DELETE /api/v1/journey/{journeyId}` (또는 `POST /api/v1/journey/{journeyId}/cancel`)
+- **설명**: 잘못 등록되었거나 취소할 여정 ID를 전달받아 비행 여정을 취소/삭제합니다.
+- **Path Parameter**: `journeyId` (`Long`, 필수)
+- **Response Body (`200 OK` - `JourneyDto.DeleteResponse`)**
+  ```json
+  {
+    "journeyId": 1,
+    "success": true,
+    "message": "여정(PNR: HST999)이 성공적으로 취소/삭제되었습니다."
+  }
+  ```
+
+
+---
+
 ### 5.3 Cart API (스마트 장바구니 & ChoiceFit)
 
 #### `POST /api/v1/cart/add`

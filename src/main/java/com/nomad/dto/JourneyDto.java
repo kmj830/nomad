@@ -108,4 +108,15 @@ public class JourneyDto {
         private String destinationWeather;
         private String recommendationReason;
     }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class DeleteResponse {
+        private Long journeyId;
+        private boolean success;
+        private String message;
+    }
 }
