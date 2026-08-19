@@ -41,4 +41,14 @@ public class Product {
 
     @Builder.Default
     private Boolean isVipExclusive = false;
+
+    // Frontend Next.js ProductRow compatibility
+    public String getThumbnailUrl() {
+        return this.imageUrl != null ? this.imageUrl : "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80";
+    }
+
+    public java.math.BigDecimal getPriceKrw() {
+        return this.price != null ? this.price : java.math.BigDecimal.ZERO;
+    }
 }
+
