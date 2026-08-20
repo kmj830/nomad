@@ -42,11 +42,8 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-        Member vipMember = null;
-        Member goldMember = null;
-        Member platinumMember = null;
-
-        if (memberRepository.count() == 0) {
+        Member vipMember = memberRepository.findByEmail("vip@herstory.com").orElse(null);
+        if (vipMember == null) {
             vipMember = memberRepository.save(Member.builder()
                     .email("vip@herstory.com")
                     .password("Test1234!")
@@ -63,8 +60,15 @@ public class DataInitializer implements CommandLineRunner {
                     .journeyAlert(true)
                     .marketingOptIn(false)
                     .build());
+        } else {
+            vipMember.setVipTier(VipTier.VIP);
+            vipMember.setNomadMiles(124500L);
+            vipMember.setAutoFillPassport(true);
+            memberRepository.save(vipMember);
+        }
 
-            goldMember = memberRepository.save(Member.builder()
+        if (memberRepository.findByEmail("gold@herstory.com").isEmpty()) {
+            Member goldMember = memberRepository.save(Member.builder()
                     .email("gold@herstory.com")
                     .password("Test1234!")
                     .name("이여행 (Gold)")
@@ -80,8 +84,10 @@ public class DataInitializer implements CommandLineRunner {
                     .journeyAlert(true)
                     .marketingOptIn(true)
                     .build());
+        }
 
-            platinumMember = memberRepository.save(Member.builder()
+        if (memberRepository.findByEmail("platinum@herstory.com").isEmpty()) {
+            Member platinumMember = memberRepository.save(Member.builder()
                     .email("platinum@herstory.com")
                     .password("Test1234!")
                     .name("박스타 (Platinum)")
@@ -97,8 +103,6 @@ public class DataInitializer implements CommandLineRunner {
                     .journeyAlert(true)
                     .marketingOptIn(false)
                     .build());
-        } else {
-            vipMember = memberRepository.findAll().stream().findFirst().orElse(null);
         }
 
         // 1. Force update all existing products to verified Unsplash high-res image URLs
@@ -248,7 +252,7 @@ public class DataInitializer implements CommandLineRunner {
                 "천연 고무 코팅 처리된 고야딘 캔버스로 탁월한 경량성과 방수 기능을 제공하는 아이코닉 더플백", true);
 
         // 3. Initial Journey Seed (여정 기본 데이터)
-        if (journeyRepository.count() == 0 && vipMember != null) {
+        if (journeyRepository.countByMemberId(vipMember.getId()) == 0) {
             journeyRepository.save(Journey.builder()
                     .member(vipMember)
                     .pnr("HST777")
@@ -259,10 +263,32 @@ public class DataInitializer implements CommandLineRunner {
                     .destinationWeather("열대성 스콜 (기온 32°C, 습도 85%)")
                     .recommendationReason("방콕 고온다습 기후를 위한 방수 럭셔리 컬렉션 추천")
                     .build());
+
+            journeyRepository.save(Journey.builder()
+                    .member(vipMember)
+                    .pnr("HST888")
+                    .origin("ICN (인천국제공항)")
+                    .destination("HND (도쿄 하네다)")
+                    .departureDateTime(LocalDateTime.now().minusDays(7))
+                    .flightStatus(FlightStatus.COMPLETED)
+                    .destinationWeather("맑음 (기온 26°C, 습도 45%)")
+                    .recommendationReason("도쿄 쾌적한 도시 여행을 위한 럭셔리 레더 컬렉션")
+                    .build());
+
+            journeyRepository.save(Journey.builder()
+                    .member(vipMember)
+                    .pnr("HST999")
+                    .origin("ICN (인천국제공항)")
+                    .destination("CDG (파리 샤를 드골)")
+                    .departureDateTime(LocalDateTime.now().minusMonths(1))
+                    .flightStatus(FlightStatus.COMPLETED)
+                    .destinationWeather("선선함 (기온 21°C, 습도 50%)")
+                    .recommendationReason("파리 패션위크 전용 트래블 럭셔리 라인업")
+                    .build());
         }
 
         // 4. Initial SmartCart Seed
-        if (smartCartRepository.count() == 0 && vipMember != null) {
+        if (smartCartRepository.findByMemberIdAndStatus(vipMember.getId(), CartStatus.IN_CART).isEmpty()) {
             Product p1 = productRepository.findAll().stream().findFirst().orElse(null);
             if (p1 != null) {
                 SmartCart cart = smartCartRepository.save(SmartCart.builder()
@@ -277,7 +303,7 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         // 5. Initial Mileage History Seed (프로토타입 디자인 100% 매칭)
-        if (mileageHistoryRepository.count() == 0 && vipMember != null) {
+        if (mileageHistoryRepository.findByMemberIdOrderByCreatedAtDesc(vipMember.getId()).isEmpty()) {
             mileageHistoryRepository.save(com.nomad.domain.mileage.MileageHistory.builder()
                     .member(vipMember)
                     .title("인천국제공항 제1여객터미널 부티크")
@@ -310,7 +336,7 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         // 6. Initial Coupons Seed (MyPage 프로토타입 100% 매칭)
-        if (couponRepository.count() == 0 && vipMember != null) {
+        if (couponRepository.findByMemberIdOrderByValidUntilAsc(vipMember.getId()).isEmpty()) {
             couponRepository.save(com.nomad.domain.coupon.Coupon.builder()
                     .member(vipMember)
                     .couponCode("DUTYFREE-10PCT")
@@ -347,7 +373,7 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         // 7. Initial Payment Methods Seed (MyPage 프로토타입 100% 매칭)
-        if (paymentMethodRepository.count() == 0 && vipMember != null) {
+        if (paymentMethodRepository.findByMemberIdOrderByIsDefaultDescCreatedAtAsc(vipMember.getId()).isEmpty()) {
             paymentMethodRepository.save(com.nomad.domain.member.PaymentMethod.builder()
                     .member(vipMember)
                     .cardName("HER-STORY 카드")
@@ -362,31 +388,6 @@ public class DataInitializer implements CommandLineRunner {
                     .cardNumberMasked("•••• 8890")
                     .subtitle("•••• 8890")
                     .isDefault(false)
-                    .build());
-        }
-
-        // 8. Additional Journey History Seed
-        if (journeyRepository.count() <= 1 && vipMember != null) {
-            journeyRepository.save(Journey.builder()
-                    .member(vipMember)
-                    .pnr("HST888")
-                    .origin("ICN (인천국제공항)")
-                    .destination("HND (도쿄 하네다)")
-                    .departureDateTime(LocalDateTime.now().minusDays(7))
-                    .flightStatus(FlightStatus.COMPLETED)
-                    .destinationWeather("맑음 (기온 26°C, 습도 45%)")
-                    .recommendationReason("도쿄 쾌적한 도시 여행을 위한 럭셔리 레더 컬렉션")
-                    .build());
-
-            journeyRepository.save(Journey.builder()
-                    .member(vipMember)
-                    .pnr("HST999")
-                    .origin("ICN (인천국제공항)")
-                    .destination("CDG (파리 샤를 드골)")
-                    .departureDateTime(LocalDateTime.now().minusMonths(1))
-                    .flightStatus(FlightStatus.COMPLETED)
-                    .destinationWeather("선선함 (기온 21°C, 습도 50%)")
-                    .recommendationReason("파리 패션위크 전용 트래블 럭셔리 라인업")
                     .build());
         }
     }
