@@ -124,8 +124,11 @@ class JourneyServiceTest {
                 .isRainy(true)
                 .build());
         when(productRepository.findAll()).thenReturn(List.of(product));
-        when(openAiService.generatePersonalizedStylingAdvice(any(), any(), any(), any()))
-                .thenReturn("방수 전용 비세토스 백팩 스타일링 제안");
+        when(openAiService.recommendProductsWithAi(any(), any(), any(), any()))
+                .thenReturn(OpenAiService.AiRecommendationResult.builder()
+                        .recommendedProductIds(List.of(1L))
+                        .advice("방수 전용 비세토스 백팩 스타일링 제안")
+                        .build());
         when(flightService.getFlightInfo(any())).thenReturn(FlightDto.FlightInfoResponse.builder()
                 .flightNumber("OZ741")
                 .airlineName("아시아나항공")

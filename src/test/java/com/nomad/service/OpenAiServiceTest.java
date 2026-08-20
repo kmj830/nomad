@@ -27,4 +27,21 @@ class OpenAiServiceTest {
         assertThat(tip).contains("비세토스 백팩");
         assertThat(tip).contains("고온다습");
     }
+
+    @Test
+    @DisplayName("OpenAI API 키가 없을 때 스마트 Fallback 상품 추천 및 조언 생성")
+    void recommendProductsWithAi_Fallback() {
+        var catalog = java.util.List.of(
+                com.nomad.domain.product.Product.builder().id(1L).name("MCM 백팩").category(com.nomad.domain.product.ProductCategory.WATERPROOF).build(),
+                com.nomad.domain.product.Product.builder().id(2L).name("프라다 판초").category(com.nomad.domain.product.ProductCategory.WATERPROOF).build(),
+                com.nomad.domain.product.Product.builder().id(3L).name("보테가 케어 키트").category(com.nomad.domain.product.ProductCategory.LEATHER_CARE).build()
+        );
+
+        var result = openAiService.recommendProductsWithAi("BKK (방콕)", "열대성 스콜 (습도 85%)", "VIP", catalog);
+
+        assertThat(result.getRecommendedProductIds()).isNotEmpty();
+        assertThat(result.getRecommendedProductIds()).contains(1L, 2L, 3L);
+        assertThat(result.getAdvice()).contains("VIP");
+    }
 }
+

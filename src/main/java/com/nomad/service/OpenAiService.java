@@ -29,6 +29,136 @@ public class OpenAiService {
         return apiKey != null && !apiKey.isBlank() && !apiKey.startsWith("YOUR_");
     }
 
+    @lombok.Getter
+    @lombok.Builder
+    @lombok.NoArgsConstructor
+    @lombok.AllArgsConstructor
+    public static class AiRecommendationResult {
+        private List<Long> recommendedProductIds;
+        private String advice;
+    }
+
+    public AiRecommendationResult recommendProductsWithAi(
+            String destination,
+            String weatherInfo,
+            String vipTier,
+            List<com.nomad.domain.product.Product> catalog
+    ) {
+        if (catalog == null || catalog.isEmpty()) {
+            return AiRecommendationResult.builder()
+                    .recommendedProductIds(List.of())
+                    .advice("추천 가능한 상품이 없습니다.")
+                    .build();
+        }
+
+        if (!isApiKeyAvailable()) {
+            return fallbackRecommendation(destination, weatherInfo, vipTier, catalog);
+        }
+
+        try {
+            StringBuilder catalogJson = new StringBuilder("[");
+            for (int i = 0; i < catalog.size(); i++) {
+                com.nomad.domain.product.Product p = catalog.get(i);
+                if (i > 0) catalogJson.append(",");
+                catalogJson.append(String.format("{\"id\":%d,\"brand\":\"%s\",\"name\":\"%s\",\"category\":\"%s\",\"price\":%s,\"description\":\"%s\"}",
+                        p.getId(), escapeJson(p.getBrand()), escapeJson(p.getName()), p.getCategory(), p.getPrice(), escapeJson(p.getDescription())));
+            }
+            catalogJson.append("]");
+
+            String prompt = String.format(
+                    "You are an AI luxury fashion concierge for Herstory Club. " +
+                    "Select 3 to 5 best luxury products from the catalog below that best match the destination weather and luxury travel needs. " +
+                    "Ensure brand diversity across multiple luxury brands (e.g. Prada, Gucci, Bottega Veneta, Louis Vuitton, MCM, Hermès, Dior). " +
+                    "Client VIP Tier: %s. Destination: %s. Weather: %s.\n\n" +
+                    "Product Catalog:\n%s\n\n" +
+                    "Respond STRICTLY in JSON format with no markdown blocks:\n" +
+                    "{\"recommendedProductIds\": [id1, id2, id3, ...], \"advice\": \"2-sentence elegant Korean styling advice...\"}",
+                    vipTier, destination, weatherInfo, catalogJson.toString()
+            );
+
+            String responseText = callOpenAiGpt(prompt, 350);
+            if (responseText.contains("```json")) {
+                responseText = responseText.substring(responseText.indexOf("```json") + 7);
+                if (responseText.contains("```")) {
+                    responseText = responseText.substring(0, responseText.indexOf("```"));
+                }
+            } else if (responseText.contains("```")) {
+                responseText = responseText.substring(responseText.indexOf("```") + 3);
+                if (responseText.contains("```")) {
+                    responseText = responseText.substring(0, responseText.indexOf("```"));
+                }
+            }
+
+            JsonNode node = objectMapper.readTree(responseText.trim());
+            List<Long> ids = new java.util.ArrayList<>();
+            if (node.has("recommendedProductIds") && node.get("recommendedProductIds").isArray()) {
+                for (JsonNode idNode : node.get("recommendedProductIds")) {
+                    ids.add(idNode.asLong());
+                }
+            }
+            String advice = node.has("advice") ? node.get("advice").asText() : "";
+            if (advice.isBlank()) {
+                advice = String.format("[%s VIP AI 큐레이션] %s 기후(%s)에 맞춘 프리미엄 럭셔리 스타일링 제안입니다.", vipTier, destination, weatherInfo);
+            }
+
+            if (ids.isEmpty()) {
+                return fallbackRecommendation(destination, weatherInfo, vipTier, catalog);
+            }
+
+            return AiRecommendationResult.builder()
+                    .recommendedProductIds(ids)
+                    .advice(advice)
+                    .build();
+        } catch (Exception e) {
+            return fallbackRecommendation(destination, weatherInfo, vipTier, catalog);
+        }
+    }
+
+    private AiRecommendationResult fallbackRecommendation(
+            String destination,
+            String weatherInfo,
+            String vipTier,
+            List<com.nomad.domain.product.Product> catalog
+    ) {
+        boolean isRainy = weatherInfo != null && (weatherInfo.contains("스콜") || weatherInfo.contains("비") || weatherInfo.contains("Rain") || weatherInfo.contains("습도 8") || weatherInfo.contains("습도 9"));
+        List<Long> ids = new java.util.ArrayList<>();
+
+        for (com.nomad.domain.product.Product p : catalog) {
+            if (isRainy) {
+                if (p.getCategory() == com.nomad.domain.product.ProductCategory.WATERPROOF || p.getCategory() == com.nomad.domain.product.ProductCategory.LEATHER_CARE) {
+                    ids.add(p.getId());
+                }
+            } else {
+                if (p.getCategory() != com.nomad.domain.product.ProductCategory.LIMITED_EDITION) {
+                    ids.add(p.getId());
+                }
+            }
+            if (ids.size() >= 5) break;
+        }
+
+        if (ids.size() < 3) {
+            for (com.nomad.domain.product.Product p : catalog) {
+                if (!ids.contains(p.getId())) {
+                    ids.add(p.getId());
+                }
+                if (ids.size() >= 4) break;
+            }
+        }
+
+        String advice = String.format("[%s VIP AI 큐레이션] %s 현지 기후(%s)에 최적화된 글로벌 명품 브랜드 맞춤 룩북을 제안합니다.",
+                vipTier, destination, weatherInfo);
+
+        return AiRecommendationResult.builder()
+                .recommendedProductIds(ids)
+                .advice(advice)
+                .build();
+    }
+
+    private String escapeJson(String text) {
+        if (text == null) return "";
+        return text.replace("\"", "\\\"").replace("\n", " ").replace("\r", "");
+    }
+
     public String generatePersonalizedStylingAdvice(String destination, String weatherInfo, String vipTier, String productName) {
         if (!isApiKeyAvailable()) {
             return String.format("[%s VIP 전용 AI 큐레이션] %s 기후(%s)에 맞춰 정밀 설계된 %s 스페셜 룩북을 확인해보세요.",

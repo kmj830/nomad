@@ -81,26 +81,48 @@ public class JourneyService {
         WeatherService.WeatherData weather = weatherService.fetchDestinationWeather(journey.getDestination());
         List<Product> allProducts = productRepository.findAll();
 
-        // Smart curation filtering based on weather
-        List<Product> recommended;
-        if (weather.isRainy()) {
-            recommended = allProducts.stream()
-                    .filter(p -> p.getCategory() == ProductCategory.WATERPROOF || p.getCategory() == ProductCategory.LEATHER_CARE)
-                    .collect(Collectors.toList());
-        } else {
-            recommended = allProducts;
+        // AI Direct Product Recommendation & Personalized Styling Note
+        OpenAiService.AiRecommendationResult aiResult = openAiService.recommendProductsWithAi(
+                journey.getDestination(),
+                weather.getWeatherDescription(),
+                journey.getMember().getVipTier().name(),
+                allProducts
+        );
+
+        java.util.Map<Long, Product> productMap = allProducts.stream()
+                .collect(Collectors.toMap(Product::getId, p -> p, (existing, replacement) -> existing));
+
+        List<Product> recommended = new java.util.ArrayList<>();
+        if (aiResult.getRecommendedProductIds() != null) {
+            for (Long id : aiResult.getRecommendedProductIds()) {
+                Product p = productMap.get(id);
+                if (p != null && !recommended.contains(p)) {
+                    recommended.add(p);
+                }
+            }
+        }
+
+        // Defensive backfill if recommendations are less than 3
+        if (recommended.size() < 3) {
+            for (Product p : allProducts) {
+                if (!recommended.contains(p) && p.getCategory() != ProductCategory.LIMITED_EDITION) {
+                    recommended.add(p);
+                }
+                if (recommended.size() >= 4) break;
+            }
         }
         if (recommended.isEmpty()) {
             recommended = allProducts;
         }
 
-        String topProductName = recommended.isEmpty() ? "럭셔리 레더 백팩" : recommended.get(0).getName();
-        String aiAdvice = openAiService.generatePersonalizedStylingAdvice(
-                journey.getDestination(),
-                weather.getWeatherDescription(),
-                journey.getMember().getVipTier().name(),
-                topProductName
-        );
+        String aiAdvice = (aiResult.getAdvice() != null && !aiResult.getAdvice().isBlank())
+                ? aiResult.getAdvice()
+                : openAiService.generatePersonalizedStylingAdvice(
+                        journey.getDestination(),
+                        weather.getWeatherDescription(),
+                        journey.getMember().getVipTier().name(),
+                        recommended.get(0).getName()
+                );
 
         String rainProb = weather.isRainy() ? "76%" : "20%";
 
