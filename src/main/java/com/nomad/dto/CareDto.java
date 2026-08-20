@@ -55,5 +55,39 @@ public class CareDto {
         private Long totalMiles;
         private String message;
     }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class CollectionItem {
+        private Long itemId;
+        private Long productId;
+        private String name;
+        private String brand;
+        private String category;
+        private String imageUrl;
+        private String purchaseDate;
+        private String lastCareDate;
+        private int lastCaredDaysAgo;
+        private String careStatus;       // OPTIMAL, CONDITIONING_NEEDED, CARE_RECOMMENDED
+        private String careStatusLabel;  // 최적, 컨디셔닝 필요, 전문 케어 권장
+        private String careStatusColor;  // #44C67C, #C64F44, #F59E0B
+        private String careTip;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class MyCollectionResponse {
+        private Long memberId;
+        private String memberName;
+        private int totalCount;
+        private CollectionItem featuredItem;
+        private List<CollectionItem> items;
+    }
 }
 

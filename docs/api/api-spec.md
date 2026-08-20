@@ -996,6 +996,110 @@ data: {"type":"VIP_CHECKIN","memberId":1,"memberName":"김노마드 (VIP)","vipT
 
 ---
 
+#### `GET /api/v1/care/my-collection` (또는 `GET /api/v1/postflight/my-collection`)
+- **설명**: 회원이 소유/구매한 명품 컬렉션 아이템 목록과 각 아이템별 최근 케어일, 가죽 컨디션 상태(최적/컨디셔닝 필요/전문 케어 권장) 및 목적지 기후 맞춤 긴급 케어 대상 추천 아이템을 조회합니다. (프론트엔드 `LeatherCarePage` 연동)
+
+##### Query Parameters
+| 파라미터 | 타입 | 필수 | 설명 |
+| :--- | :--- | :---: | :--- |
+| `memberId` | `Long` | N | 특정 회원 ID (미입력 시 기본 로그인 VIP 회원 자동 기준) |
+
+##### Response Body (`200 OK` - `CareDto.MyCollectionResponse`)
+| 필드명 | 타입 | 설명 |
+| :--- | :--- | :--- |
+| `memberId` | `Long` | 회원 ID |
+| `memberName` | `String` | 회원 이름 (예: `김노마드 (VIP)`) |
+| `totalCount` | `int` | 보유 아이템 총 수량 |
+| `featuredItem` | `CollectionItem` | 현재 기후/여정 기준 긴급 케어 대상 대표 아이템 |
+| `items` | `List<CollectionItem>` | 회원의 보유 럭셔리 컬렉션 아이템 전체 목록 |
+
+```json
+{
+  "memberId": 1,
+  "memberName": "김노마드 (VIP)",
+  "totalCount": 4,
+  "featuredItem": {
+    "itemId": 99,
+    "productId": 1,
+    "name": "비세토스 스타크 백팩",
+    "brand": "MCM",
+    "category": "TRAVEL_BACKPACK",
+    "imageUrl": "https://mcm-nomad-backend.onrender.com/images/products/01_mcm_stark_backpack.jpg",
+    "purchaseDate": "2026.01.10",
+    "lastCareDate": "2026.08.18",
+    "lastCaredDaysAgo": 3,
+    "careStatus": "OPTIMAL",
+    "careStatusLabel": "최적",
+    "careStatusColor": "#44C67C",
+    "careTip": "열대성 고온다습 기후 대응 방수 왁싱 가공 상태 우수"
+  },
+  "items": [
+    {
+      "itemId": 1,
+      "productId": 101,
+      "name": "비세토스 뮌헨 토트",
+      "brand": "MCM",
+      "category": "LEATHER_TOTE",
+      "imageUrl": "/care/bag-tote.png",
+      "purchaseDate": "2025.10.14",
+      "lastCareDate": "2026.08.09",
+      "lastCaredDaysAgo": 12,
+      "careStatus": "OPTIMAL",
+      "careStatusLabel": "최적",
+      "careStatusColor": "#44C67C",
+      "careTip": "가죽 밸런스가 매우 양호합니다. 습기 노출만 주의해주세요."
+    },
+    {
+      "itemId": 2,
+      "productId": 102,
+      "name": "아렌 크로스바디",
+      "brand": "MCM",
+      "category": "CROSSBODY",
+      "imageUrl": "/care/bag-crossbody.png",
+      "purchaseDate": "2025.04.10",
+      "lastCareDate": "2026.05.28",
+      "lastCaredDaysAgo": 84,
+      "careStatus": "CONDITIONING_NEEDED",
+      "careStatusLabel": "컨디셔닝 필요",
+      "careStatusColor": "#C64F44",
+      "careTip": "가죽 표면 유분 감소가 감지되어 가죽 전용 밤 컨디셔닝이 필요합니다."
+    },
+    {
+      "itemId": 3,
+      "productId": 17,
+      "name": "샤넬 클래식 캐비어 플랩백",
+      "brand": "CHANEL",
+      "category": "SHOULDER_BAG",
+      "imageUrl": "https://mcm-nomad-backend.onrender.com/images/products/17_chanel_classic_flap.jpg",
+      "purchaseDate": "2024.12.24",
+      "lastCareDate": "2026.07.20",
+      "lastCaredDaysAgo": 32,
+      "careStatus": "OPTIMAL",
+      "careStatusLabel": "최적",
+      "careStatusColor": "#44C67C",
+      "careTip": "캐비어 스킨의 엠보싱 상태가 우수합니다."
+    },
+    {
+      "itemId": 4,
+      "productId": 10,
+      "name": "루이비통 모노그램 키폴 50",
+      "brand": "LOUIS VUITTON",
+      "category": "TRAVEL_BAG",
+      "imageUrl": "https://mcm-nomad-backend.onrender.com/images/products/10_lv_keepall_50.jpg",
+      "purchaseDate": "2024.08.18",
+      "lastCareDate": "2026.06.15",
+      "lastCaredDaysAgo": 67,
+      "careStatus": "CARE_RECOMMENDED",
+      "careStatusLabel": "전문 케어 권장",
+      "careStatusColor": "#F59E0B",
+      "careTip": "핸들 카우하이드 가죽 태닝 및 방수 코팅 점검을 권장합니다."
+    }
+  ]
+}
+```
+
+---
+
 ### 5.7 Flight API (실시간 항공편 운항 정보)
 
 #### `GET /api/v1/flight/lookup`

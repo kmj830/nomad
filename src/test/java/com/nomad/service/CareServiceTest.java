@@ -78,5 +78,26 @@ class CareServiceTest {
         assertThat(res.getTotalMiles()).isEqualTo(6000L);
         assertThat(res.getMessage()).contains("시티 패스포트 스탬프 획득!");
     }
+
+    @Test
+    @DisplayName("나의 럭셔리 컬렉션 보유 아이템 및 가죽 케어 상태 목록 조회")
+    void getMyCollection_Success() {
+        com.nomad.domain.member.Member member = com.nomad.domain.member.Member.builder()
+                .id(1L).name("김노마드 (VIP)").build();
+
+        when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
+        when(orderRepository.findByMemberIdOrderByCreatedAtDesc(1L)).thenReturn(List.of());
+
+        CareDto.MyCollectionResponse res = careService.getMyCollection(1L);
+
+        assertThat(res.getMemberId()).isEqualTo(1L);
+        assertThat(res.getMemberName()).isEqualTo("김노마드 (VIP)");
+        assertThat(res.getItems()).isNotEmpty();
+        assertThat(res.getItems().get(0).getName()).isEqualTo("비세토스 뮌헨 토트");
+        assertThat(res.getItems().get(0).getCareStatus()).isEqualTo("OPTIMAL");
+        assertThat(res.getItems().get(1).getName()).isEqualTo("아렌 크로스바디");
+        assertThat(res.getItems().get(1).getCareStatus()).isEqualTo("CONDITIONING_NEEDED");
+        assertThat(res.getFeaturedItem().getName()).isEqualTo("비세토스 스타크 백팩");
+    }
 }
 

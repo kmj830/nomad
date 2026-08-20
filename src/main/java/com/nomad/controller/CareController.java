@@ -56,6 +56,16 @@ public class CareController {
     public ResponseEntity<CareDto.StampResponse> checkInCityStamp(@RequestBody CareDto.StampRequest request) {
         return ResponseEntity.ok(careService.checkInCityStamp(request));
     }
+
+    @Operation(summary = "나의 럭셔리 컬렉션 보유 아이템 및 가죽 케어 상태 목록 조회", description = "회원이 보유한 명품 아이템 목록, 최근 케어일, 가죽 컨디션 상태(최적/컨디셔닝 필요/전문 케어 권장) 및 긴급 케어 추천 아이템을 조회합니다.")
+    @GetMapping({"/my-collection", "/collection/{memberId}"})
+    public ResponseEntity<CareDto.MyCollectionResponse> getMyCollection(
+            @PathVariable(required = false) Long memberId,
+            @RequestParam(required = false) Long memberIdParam
+    ) {
+        Long targetMemberId = memberId != null ? memberId : memberIdParam;
+        return ResponseEntity.ok(careService.getMyCollection(targetMemberId));
+    }
 }
 
 
