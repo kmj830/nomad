@@ -16,4 +16,4 @@ FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 COPY --from=build /app/build/libs/*.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-Xmx384m", "-jar", "-Dspring.profiles.active=prod", "app.jar"]
+ENTRYPOINT ["java", "-Xms128m", "-Xmx256m", "-XX:MaxMetaspaceSize=96m", "-XX:ReservedCodeCacheSize=32m", "-Xss512k", "-XX:+UseSerialGC", "-Dspring.profiles.active=prod", "-jar", "app.jar"]

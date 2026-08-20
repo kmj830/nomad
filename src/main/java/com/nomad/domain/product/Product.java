@@ -42,9 +42,19 @@ public class Product {
     @Builder.Default
     private Boolean isVipExclusive = false;
 
+    public String getImageUrl() {
+        if (this.imageUrl == null) {
+            return "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80";
+        }
+        if (this.imageUrl.startsWith("/")) {
+            return "https://mcm-nomad-backend.onrender.com" + this.imageUrl;
+        }
+        return this.imageUrl;
+    }
+
     // Frontend Next.js ProductRow compatibility
     public String getThumbnailUrl() {
-        return this.imageUrl != null ? this.imageUrl : "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80";
+        return getImageUrl();
     }
 
     public java.math.BigDecimal getPriceKrw() {

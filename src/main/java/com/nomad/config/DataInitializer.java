@@ -105,47 +105,50 @@ public class DataInitializer implements CommandLineRunner {
                     .build());
         }
 
-        // 1. Force update all existing products to verified Unsplash high-res image URLs
+        // 1. Force update all existing products to verified local static images
         List<Product> existingProducts = productRepository.findAll();
         for (Product p : existingProducts) {
-            if (p.getName().contains("판초") || p.getName().contains("커버") || p.getName().contains("트렌치코트")) {
-                p.setImageUrl("https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=800&q=80");
-            } else if (p.getName().contains("솔루션") || p.getName().contains("케어") || p.getName().contains("실드")) {
-                p.setImageUrl("https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=800&q=80");
-            } else if (p.getName().contains("슬링백") || p.getName().contains("크로스바디")) {
-                p.setImageUrl("https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80");
-            } else if (p.getName().contains("백팩")) {
-                p.setImageUrl("https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80");
-            } else if (p.getName().contains("패스포트") || p.getName().contains("여권") || p.getName().contains("월렛") || p.getName().contains("홀더")) {
-                p.setImageUrl("https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80");
-            } else if (p.getName().contains("파우치") || p.getName().contains("워시백")) {
-                p.setImageUrl("https://images.unsplash.com/photo-1577733966973-d680bffd2e80?auto=format&fit=crop&w=800&q=80");
-            } else if (p.getName().contains("키폴") || p.getName().contains("더플백") || p.getName().contains("위켄더") || p.getName().contains("보스턴백") || p.getName().contains("카빈백") || p.getName().contains("캐리어")) {
-                p.setImageUrl("https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=800&q=80");
-            } else if (p.getName().contains("샤넬") || p.getName().contains("플랩백") || p.getName().contains("22")) {
-                p.setImageUrl("https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=800&q=80");
-            } else if (p.getName().contains("에르메스") || p.getName().contains("타막")) {
-                p.setImageUrl("https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=800&q=80");
-            } else if (p.getName().contains("구찌")) {
-                p.setImageUrl("https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80");
-            } else if (p.getName().contains("프라다")) {
-                p.setImageUrl("https://images.unsplash.com/photo-1577733966973-d680bffd2e80?auto=format&fit=crop&w=800&q=80");
-            } else if (p.getName().contains("보테가") || p.getName().contains("카세트")) {
-                p.setImageUrl("https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=800&q=80");
-            } else if (p.getName().contains("블레이저")) {
-                p.setImageUrl("https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=800&q=80");
-            } else if (p.getName().contains("트렉 팬츠") || p.getName().contains("바지")) {
-                p.setImageUrl("https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&w=800&q=80");
-            } else if (p.getName().contains("로퍼")) {
-                p.setImageUrl("https://images.unsplash.com/photo-1533867617858-e7b97e060509?auto=format&fit=crop&w=800&q=80");
-            } else if (p.getName().contains("헤드폰") || p.getName().contains("오버이어")) {
-                p.setImageUrl("https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80");
-            } else if (p.getName().contains("스니커즈")) {
-                p.setImageUrl("https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=800&q=80");
-            } else if (p.getName().contains("키링")) {
-                p.setImageUrl("https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80");
-            } else {
-                p.setImageUrl("https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80");
+            String name = p.getName();
+            if (name.contains("MCM 스타크 비세토스 방수")) {
+                p.setImageUrl("/images/products/01_mcm_stark_backpack.jpg");
+            } else if (name.contains("위켄더") || name.contains("Ottomar")) {
+                p.setImageUrl("/images/products/02_mcm_weekender_duffle.jpg");
+            } else if (name.contains("에어포트 리미티드")) {
+                p.setImageUrl("/images/products/03_mcm_airport_limited.jpg");
+            } else if (name.contains("판초")) {
+                p.setImageUrl("/images/products/04_prada_renylon_poncho.jpg");
+            } else if (name.contains("사피아노") || name.contains("토일레트리")) {
+                p.setImageUrl("/images/products/05_prada_saffiano_pouch.jpg");
+            } else if (name.contains("보테가") && name.contains("케어")) {
+                p.setImageUrl("/images/products/06_bottega_leather_care.jpg");
+            } else if (name.contains("카세트")) {
+                p.setImageUrl("/images/products/07_bottega_cassette_bag.jpg");
+            } else if (name.contains("구찌") && name.contains("슬링백")) {
+                p.setImageUrl("/images/products/08_gucci_gg_slingbag.jpg");
+            } else if (name.contains("사보이")) {
+                p.setImageUrl("/images/products/09_gucci_savoy_duffle.jpg");
+            } else if (name.contains("키폴")) {
+                p.setImageUrl("/images/products/10_lv_keepall_50.jpg");
+            } else if (name.contains("크리스토퍼")) {
+                p.setImageUrl("/images/products/11_lv_christopher_backpack.jpg");
+            } else if (name.contains("호라이즌") || name.contains("캐리어")) {
+                p.setImageUrl("/images/products/12_lv_horizon_55_luggage.jpg");
+            } else if (name.contains("타막") || name.contains("패스포트")) {
+                p.setImageUrl("/images/products/13_hermes_tarmac_passport.jpg");
+            } else if (name.contains("에르백")) {
+                p.setImageUrl("/images/products/14_hermes_herbag_50.jpg");
+            } else if (name.contains("디올") && name.contains("새들")) {
+                p.setImageUrl("/images/products/15_dior_saddle_backpack.jpg");
+            } else if (name.contains("디올") && name.contains("케어")) {
+                p.setImageUrl("/images/products/16_dior_leather_care.jpg");
+            } else if (name.contains("샤넬") && name.contains("플랩백")) {
+                p.setImageUrl("/images/products/17_chanel_classic_flap.jpg");
+            } else if (name.contains("샤넬 22")) {
+                p.setImageUrl("/images/products/18_chanel_22_bag.jpg");
+            } else if (name.contains("트렌치코트") || name.contains("버버리")) {
+                p.setImageUrl("/images/products/19_burberry_kensington_trench.jpg");
+            } else if (name.contains("고야드") || name.contains("보잉")) {
+                p.setImageUrl("/images/products/20_goyard_boeing_45.jpg");
             }
             productRepository.save(p);
         }
@@ -153,102 +156,102 @@ public class DataInitializer implements CommandLineRunner {
         // 2. Ensure 20 diverse luxury brand products exist
         ensureProduct("MCM 스타크 비세토스 방수 백팩 32", "MCM", ProductCategory.WATERPROOF,
                 new BigDecimal("1250000.00"), 50,
-                "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80",
+                "/images/products/01_mcm_stark_backpack.jpg",
                 "열대성 스콜 및 우천 시 소지품을 완벽 보호하는 하이테크 비세토스 방수 백팩", true);
 
         ensureProduct("MCM 비세토스 모노그램 위켄더 더플백 45", "MCM", ProductCategory.TRAVEL_BAG,
                 new BigDecimal("1980000.00"), 30,
-                "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=800&q=80",
+                "/images/products/02_mcm_weekender_duffle.jpg",
                 "아이코닉 코냑 비세토스 캔버스와 24K 도금 하드웨어로 완성된 클래식 여행 가방", true);
 
         ensureProduct("MCM 스타크 비세토스 에어포트 리미티드 백팩", "MCM", ProductCategory.LIMITED_EDITION,
                 new BigDecimal("1350000.00"), 15,
-                "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80",
+                "/images/products/03_mcm_airport_limited.jpg",
                 "인천국제공항 T1 한정 팝업 익스클루시브 비세토스 레더 백팩", true);
 
         ensureProduct("프라다 리나일론 테크니컬 방수 레인 판초", "PRADA", ProductCategory.WATERPROOF,
                 new BigDecimal("1980000.00"), 40,
-                "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=800&q=80",
+                "/images/products/04_prada_renylon_poncho.jpg",
                 "열대성 스콜과 우천 시 완벽한 방수를 자랑하는 프라다 시그니처 친환경 리나일론 케이프", true);
 
         ensureProduct("프라다 사피아노 레더 트래블 토일레트리 파우치", "PRADA", ProductCategory.ACCESSORY,
                 new BigDecimal("1150000.00"), 45,
-                "https://images.unsplash.com/photo-1577733966973-d680bffd2e80?auto=format&fit=crop&w=800&q=80",
+                "/images/products/05_prada_saffiano_pouch.jpg",
                 "스크래치와 수분에 강한 사피아노 가죽으로 제작된 기내 및 호텔 전용 럭셔리 워시백 파우치", false);
 
         ensureProduct("보테가 베네타 인트레치아토 레더 실드 케어 키트", "BOTTEGA VENETA", ProductCategory.LEATHER_CARE,
                 new BigDecimal("180000.00"), 100,
-                "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=800&q=80",
+                "/images/products/06_bottega_leather_care.jpg",
                 "고습도 환경에서 가죽의 수분 침투를 막고 은은한 광택을 유지하는 프리미엄 나노 코팅 에센스 세트", false);
 
         ensureProduct("보테가 베네타 인트레치아토 카세트 크로스바디백", "BOTTEGA VENETA", ProductCategory.ACCESSORY,
                 new BigDecimal("3250000.00"), 25,
-                "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=800&q=80",
+                "/images/products/07_bottega_cassette_bag.jpg",
                 "부드러운 나파 가죽을 엮어 완성한 시그니처 카세트백으로 공항과 도심 이동 시 최적의 수납감 제공", true);
 
         ensureProduct("구찌 GG 방수 코팅 캔버스 슬링백", "GUCCI", ProductCategory.WATERPROOF,
                 new BigDecimal("1420000.00"), 35,
-                "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80",
+                "/images/products/08_gucci_gg_slingbag.jpg",
                 "열대 스콜 속에서도 소지품과 여권을 쾌적하게 보호하는 GG 수프림 발수 코팅 슬링백", false);
 
         ensureProduct("구찌 사보이 모노그램 미디엄 더플백", "GUCCI", ProductCategory.TRAVEL_BAG,
                 new BigDecimal("2890000.00"), 20,
-                "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=800&q=80",
+                "/images/products/09_gucci_savoy_duffle.jpg",
                 "헤리티지 웹 스트라이프와 GG 수프림 캔버스가 돋보이는 럭셔리 주말 트래블 더플백", true);
 
         ensureProduct("루이비통 키폴 반둘리에 50 워터프루프 트래블백", "LOUIS VUITTON", ProductCategory.WATERPROOF,
                 new BigDecimal("3580000.00"), 20,
-                "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=800&q=80",
+                "/images/products/10_lv_keepall_50.jpg",
                 "방수 지퍼와 심실링 테이핑이 적용되어 악천후에도 안전한 모노그램 캔버스 더플 트래블백", true);
 
         ensureProduct("루이비통 크리스토퍼 PM 모노그램 백팩", "LOUIS VUITTON", ProductCategory.BACKPACK,
                 new BigDecimal("4450000.00"), 15,
-                "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80",
+                "/images/products/11_lv_christopher_backpack.jpg",
                 "고급스러운 모노그램 캔버스와 넉넉한 수납공간을 갖춘 하이엔드 여행용 백팩", true);
 
         ensureProduct("루이비통 호라이즌 55 모노그램 캐리어", "LOUIS VUITTON", ProductCategory.LIMITED_EDITION,
                 new BigDecimal("4200000.00"), 8,
-                "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=800&q=80",
+                "/images/products/12_lv_horizon_55_luggage.jpg",
                 "공항 VIP 라운지 팝업 익스클루시브 초경량 럭셔리 롤링 러기지", true);
 
         ensureProduct("에르메스 타막 카프스킨 트래블 패스포트 홀더", "HERMÈS", ProductCategory.ACCESSORY,
                 new BigDecimal("720000.00"), 30,
-                "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=800&q=80",
+                "/images/products/13_hermes_tarmac_passport.jpg",
                 "최고급 엡송 송아지 가죽과 방수 안감이 적용되어 보딩패스와 여권을 품격 있게 보호", false);
 
         ensureProduct("에르메스 에르백 집 50 방수 캔버스 카빈백", "HERMÈS", ProductCategory.TRAVEL_BAG,
                 new BigDecimal("4650000.00"), 10,
-                "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=800&q=80",
+                "/images/products/14_hermes_herbag_50.jpg",
                 "발수 가공 오피서 캔버스와 바레니아 레더 플랩이 결합된 기내 반입용 프리미엄 트래블백", true);
 
         ensureProduct("디올 새들 테크니컬 오블리크 트래블 백팩", "DIOR", ProductCategory.BACKPACK,
                 new BigDecimal("4100000.00"), 25,
-                "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80",
+                "/images/products/15_dior_saddle_backpack.jpg",
                 "발수 가공 오블리크 자카드와 알루미늄 버클이 돋보이는 럭셔리 트래블 백팩", true);
 
         ensureProduct("디올 오블리크 자카드 레더 케어 에센스 세트", "DIOR", ProductCategory.LEATHER_CARE,
                 new BigDecimal("210000.00"), 60,
-                "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=800&q=80",
+                "/images/products/16_dior_leather_care.jpg",
                 "디올 아틀리에 특화 가죽 클리닝 솔루션과 나노 발수 프로텍트 밤 세트", false);
 
         ensureProduct("샤넬 클래식 플랩백 에어포트 에디션", "CHANEL", ProductCategory.LIMITED_EDITION,
                 new BigDecimal("14500000.00"), 5,
-                "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=800&q=80",
+                "/images/products/17_chanel_classic_flap.jpg",
                 "공항 면세 부티크 전용 익스클루시브 캐비어 스킨 플랩백", true);
 
         ensureProduct("샤넬 22 카프스킨 스몰 트래블 백", "CHANEL", ProductCategory.READY_TO_WEAR,
                 new BigDecimal("8220000.00"), 12,
-                "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=800&q=80",
+                "/images/products/18_chanel_22_bag.jpg",
                 "유연한 유광 카프스킨과 골드 메탈 참 장식이 돋보이는 모던 럭셔리 트래블 숄더백", true);
 
         ensureProduct("버버리 켄싱턴 헤리티지 방수 트렌치코트", "BURBERRY", ProductCategory.WATERPROOF,
                 new BigDecimal("3390000.00"), 20,
-                "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=800&q=80",
+                "/images/products/19_burberry_kensington_trench.jpg",
                 "비바람을 완벽 차단하는 토마스 버버리 개버딘 코튼과 빈티지 체크 안감의 시그니처 레인코트", true);
 
         ensureProduct("고야드 보잉 45 방수 고야딘 캔버스 더플백", "GOYARD", ProductCategory.TRAVEL_BAG,
                 new BigDecimal("4850000.00"), 15,
-                "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=800&q=80",
+                "/images/products/20_goyard_boeing_45.jpg",
                 "천연 고무 코팅 처리된 고야딘 캔버스로 탁월한 경량성과 방수 기능을 제공하는 아이코닉 더플백", true);
 
         // 3. Initial Journey Seed (여정 기본 데이터)
@@ -395,7 +398,16 @@ public class DataInitializer implements CommandLineRunner {
     private void ensureProduct(String name, String brand, ProductCategory category,
                                BigDecimal price, Integer stock, String imageUrl,
                                String description, Boolean isVipExclusive) {
-        if (!productRepository.existsByName(name)) {
+        Product existing = productRepository.findByName(name).orElse(null);
+        if (existing != null) {
+            existing.setImageUrl(imageUrl);
+            existing.setBrand(brand);
+            existing.setCategory(category);
+            existing.setPrice(price);
+            existing.setDescription(description);
+            existing.setIsVipExclusive(isVipExclusive);
+            productRepository.save(existing);
+        } else {
             productRepository.save(Product.builder()
                     .name(name)
                     .brand(brand)

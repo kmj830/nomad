@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class FlightServiceTest {
 
-    private final FlightService flightService = new FlightService();
+    private final FlightService flightService = new FlightService(new org.springframework.web.client.RestTemplate());
 
     @Test
     @DisplayName("항공편명 기준 운항 정보 조회 테스트 (KE651)")

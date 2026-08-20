@@ -22,7 +22,7 @@ public class OpenAiService {
     @Value("${OPENAI_API_KEY:${openai.api.key:}}")
     private String apiKey;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public boolean isApiKeyAvailable() {

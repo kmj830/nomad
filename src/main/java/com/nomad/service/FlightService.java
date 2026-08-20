@@ -28,7 +28,7 @@ public class FlightService {
     @Value("${INCHEON_AIRPORT_API_KEY:${incheon.airport.api.key:}}")
     private String incheonAirportApiKey;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
 
     public boolean isApiKeyAvailable() {
         return incheonAirportApiKey != null && !incheonAirportApiKey.isBlank();

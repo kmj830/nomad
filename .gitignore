@@ -55,6 +55,7 @@ requirements/
 *.png
 *.jpg
 *.jpeg
+!src/main/resources/static/**
 *.docx
 *.pptx
 *.pdf
@@ -66,5 +67,11 @@ requirements/
 *.pem
 *serviceAccount*.json
 firebase-adminsdk*.json
+
+### Local QR Code Test Images ###
+qr-images/
+QR_IMAGE/
+qr_images/
+
 
 

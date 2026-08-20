@@ -7,7 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class OpenAiServiceTest {
 
-    private final OpenAiService openAiService = new OpenAiService();
+    private final OpenAiService openAiService = new OpenAiService(new org.springframework.web.client.RestTemplate());
 
     @Test
     @DisplayName("OpenAI API 키가 없을 때 스마트 Fallback AI 큐레이션 문구 생성")

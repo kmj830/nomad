@@ -49,7 +49,13 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: false
+server:
+  tomcat:
+    threads:
+      max: 30
+      min-spare: 5
+    max-connections: 200
 
 

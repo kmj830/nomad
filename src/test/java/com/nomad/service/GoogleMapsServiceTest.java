@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class GoogleMapsServiceTest {
 
-    private final GoogleMapsService googleMapsService = new GoogleMapsService();
+    private final GoogleMapsService googleMapsService = new GoogleMapsService(new org.springframework.web.client.RestTemplate());
 
     @Test
     @DisplayName("Google Maps API 연동 및 매장 탐색 데이터 반환")

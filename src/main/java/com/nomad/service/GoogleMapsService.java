@@ -20,7 +20,7 @@ public class GoogleMapsService {
     @Value("${GOOGLE_MAPS_API_KEY:${google.maps.api.key:}}")
     private String mapsApiKey;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
 
     public boolean isApiKeyAvailable() {
         return mapsApiKey != null && !mapsApiKey.isBlank() && !mapsApiKey.startsWith("YOUR_");
