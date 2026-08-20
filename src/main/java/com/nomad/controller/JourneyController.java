@@ -88,6 +88,16 @@ public class JourneyController {
         ));
     }
 
+    @Operation(summary = "내 비행 여정 히스토리 목록 조회", description = "회원의 과거 완료된 비행 및 다가오는 전체 여정 히스토리 목록을 최신순으로 조회합니다.")
+    @GetMapping({"/my", "/list", "/member/{memberId}"})
+    public ResponseEntity<JourneyDto.MyJourneysResponse> getMyJourneys(
+            @RequestParam(required = false) Long memberId,
+            @PathVariable(required = false) Long memberIdPath
+    ) {
+        Long targetMemberId = memberIdPath != null ? memberIdPath : (memberId != null ? memberId : 1L);
+        return ResponseEntity.ok(journeyService.getMyJourneys(targetMemberId));
+    }
+
     @Operation(summary = "여정 기본 상세 단건 조회", description = "여정 ID를 통해 PNR, 출/도착지, 출발 일시, 운항 상태 및 기후 분석 정보를 조회합니다.")
     @GetMapping("/{journeyId}")
     public ResponseEntity<JourneyDto.JourneyResponse> getJourney(@PathVariable Long journeyId) {

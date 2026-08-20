@@ -32,10 +32,12 @@
 
 | 환경 | Base URL | 설명 |
 | :--- | :--- | :--- |
-| **Production (Live)** | `https://herstory-backend.onrender.com` | Render 클라우드 배포 서버 |
-| **Swagger UI** | `https://herstory-backend.onrender.com/swagger-ui/index.html` | 대화형 API 테스트 콘솔 |
-| **OpenAPI Spec (JSON)** | `https://herstory-backend.onrender.com/v3/api-docs` | OpenAPI 3.0 JSON 스키마 |
+| **Production (Live)** | `https://mcm-nomad-backend.onrender.com` | Render 클라우드 배포 서버 |
+| **Swagger UI** | `https://mcm-nomad-backend.onrender.com/swagger-ui/index.html` | 대화형 API 테스트 콘솔 |
+| **Staff Tablet** | `https://mcm-nomad-backend.onrender.com/staff` | 매장 직원 전용 실시간 태블릿 대시보드 |
+| **OpenAPI Spec (JSON)** | `https://mcm-nomad-backend.onrender.com/v3/api-docs` | OpenAPI 3.0 JSON 스키마 |
 | **Local Development** | `http://localhost:8080` | 로컬 개발 서버 |
+
 
 ### 1.2 공통 HTTP 헤더 (Common Headers)
 
@@ -1336,3 +1338,39 @@ public class PushResponse {
     private String statusMessage;
 }
 ```
+
+### 6.10 `MyPageDto` & `CouponDto` & `PaymentMethodDto`
+```java
+// 마이페이지 종합 요약 대시보드 응답
+public class SummaryResponse {
+    private Long memberId;
+    private String name;
+    private String initial;
+    private String email;
+    private VipTier vipTier;
+    private Long miles;
+    private Long couponCount;
+    private Long journeyCount;
+    private String nextTier;
+    private Long milesToNextTier;
+    private Integer tierProgressPercent;
+    private NotificationSettings settings;
+}
+
+// 쿠폰 목록 응답
+public class CouponListResponse {
+    private Long memberId;
+    private Integer totalCoupons;
+    private List<CouponItem> items;
+}
+
+// 결제 수단 목록 아이템
+public class PaymentMethodItem {
+    private Long cardId;
+    private String cardName;
+    private String cardNumberMasked;
+    private String subtitle;
+    private Boolean isDefault;
+}
+```
+

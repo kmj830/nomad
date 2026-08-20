@@ -119,4 +119,30 @@ public class JourneyDto {
         private boolean success;
         private String message;
     }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class JourneySummaryItem {
+        private Long journeyId;
+        private String pnr;
+        private String origin;
+        private String destination;
+        private LocalDateTime departureDateTime;
+        private FlightStatus flightStatus;
+        private String destinationWeather;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class MyJourneysResponse {
+        private Long memberId;
+        private Integer totalJourneys;
+        private List<JourneySummaryItem> journeys;
+    }
 }

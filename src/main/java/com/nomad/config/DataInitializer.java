@@ -36,6 +36,8 @@ public class DataInitializer implements CommandLineRunner {
     private final SmartCartRepository smartCartRepository;
     private final OrderRepository orderRepository;
     private final com.nomad.domain.mileage.MileageHistoryRepository mileageHistoryRepository;
+    private final com.nomad.domain.coupon.CouponRepository couponRepository;
+    private final com.nomad.domain.member.PaymentMethodRepository paymentMethodRepository;
 
     @Override
     @Transactional
@@ -49,27 +51,51 @@ public class DataInitializer implements CommandLineRunner {
                     .email("vip@herstory.com")
                     .password("Test1234!")
                     .name("김노마드 (VIP)")
-                    .phone("010-1234-5678")
+                    .englishName("KIM NOMAD")
+                    .birthDate("1994-03-08")
+                    .passportNumber("M1234567")
+                    .passportExpiryDate("2031.04")
+                    .autoFillPassport(true)
+                    .phone("010-2456-8890")
                     .vipTier(VipTier.VIP)
-                    .nomadMiles(15000L)
+                    .nomadMiles(124500L)
+                    .milesAlert(true)
+                    .journeyAlert(true)
+                    .marketingOptIn(false)
                     .build());
 
             goldMember = memberRepository.save(Member.builder()
                     .email("gold@herstory.com")
                     .password("Test1234!")
                     .name("이여행 (Gold)")
+                    .englishName("LEE TRAVEL")
+                    .birthDate("1996-07-15")
+                    .passportNumber("M7654321")
+                    .passportExpiryDate("2030.11")
+                    .autoFillPassport(true)
                     .phone("010-9876-5432")
                     .vipTier(VipTier.GOLD)
                     .nomadMiles(4500L)
+                    .milesAlert(true)
+                    .journeyAlert(true)
+                    .marketingOptIn(true)
                     .build());
 
             platinumMember = memberRepository.save(Member.builder()
                     .email("platinum@herstory.com")
                     .password("Test1234!")
                     .name("박스타 (Platinum)")
+                    .englishName("PARK STAR")
+                    .birthDate("1992-12-01")
+                    .passportNumber("M9988776")
+                    .passportExpiryDate("2032.08")
+                    .autoFillPassport(true)
                     .phone("010-5555-7777")
                     .vipTier(VipTier.PLATINUM)
                     .nomadMiles(9800L)
+                    .milesAlert(true)
+                    .journeyAlert(true)
+                    .marketingOptIn(false)
                     .build());
         } else {
             vipMember = memberRepository.findAll().stream().findFirst().orElse(null);
@@ -236,6 +262,87 @@ public class DataInitializer implements CommandLineRunner {
                     .balanceAfter(9300L)
                     .description("인천공항 T1 마티나 라운지 · 10월 9일")
                     .createdAt(LocalDateTime.now().minusDays(7))
+                    .build());
+        }
+
+        // 6. Initial Coupons Seed (MyPage 프로토타입 100% 매칭)
+        if (couponRepository.count() == 0 && vipMember != null) {
+            couponRepository.save(com.nomad.domain.coupon.Coupon.builder()
+                    .member(vipMember)
+                    .couponCode("DUTYFREE-10PCT")
+                    .title("면세점 10% 할인")
+                    .subtitle("12월 31일까지 · 인천 T1/T2")
+                    .category(com.nomad.domain.coupon.CouponCategory.DISCOUNT)
+                    .status(com.nomad.domain.coupon.CouponStatus.AVAILABLE)
+                    .validUntil(LocalDateTime.now().plusMonths(4))
+                    .isUrgent(false)
+                    .discountRate(10)
+                    .build());
+
+            couponRepository.save(com.nomad.domain.coupon.Coupon.builder()
+                    .member(vipMember)
+                    .couponCode("LOUNGE-FREE-PASS")
+                    .title("라운지 1회 무료")
+                    .subtitle("3월 15일까지")
+                    .category(com.nomad.domain.coupon.CouponCategory.LOUNGE)
+                    .status(com.nomad.domain.coupon.CouponStatus.AVAILABLE)
+                    .validUntil(LocalDateTime.now().plusMonths(7))
+                    .isUrgent(false)
+                    .build());
+
+            couponRepository.save(com.nomad.domain.coupon.Coupon.builder()
+                    .member(vipMember)
+                    .couponCode("VIP-FITTING-PRIORITY")
+                    .title("VIP 피팅 우선 예약")
+                    .subtitle("만료 임박 · 8월 31일까지")
+                    .category(com.nomad.domain.coupon.CouponCategory.VIP_FITTING)
+                    .status(com.nomad.domain.coupon.CouponStatus.AVAILABLE)
+                    .validUntil(LocalDateTime.now().plusDays(11))
+                    .isUrgent(true)
+                    .build());
+        }
+
+        // 7. Initial Payment Methods Seed (MyPage 프로토타입 100% 매칭)
+        if (paymentMethodRepository.count() == 0 && vipMember != null) {
+            paymentMethodRepository.save(com.nomad.domain.member.PaymentMethod.builder()
+                    .member(vipMember)
+                    .cardName("HER-STORY 카드")
+                    .cardNumberMasked("•••• 4412")
+                    .subtitle("•••• 4412 · 기본 결제")
+                    .isDefault(true)
+                    .build());
+
+            paymentMethodRepository.save(com.nomad.domain.member.PaymentMethod.builder()
+                    .member(vipMember)
+                    .cardName("신한카드")
+                    .cardNumberMasked("•••• 8890")
+                    .subtitle("•••• 8890")
+                    .isDefault(false)
+                    .build());
+        }
+
+        // 8. Additional Journey History Seed
+        if (journeyRepository.count() <= 1 && vipMember != null) {
+            journeyRepository.save(Journey.builder()
+                    .member(vipMember)
+                    .pnr("HST888")
+                    .origin("ICN (인천국제공항)")
+                    .destination("HND (도쿄 하네다)")
+                    .departureDateTime(LocalDateTime.now().minusDays(7))
+                    .flightStatus(FlightStatus.COMPLETED)
+                    .destinationWeather("맑음 (기온 26°C, 습도 45%)")
+                    .recommendationReason("도쿄 쾌적한 도시 여행을 위한 럭셔리 레더 컬렉션")
+                    .build());
+
+            journeyRepository.save(Journey.builder()
+                    .member(vipMember)
+                    .pnr("HST999")
+                    .origin("ICN (인천국제공항)")
+                    .destination("CDG (파리 샤를 드골)")
+                    .departureDateTime(LocalDateTime.now().minusMonths(1))
+                    .flightStatus(FlightStatus.COMPLETED)
+                    .destinationWeather("선선함 (기온 21°C, 습도 50%)")
+                    .recommendationReason("파리 패션위크 전용 트래블 럭셔리 라인업")
                     .build());
         }
     }

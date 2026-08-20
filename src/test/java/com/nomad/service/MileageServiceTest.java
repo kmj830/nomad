@@ -33,6 +33,9 @@ class MileageServiceTest {
     @Mock
     private MileageHistoryRepository mileageHistoryRepository;
 
+    @Mock
+    private com.nomad.domain.coupon.CouponRepository couponRepository;
+
     @InjectMocks
     private MileageService mileageService;
 

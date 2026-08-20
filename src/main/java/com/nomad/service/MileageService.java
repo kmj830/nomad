@@ -21,6 +21,7 @@ public class MileageService {
 
     private final MemberRepository memberRepository;
     private final MileageHistoryRepository mileageHistoryRepository;
+    private final com.nomad.domain.coupon.CouponRepository couponRepository;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
 
@@ -217,6 +218,26 @@ public class MileageService {
                 .description("쿠폰코드: " + couponCode)
                 .build();
         mileageHistoryRepository.save(history);
+
+        // Save to Coupon table for MyPage Coupon Wallet
+        com.nomad.domain.coupon.CouponCategory couponCategory = switch (code) {
+            case "LOUNGE_PASS" -> com.nomad.domain.coupon.CouponCategory.LOUNGE;
+            case "VIP_FITTING" -> com.nomad.domain.coupon.CouponCategory.VIP_FITTING;
+            case "LEATHER_CARE_KIT" -> com.nomad.domain.coupon.CouponCategory.LEATHER_CARE;
+            case "AIRPORT_PICKUP" -> com.nomad.domain.coupon.CouponCategory.AIRPORT_PICKUP;
+            default -> com.nomad.domain.coupon.CouponCategory.DISCOUNT;
+        };
+
+        couponRepository.save(com.nomad.domain.coupon.Coupon.builder()
+                .member(member)
+                .couponCode(couponCode)
+                .title(benefitName)
+                .subtitle("마일리지 교환 혜택 · 유효기간 30일")
+                .category(couponCategory)
+                .status(com.nomad.domain.coupon.CouponStatus.AVAILABLE)
+                .validUntil(java.time.LocalDateTime.now().plusDays(30))
+                .isUrgent(false)
+                .build());
 
         return MileageDto.RedeemBenefitResponse.builder()
                 .memberId(member.getId())

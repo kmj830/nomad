@@ -210,6 +210,28 @@ public class JourneyService {
                 .build();
     }
 
+    public JourneyDto.MyJourneysResponse getMyJourneys(Long memberId) {
+        List<Journey> journeys = journeyRepository.findByMemberIdOrderByDepartureDateTimeDesc(memberId);
+
+        List<JourneyDto.JourneySummaryItem> items = journeys.stream()
+                .map(j -> JourneyDto.JourneySummaryItem.builder()
+                        .journeyId(j.getId())
+                        .pnr(j.getPnr())
+                        .origin(j.getOrigin())
+                        .destination(j.getDestination())
+                        .departureDateTime(j.getDepartureDateTime())
+                        .flightStatus(j.getFlightStatus())
+                        .destinationWeather(j.getDestinationWeather())
+                        .build())
+                .collect(Collectors.toList());
+
+        return JourneyDto.MyJourneysResponse.builder()
+                .memberId(memberId)
+                .totalJourneys(items.size())
+                .journeys(items)
+                .build();
+    }
+
     @Transactional
     public JourneyDto.DeleteResponse deleteJourney(Long journeyId) {
         Journey journey = journeyRepository.findById(journeyId)

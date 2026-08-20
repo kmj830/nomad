@@ -6,6 +6,7 @@ import java.util.Optional;
 
 public interface JourneyRepository extends JpaRepository<Journey, Long> {
     List<Journey> findByMemberIdOrderByDepartureDateTimeDesc(Long memberId);
+    long countByMemberId(Long memberId);
     Optional<Journey> findTopByMemberIdOrderByDepartureDateTimeDesc(Long memberId);
     Optional<Journey> findByPnr(String pnr);
 }
