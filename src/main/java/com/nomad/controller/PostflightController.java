@@ -79,12 +79,18 @@ public class PostflightController {
     }
 
     @Operation(summary = "나의 럭셔리 컬렉션 보유 아이템 및 가죽 케어 상태 목록 조회", description = "프론트엔드 LeatherCarePage 나의 컬렉션 상태 연동 전용 엔드포인트")
-    @GetMapping({"/my-collection", "/collection/{memberId}"})
+    @GetMapping("/my-collection")
     public ResponseEntity<CareDto.MyCollectionResponse> getMyCollection(
-            @PathVariable(required = false) Long memberId,
-            @RequestParam(required = false) Long memberIdParam
+            @RequestParam(required = false) Long memberId
     ) {
-        Long targetMemberId = memberId != null ? memberId : memberIdParam;
-        return ResponseEntity.ok(careService.getMyCollection(targetMemberId));
+        return ResponseEntity.ok(careService.getMyCollection(memberId));
+    }
+
+    @Operation(summary = "나의 럭셔리 컬렉션 보유 아이템 및 가죽 케어 상태 목록 조회 (경로 변수)", description = "프론트엔드 LeatherCarePage 회원 ID별 연동 엔드포인트")
+    @GetMapping("/collection/{memberId}")
+    public ResponseEntity<CareDto.MyCollectionResponse> getMyCollectionByPath(
+            @PathVariable Long memberId
+    ) {
+        return ResponseEntity.ok(careService.getMyCollection(memberId));
     }
 }
