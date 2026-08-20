@@ -12,9 +12,19 @@ public class OrderDto {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
+    @Builder
     public static class CheckoutRequest {
         private Long memberId;
         private Long journeyId;
+        private String pickupMonth;
+        private String pickupDay;
+        private String pickupTime;
+        private String pickupLocation;
+
+        public CheckoutRequest(Long memberId, Long journeyId) {
+            this.memberId = memberId;
+            this.journeyId = journeyId;
+        }
     }
 
     @Getter
@@ -43,6 +53,9 @@ public class OrderDto {
         private BigDecimal finalAmount;
         private Integer earnedMiles;
         private OrderStatus orderStatus;
+        private String pickupDate;
+        private String pickupTime;
+        private String pickupLocation;
         private List<OrderItemDetail> items;
         private LocalDateTime createdAt;
     }

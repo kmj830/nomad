@@ -33,8 +33,7 @@ public class OrderService {
 
     @Transactional
     public OrderDto.OrderResponse checkout(OrderDto.CheckoutRequest request) {
-        Member member = memberRepository.findById(request.getMemberId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. ID: " + request.getMemberId()));
+        Member member = findMemberOrFallback(request.getMemberId());
 
         SmartCart cart = smartCartRepository.findByMemberIdAndStatus(member.getId(), CartStatus.IN_CART)
                 .orElseThrow(() -> new IllegalArgumentException("결제할 장바구니 상품이 없습니다."));
@@ -46,6 +45,10 @@ public class OrderService {
         Journey journey = null;
         if (request.getJourneyId() != null) {
             journey = journeyRepository.findById(request.getJourneyId()).orElse(null);
+        }
+        if (journey == null) {
+            journey = journeyRepository.findTopByMemberIdOrderByDepartureDateTimeDesc(member.getId())
+                    .orElseGet(() -> journeyRepository.findAll().stream().findFirst().orElse(null));
         }
 
         BigDecimal totalAmount = cart.getItems().stream()
@@ -79,6 +82,21 @@ public class OrderService {
                     .build());
         }
 
+        // Calculate or assign pickup schedule
+        String pickupDate = (request.getPickupMonth() != null && request.getPickupDay() != null)
+                ? (request.getPickupMonth() + " " + request.getPickupDay())
+                : (journey != null && journey.getDepartureDateTime() != null
+                        ? (journey.getDepartureDateTime().getMonthValue() + "월 " + journey.getDepartureDateTime().getDayOfMonth() + "일")
+                        : "8월 22일");
+
+        String pickupTime = (request.getPickupTime() != null && !request.getPickupTime().isBlank())
+                ? request.getPickupTime()
+                : "5:30 PM";
+
+        String pickupLocation = (request.getPickupLocation() != null && !request.getPickupLocation().isBlank())
+                ? request.getPickupLocation()
+                : "인천국제공항 제2여객터미널 3층 면세구역 250번 게이트 앞 Herstory VIP Care & Pick-up Desk";
+
         Order order = Order.builder()
                 .member(member)
                 .journey(journey)
@@ -86,6 +104,9 @@ public class OrderService {
                 .dutyFreeDiscount(dutyFreeDiscount)
                 .finalAmount(finalAmount)
                 .earnedMiles(earnedMiles)
+                .pickupDate(pickupDate)
+                .pickupTime(pickupTime)
+                .pickupLocation(pickupLocation)
                 .orderStatus(OrderStatus.PAID)
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -125,9 +146,22 @@ public class OrderService {
                 .dutyFreeDiscount(savedOrder.getDutyFreeDiscount())
                 .finalAmount(savedOrder.getFinalAmount())
                 .earnedMiles(savedOrder.getEarnedMiles())
+                .pickupDate(savedOrder.getPickupDate())
+                .pickupTime(savedOrder.getPickupTime())
+                .pickupLocation(savedOrder.getPickupLocation())
                 .orderStatus(savedOrder.getOrderStatus())
                 .items(itemDetails)
                 .createdAt(savedOrder.getCreatedAt())
                 .build();
+    }
+
+    private Member findMemberOrFallback(Long memberId) {
+        if (memberId != null) {
+            return memberRepository.findById(memberId)
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. ID: " + memberId));
+        }
+        return memberRepository.findByEmail("vip@herstory.com")
+                .orElseGet(() -> memberRepository.findAll().stream().findFirst()
+                        .orElseThrow(() -> new IllegalArgumentException("존재하는 회원이 없습니다.")));
     }
 }

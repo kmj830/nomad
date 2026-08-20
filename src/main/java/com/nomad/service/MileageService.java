@@ -252,11 +252,11 @@ public class MileageService {
 
     private Member getMember(Long memberId) {
         if (memberId != null) {
-            var found = memberRepository.findById(memberId);
-            if (found.isPresent()) return found.get();
+            return memberRepository.findById(memberId)
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. ID: " + memberId));
         }
         return memberRepository.findByEmail("vip@herstory.com")
                 .orElseGet(() -> memberRepository.findAll().stream().findFirst()
-                        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. ID: " + memberId)));
+                        .orElseThrow(() -> new IllegalArgumentException("존재하는 회원이 없습니다.")));
     }
 }

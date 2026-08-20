@@ -730,10 +730,10 @@ data: {"type":"VIP_CHECKIN","memberId":1,"memberName":"김노마드 (VIP)","vipT
 
 ---
 
-### 5.5 Order API (면세 결제 & 마일리지 적립)
+### 5.5 Order API (면세 결제 & 마일리지 적립 & 픽업 일정 확정)
 
 #### `POST /api/v1/order/checkout`
-- **설명**: 스마트 장바구니 품목을 면세 결제하고, VIP 등급별 할인(5%~15%) 자동 차감 후 결제 금액의 5%를 Herstory Miles로 적립합니다.
+- **설명**: 스마트 장바구니 품목을 면세 결제하고, VIP 등급별 할인(5%~15%) 자동 차감 후 결제 금액의 5%를 Herstory Miles로 적립하며, 유저가 지정한 면세 픽업 일정을 확정합니다.
 - **Content-Type**: `application/json`
 
 ##### Request Body (`OrderDto.CheckoutRequest`)
@@ -741,11 +741,19 @@ data: {"type":"VIP_CHECKIN","memberId":1,"memberName":"김노마드 (VIP)","vipT
 | :--- | :--- | :---: | :--- | :--- |
 | `memberId` | `Long` | Y | - | 회원 ID |
 | `journeyId` | `Long` | N | `1` | 연동 여정 ID |
+| `pickupMonth` | `String` | N | `"8월"` | 픽업 월 |
+| `pickupDay` | `String` | N | `"22일"` | 픽업 일 |
+| `pickupTime` | `String` | N | `"5:35 PM"` | 픽업 시간 |
+| `pickupLocation` | `String` | N | - | 공항 면세 픽업 데스크 위치 |
 
 ```json
 {
   "memberId": 1,
-  "journeyId": 1
+  "journeyId": 1,
+  "pickupMonth": "8월",
+  "pickupDay": "22일",
+  "pickupTime": "5:35 PM",
+  "pickupLocation": "인천공항 제2여객터미널 3층 면세구역 250번 게이트 앞 Herstory VIP Care & Pick-up Desk"
 }
 ```
 
@@ -760,6 +768,9 @@ data: {"type":"VIP_CHECKIN","memberId":1,"memberName":"김노마드 (VIP)","vipT
 | `finalAmount` | `BigDecimal` | 최종 결제 청구 금액 |
 | `earnedMiles` | `Integer` | 이번 주문으로 적립된 Herstory Miles (+5%) |
 | `orderStatus` | `String (Enum)` | 주문 상태 (`PAID`, `PENDING`, `CANCELLED`) |
+| `pickupDate` | `String` | 확정된 픽업 날짜 (예: `"8월 22일"`) |
+| `pickupTime` | `String` | 확정된 픽업 시간 (예: `"5:35 PM"`) |
+| `pickupLocation` | `String` | 확정된 공항 픽업 데스크 위치 |
 | `items` | `List<OrderItemDetail>` | 구매 완료된 주문 품목 목록 |
 | `createdAt` | `LocalDateTime` | 주문 결제 일시 |
 
@@ -773,6 +784,9 @@ data: {"type":"VIP_CHECKIN","memberId":1,"memberName":"김노마드 (VIP)","vipT
   "finalAmount": 1062500.00,
   "earnedMiles": 53125,
   "orderStatus": "PAID",
+  "pickupDate": "8월 22일",
+  "pickupTime": "5:35 PM",
+  "pickupLocation": "인천공항 제2여객터미널 3층 면세구역 250번 게이트 앞 Herstory VIP Care & Pick-up Desk",
   "items": [
     {
       "productId": 1,
@@ -782,6 +796,36 @@ data: {"type":"VIP_CHECKIN","memberId":1,"memberName":"김노마드 (VIP)","vipT
     }
   ],
   "createdAt": "2026-08-15T18:15:30"
+}
+```
+
+---
+
+### 5.5-1 Airport API (공항 피팅 & 픽업 일정 자동 계산)
+
+#### `GET /api/v1/airport/{journeyId}/pickup-schedule` (또는 `/api/v1/airport/pickup-schedule`)
+- **설명**: 유저가 등록한 비행 여정/보딩패스 정보를 기반으로 출국 당일 기준 픽업 가능 월/일/시간 슬롯 및 최적 픽업 시간대를 자동 산출합니다.
+- **Content-Type**: `application/json`
+
+##### Response Body (`200 OK` - `AirportDto.PickupScheduleResponse`)
+```json
+{
+  "journeyId": 1,
+  "pnr": "HST777",
+  "flightNumber": "HST777",
+  "airportName": "인천국제공항 (ICN)",
+  "terminal": "인천공항 제2여객터미널",
+  "departureDateTime": "2026-08-22T19:35:00",
+  "departureDate": "2026-08-22",
+  "departureTime": "19:35",
+  "pickupDeskLocation": "인천국제공항 인천공항 제2여객터미널 3층 면세구역 250번 게이트 앞 Herstory VIP Care & Pick-up Desk",
+  "months": ["7월", "8월", "9월"],
+  "days": ["21일", "22일", "23일"],
+  "times": ["3:35 PM", "4:35 PM", "5:35 PM"],
+  "defaultMonth": "8월",
+  "defaultDay": "22일",
+  "defaultTime": "5:35 PM",
+  "recommendedNotice": "출국 2시간 전(5:35 PM) 수령 시 가장 여유롭게 탑승하실 수 있습니다."
 }
 ```
 

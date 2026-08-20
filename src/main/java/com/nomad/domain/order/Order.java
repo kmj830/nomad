@@ -41,6 +41,12 @@ public class Order {
 
     private Integer earnedMiles;
 
+    private String pickupDate;
+
+    private String pickupTime;
+
+    private String pickupLocation;
+
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private OrderStatus orderStatus = OrderStatus.PAID;

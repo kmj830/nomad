@@ -55,15 +55,8 @@ public class CouponService {
 
     @Transactional
     public Coupon issueCoupon(Long memberId, String title, String subtitle, CouponCategory category, int validDays, Integer discountRate) {
-        Member member = null;
-        if (memberId != null) {
-            member = memberRepository.findById(memberId).orElse(null);
-        }
-        if (member == null) {
-            member = memberRepository.findByEmail("vip@herstory.com")
-                    .orElseGet(() -> memberRepository.findAll().stream().findFirst()
-                            .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다. ID: " + memberId)));
-        }
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다. ID: " + memberId));
 
         String code = "CPN-" + System.currentTimeMillis() % 1000000;
         LocalDateTime validUntil = LocalDateTime.now().plusDays(validDays);

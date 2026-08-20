@@ -25,11 +25,11 @@ public class CartService {
 
     @Transactional
     public CartDto.CartResponse addToCart(CartDto.AddItemRequest request) {
-        Member member = findMemberOrFallback(request.getMemberId());
+        Member member = memberRepository.findById(request.getMemberId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. ID: " + request.getMemberId()));
 
         Product product = productRepository.findById(request.getProductId())
-                .orElseGet(() -> productRepository.findAll().stream().findFirst()
-                        .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다. ID: " + request.getProductId())));
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다. ID: " + request.getProductId()));
 
         SmartCart cart = smartCartRepository.findByMemberIdAndStatus(member.getId(), CartStatus.IN_CART)
                 .orElseGet(() -> smartCartRepository.save(
@@ -62,15 +62,18 @@ public class CartService {
 
     @Transactional
     public CartDto.CartResponse updateChoiceFit(CartDto.ChoiceFitRequest request) {
-        Member member = findMemberOrFallback(request.getMemberId());
-        SmartCart cart = smartCartRepository.findByMemberIdAndStatus(member.getId(), CartStatus.IN_CART)
-                .orElseGet(() -> smartCartRepository.save(
-                        SmartCart.builder()
-                                .member(member)
-                                .choiceFit(request.getChoiceFit())
-                                .status(CartStatus.IN_CART)
-                                .build()
-                ));
+        SmartCart cart = smartCartRepository.findByMemberIdAndStatus(request.getMemberId(), CartStatus.IN_CART)
+                .orElseGet(() -> {
+                    Member member = memberRepository.findById(request.getMemberId())
+                            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. ID: " + request.getMemberId()));
+                    return smartCartRepository.save(
+                            SmartCart.builder()
+                                    .member(member)
+                                    .choiceFit(request.getChoiceFit())
+                                    .status(CartStatus.IN_CART)
+                                    .build()
+                    );
+                });
 
         cart.setChoiceFit(request.getChoiceFit());
         return convertToResponse(cart);
@@ -78,27 +81,20 @@ public class CartService {
 
     @Transactional
     public CartDto.CartResponse getMyCart(Long memberId) {
-        Member member = findMemberOrFallback(memberId);
-        SmartCart cart = smartCartRepository.findByMemberIdAndStatus(member.getId(), CartStatus.IN_CART)
-                .orElseGet(() -> smartCartRepository.save(
-                        SmartCart.builder()
-                                .member(member)
-                                .choiceFit(false)
-                                .status(CartStatus.IN_CART)
-                                .build()
-                ));
+        SmartCart cart = smartCartRepository.findByMemberIdAndStatus(memberId, CartStatus.IN_CART)
+                .orElseGet(() -> {
+                    Member member = memberRepository.findById(memberId)
+                            .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+                    return smartCartRepository.save(
+                            SmartCart.builder()
+                                    .member(member)
+                                    .choiceFit(false)
+                                    .status(CartStatus.IN_CART)
+                                    .build()
+                    );
+                });
 
         return convertToResponse(cart);
-    }
-
-    private Member findMemberOrFallback(Long memberId) {
-        if (memberId != null) {
-            var found = memberRepository.findById(memberId);
-            if (found.isPresent()) return found.get();
-        }
-        return memberRepository.findByEmail("vip@herstory.com")
-                .orElseGet(() -> memberRepository.findAll().stream().findFirst()
-                        .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다. ID: " + memberId)));
     }
 
     private CartDto.CartResponse convertToResponse(SmartCart cart) {

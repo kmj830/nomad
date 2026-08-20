@@ -271,11 +271,11 @@ public class JourneyService {
 
     private Journey findJourneyOrFallback(Long journeyId) {
         if (journeyId != null) {
-            var found = journeyRepository.findById(journeyId);
-            if (found.isPresent()) return found.get();
+            return journeyRepository.findById(journeyId)
+                    .orElseThrow(() -> new IllegalArgumentException("여정을 찾을 수 없습니다. ID: " + journeyId));
         }
         return journeyRepository.findAll().stream().findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("여정을 찾을 수 없습니다. ID: " + journeyId));
+                .orElseThrow(() -> new IllegalArgumentException("등록된 여정이 없습니다."));
     }
 
     private String extractPnrFromOcr(String rawText) {
